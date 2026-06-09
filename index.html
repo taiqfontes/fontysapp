@@ -2218,6 +2218,7 @@ function selecionarItemOrc(tipo, id) {
   if (n === 2 && orcStatus[2] === 'vazio') orcStatus[2] = 'pendente';
   closeModal('seletor');
   renderItensOrc(n);
+}
 
 function aprovarOrc(n) {
   orcStatus[n] = 'aprovado';
