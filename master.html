@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fontys Auto — Painel Master</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0d2240;--navy-mid:#163358;--blue:#2d7dd2;--blue-bg:#e8f3fc;
+  --surface:#fff;--surface-2:#f5f8fc;--border:#dce8f5;
+  --text:#0d2240;--text-2:#4a6080;--text-3:#8a9bb0;
+  --success:#1a8f5c;--success-bg:#e8f7f1;
+  --warning:#b86a00;--warning-bg:#fff4e0;
+  --danger:#c0392b;--danger-bg:#fdf0ef;
+  --purple:#6c3fc5;--purple-bg:#f0ebfd;
+  --font-display:'Playfair Display',serif;--font-body:'DM Sans',sans-serif;
+  --radius-sm:6px;--radius-md:8px;--radius-lg:10px;--radius-xl:12px;
+  --shadow-lg:0 8px 32px rgba(13,34,64,0.18);
+}
+body{font-family:var(--font-body);background:var(--surface-2);color:var(--text);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--navy);}
+.login-card{background:var(--surface);border-radius:var(--radius-xl);padding:40px;width:100%;max-width:400px;box-shadow:var(--shadow-lg);}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-logo-text{font-family:var(--font-display);font-size:28px;font-weight:600;color:var(--navy);}
+.login-logo-dot{color:var(--blue);}
+.login-logo-sub{font-size:11px;color:var(--text-3);letter-spacing:1.2px;text-transform:uppercase;margin-top:4px;}
+.login-title{font-size:16px;font-weight:500;color:var(--navy);margin-bottom:20px;text-align:center;}
+.login-group{margin-bottom:14px;}
+.login-label{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-3);font-weight:500;margin-bottom:5px;display:block;}
+.login-input{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--radius-md);font-size:13px;color:var(--text);font-family:var(--font-body);outline:none;transition:border-color .15s;}
+.login-input:focus{border-color:var(--blue);}
+.login-btn{width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-body);margin-top:6px;transition:background .15s;}
+.login-btn:hover{background:var(--navy-mid);}
+.login-btn:disabled{opacity:.6;cursor:not-allowed;}
+.login-error{background:var(--danger-bg);color:var(--danger);border-radius:var(--radius-md);padding:10px 13px;font-size:12px;margin-top:12px;display:none;}
+.login-error.show{display:block;}
+
+/* APP */
+.app{display:none;min-height:100vh;flex-direction:column;}
+.app.show{display:flex;}
+.topbar{height:60px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:100;}
+.topbar-logo{font-family:var(--font-display);font-size:19px;font-weight:600;color:var(--navy);}
+.topbar-logo-dot{color:var(--blue);}
+.topbar-badge{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--purple);background:var(--purple-bg);padding:3px 9px;border-radius:20px;font-weight:600;margin-left:10px;}
+.topbar-right{display:flex;align-items:center;gap:14px;}
+.topbar-user{font-size:12px;color:var(--text-2);}
+.btn-logout{background:none;border:1px solid var(--border);color:var(--text-2);padding:7px 14px;border-radius:var(--radius-sm);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.btn-logout:hover{background:var(--surface-2);}
+
+.main{flex:1;padding:32px 36px;max-width:1100px;width:100%;margin:0 auto;}
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;}
+.page-title{font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--navy);}
+.page-sub{font-size:13px;color:var(--text-3);margin-top:4px;}
+
+.btn{padding:9px 16px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px;font-family:var(--font-body);}
+.btn-primary{background:var(--navy);color:#fff;}
+.btn-primary:hover{background:var(--navy-mid);}
+.btn-outline{background:var(--surface);color:var(--text-2);border:1px solid var(--border);}
+.btn-outline:hover{background:var(--surface-2);}
+.btn-sm{padding:6px 12px;font-size:11px;}
+.btn:disabled{opacity:.6;cursor:not-allowed;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;}
+.kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-3);font-weight:500;margin-bottom:8px;}
+.kpi-value{font-size:24px;font-weight:700;color:var(--navy);}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-3);font-weight:600;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface-2);}
+td{padding:13px 16px;border-bottom:1px solid var(--border);font-size:12.5px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+.empty-state{padding:60px 20px;text-align:center;color:var(--text-3);}
+.empty-state i{font-size:40px;margin-bottom:12px;display:block;}
+
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+.badge-success{background:var(--success-bg);color:var(--success);}
+.badge-gray{background:var(--surface-2);color:var(--text-3);}
+
+.action-btn{background:none;border:1px solid var(--border);color:var(--text-3);cursor:pointer;padding:6px 8px;border-radius:var(--radius-sm);font-size:13px;}
+.action-btn:hover{background:var(--surface-2);color:var(--navy);}
+
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading{display:flex;align-items:center;gap:8px;justify-content:center;padding:40px;color:var(--text-3);font-size:12px;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(13,34,64,0.5);z-index:500;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--surface);border-radius:var(--radius-xl);width:100%;max-width:460px;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto;}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:16px;font-weight:600;color:var(--navy);}
+.modal-sub{font-size:11px;color:var(--text-3);margin-top:2px;}
+.modal-close{background:none;border:none;font-size:18px;color:var(--text-3);cursor:pointer;padding:4px;}
+.modal-body{padding:20px 24px;}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;}
+.form-group{margin-bottom:14px;}
+.form-label{font-size:11px;font-weight:500;color:var(--text-2);margin-bottom:5px;display:block;}
+.form-input{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-md);font-size:13px;color:var(--text);font-family:var(--font-body);outline:none;transition:border-color .15s;}
+.form-input:focus{border-color:var(--blue);}
+.form-hint{font-size:11px;color:var(--text-3);margin-top:4px;}
+
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:900;display:flex;flex-direction:column;gap:8px;}
+.toast{padding:12px 18px;border-radius:var(--radius-md);font-size:12.5px;color:#fff;box-shadow:var(--shadow-lg);animation:toastIn .2s ease;max-width:340px;}
+.toast.success{background:var(--success);}
+.toast.error{background:var(--danger);}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-text">fontys<span class="login-logo-dot">auto</span></div>
+      <div class="login-logo-sub">Painel Master</div>
+    </div>
+    <div class="login-title">Acesso restrito</div>
+    <div class="login-group">
+      <label class="login-label">E-mail</label>
+      <input class="login-input" type="email" id="login-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="login-group">
+      <label class="login-label">Senha</label>
+      <input class="login-input" type="password" id="login-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Entrar</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div class="app" id="app">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;">
+      <div class="topbar-logo">fontys<span class="topbar-logo-dot">auto</span></div>
+      <span class="topbar-badge">Master</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-user" id="topbar-user"></span>
+      <button class="btn-logout" onclick="doLogout()"><i class="ti ti-logout"></i> Saída</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="page-head">
+      <div>
+        <div class="page-title">Oficinas</div>
+        <div class="page-sub">Gerencie todas as oficinas cadastradas na plataforma</div>
+      </div>
+      <button class="btn btn-primary" onclick="abrirModalNovaOficina()"><i class="ti ti-plus"></i> Nova Oficina</button>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">Total de oficinas</div>
+        <div class="kpi-value" id="kpi-total-oficinas">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Cadastradas este mês</div>
+        <div class="kpi-value" id="kpi-mes-oficinas">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Usuários vinculados</div>
+        <div class="kpi-value" id="kpi-total-usuarios">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead><tr>
+          <th>Oficina</th>
+          <th>CNPJ</th>
+          <th>Responsável</th>
+          <th>Criada em</th>
+          <th style="width:80px">Status</th>
+          <th style="width:120px"></th>
+        </tr></thead>
+        <tbody id="tabela-oficinas">
+          <tr><td colspan="6"><div class="loading"><div class="spinner"></div> Carregando...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOVA OFICINA -->
+<div class="modal-overlay" id="modal-nova-oficina" onclick="if(event.target===this)closeModalNovaOficina()">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Nova Oficina</div>
+        <div class="modal-sub">Cria a oficina e o acesso do responsável</div>
+      </div>
+      <button class="modal-close" onclick="closeModalNovaOficina()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Nome da oficina</label>
+        <input class="form-input" id="no-nome-oficina" placeholder="Ex: Auto Center Silva">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nome do responsável</label>
+        <input class="form-input" id="no-nome-resp" placeholder="Ex: João Silva">
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-mail de acesso</label>
+        <input class="form-input" id="no-email" type="email" placeholder="responsavel@oficina.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Senha provisória</label>
+        <input class="form-input" id="no-senha" type="text" placeholder="Mínimo 6 caracteres">
+        <div class="form-hint">O responsável poderá trocar a senha depois.</div>
+      </div>
+      <div id="no-erro" style="display:none;background:var(--danger-bg);color:var(--danger);border-radius:var(--radius-md);padding:10px 13px;font-size:12px;margin-top:6px;"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModalNovaOficina()">Cancelar</button>
+      <button class="btn btn-primary" id="no-btn-criar" onclick="criarOficina()"><i class="ti ti-check"></i> Criar oficina</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR ACESSO -->
+<div class="modal-overlay" id="modal-editar-usuario" onclick="if(event.target===this)closeModalEditarUsuario()">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Editar acesso</div>
+        <div class="modal-sub" id="eu-oficina-nome">—</div>
+      </div>
+      <button class="modal-close" onclick="closeModalEditarUsuario()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">E-mail atual</label>
+        <input class="form-input" id="eu-email-atual" disabled style="background:var(--surface-2);color:var(--text-3);">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Novo e-mail</label>
+        <input class="form-input" id="eu-novo-email" type="email" placeholder="Deixe em branco para não alterar">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nova senha</label>
+        <input class="form-input" id="eu-nova-senha" type="text" placeholder="Deixe em branco para não alterar">
+        <div class="form-hint">Mínimo 6 caracteres, se for preencher.</div>
+      </div>
+      <div id="eu-erro" style="display:none;background:var(--danger-bg);color:var(--danger);border-radius:var(--radius-md);padding:10px 13px;font-size:12px;margin-top:6px;"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModalEditarUsuario()">Cancelar</button>
+      <button class="btn btn-primary" id="eu-btn-salvar" onclick="salvarEdicaoUsuario()"><i class="ti ti-check"></i> Salvar alterações</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+// ============================================================
+// SUPABASE — CONFIGURAÇÃO
+// ============================================================
+const SUPABASE_URL = 'https://iirmasivaopsmhxtrfdq.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_J262kmG_U0iySvaKJ3ehSw_0lcJKPau';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// URL das Vercel Functions
+const API_CRIAR_OFICINA = '/api/criar-oficina';
+const API_EDITAR_USUARIO = '/api/editar-usuario';
+
+let MASTER = { user: null };
+
+function toast(msg, tipo) {
+  const wrap = document.getElementById('toast-wrap');
+  const el = document.createElement('div');
+  el.className = 'toast ' + (tipo || 'success');
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+// ============================================================
+// AUTENTICAÇÃO
+// ============================================================
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  const btn = document.getElementById('login-btn');
+  const err = document.getElementById('login-error');
+
+  if (!email || !senha) { showLoginError('Preencha e-mail e senha.'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Entrando...';
+  err.classList.remove('show');
+
+  const { data, error } = await db.auth.signInWithPassword({ email, password: senha });
+
+  if (error) {
+    showLoginError('E-mail ou senha incorretos.');
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
+    return;
+  }
+
+  const { data: vinculo, error: errV } = await db
+    .from('usuarios')
+    .select('perfil, nome')
+    .eq('user_id', data.user.id)
+    .single();
+
+  if (errV || !vinculo || vinculo.perfil !== 'super_admin') {
+    showLoginError('Este acesso não tem permissão de administrador geral.');
+    await db.auth.signOut();
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
+    return;
+  }
+
+  MASTER.user = data.user;
+  MASTER.nome = vinculo.nome;
+  await initMaster();
+}
+
+function showLoginError(msg) {
+  const err = document.getElementById('login-error');
+  err.textContent = msg;
+  err.classList.add('show');
+}
+
+async function doLogout() {
+  await db.auth.signOut();
+  document.getElementById('login-wrap').style.display = 'flex';
+  document.getElementById('app').classList.remove('show');
+  MASTER.user = null;
+}
+
+async function checkSession() {
+  const { data: { session } } = await db.auth.getSession();
+  if (!session) return;
+
+  const { data: vinculo, error: errV } = await db
+    .from('usuarios')
+    .select('perfil, nome')
+    .eq('user_id', session.user.id)
+    .single();
+
+  if (errV || !vinculo || vinculo.perfil !== 'super_admin') return;
+
+  MASTER.user = session.user;
+  MASTER.nome = vinculo.nome;
+  await initMaster();
+}
+
+// ============================================================
+// INICIALIZAÇÃO
+// ============================================================
+async function initMaster() {
+  document.getElementById('login-wrap').style.display = 'none';
+  document.getElementById('app').classList.add('show');
+  document.getElementById('topbar-user').textContent = MASTER.nome || MASTER.user.email;
+  await carregarOficinas();
+}
+
+async function carregarOficinas() {
+  const { data: oficinas, error } = await db
+    .from('oficinas')
+    .select('id, nome, cnpj, created_at, ativo')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    toast('Erro ao carregar oficinas: ' + error.message, 'error');
+    return;
+  }
+
+  const { data: usuarios } = await db
+    .from('usuarios')
+    .select('oficina_id, nome, user_id, email')
+    .not('oficina_id', 'is', null);
+
+  const usuarioPorOficina = {};
+  (usuarios || []).forEach(u => {
+    if (!usuarioPorOficina[u.oficina_id]) usuarioPorOficina[u.oficina_id] = u;
+  });
+
+  renderKpis(oficinas || [], usuarios || []);
+  renderTabelaOficinas(oficinas || [], usuarioPorOficina);
+}
+
+function renderKpis(oficinas, usuarios) {
+  document.getElementById('kpi-total-oficinas').textContent = oficinas.length;
+  document.getElementById('kpi-total-usuarios').textContent = usuarios.length;
+  const mesAtual = new Date().toISOString().slice(0, 7);
+  const doMes = oficinas.filter(o => (o.created_at || '').startsWith(mesAtual)).length;
+  document.getElementById('kpi-mes-oficinas').textContent = doMes;
+}
+
+let USUARIOS_POR_OFICINA = {};
+
+function renderTabelaOficinas(oficinas, usuarioPorOficina) {
+  USUARIOS_POR_OFICINA = usuarioPorOficina;
+  const tbody = document.getElementById('tabela-oficinas');
+  if (oficinas.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="ti ti-building-store"></i>Nenhuma oficina cadastrada ainda.</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = oficinas.map(o => {
+    const criada = o.created_at ? new Date(o.created_at).toLocaleDateString('pt-BR') : '—';
+    const ativa = o.ativo !== false;
+    const usuario = usuarioPorOficina[o.id];
+    const badge = ativa
+      ? '<span class="badge badge-success">Ativa</span>'
+      : '<span class="badge badge-gray">Inativa</span>';
+    const btnToggle = ativa
+      ? `<button class="action-btn" onclick="confirmarToggleOficina('${o.id}', '${(o.nome||'').replace(/'/g,"\\'")}', false)" title="Desativar"><i class="ti ti-ban"></i></button>`
+      : `<button class="action-btn" onclick="confirmarToggleOficina('${o.id}', '${(o.nome||'').replace(/'/g,"\\'")}', true)" title="Reativar"><i class="ti ti-rotate"></i></button>`;
+    const btnEditar = usuario
+      ? `<button class="action-btn" onclick="abrirModalEditarUsuario('${o.id}')" title="Editar acesso"><i class="ti ti-pencil"></i></button>`
+      : '';
+    return `<tr style="${ativa ? '' : 'opacity:0.6;'}">
+      <td><div style="font-weight:600;color:var(--navy)">${o.nome || '—'}</div></td>
+      <td style="color:var(--text-2)">${o.cnpj || '—'}</td>
+      <td style="color:var(--text-2)">${usuario?.nome || '—'}</td>
+      <td style="color:var(--text-3);font-size:11px">${criada}</td>
+      <td>${badge}</td>
+      <td style="display:flex;gap:4px;">${btnEditar}${btnToggle}</td>
+    </tr>`;
+  }).join('');
+}
+
+function confirmarToggleOficina(oficinaId, nome, ativar) {
+  const acao = ativar ? 'reativar' : 'desativar';
+  const aviso = ativar
+    ? 'Os usuários dessa oficina poderão voltar a fazer login normalmente.'
+    : 'Os usuários dessa oficina não conseguirão mais fazer login. Os dados NÃO serão apagados e isso pode ser revertido depois.';
+  if (!confirm('Tem certeza que deseja ' + acao + ' a oficina "' + nome + '"?\n\n' + aviso)) return;
+  toggleOficina(oficinaId, ativar);
+}
+
+async function toggleOficina(oficinaId, ativar) {
+  const { error } = await db.from('oficinas').update({ ativo: ativar }).eq('id', oficinaId);
+  if (error) {
+    toast('Erro: ' + error.message, 'error');
+    return;
+  }
+  toast(ativar ? 'Oficina reativada!' : 'Oficina desativada.', 'success');
+  await carregarOficinas();
+}
+
+// ============================================================
+// CRIAR NOVA OFICINA
+// ============================================================
+function abrirModalNovaOficina() {
+  document.getElementById('no-nome-oficina').value = '';
+  document.getElementById('no-nome-resp').value = '';
+  document.getElementById('no-email').value = '';
+  document.getElementById('no-senha').value = '';
+  document.getElementById('no-erro').style.display = 'none';
+  document.getElementById('modal-nova-oficina').classList.add('show');
+}
+
+function closeModalNovaOficina() {
+  document.getElementById('modal-nova-oficina').classList.remove('show');
+}
+
+async function criarOficina() {
+  const nomeOficina = document.getElementById('no-nome-oficina').value.trim();
+  const nomeResponsavel = document.getElementById('no-nome-resp').value.trim();
+  const emailResponsavel = document.getElementById('no-email').value.trim();
+  const senhaResponsavel = document.getElementById('no-senha').value;
+  const erroEl = document.getElementById('no-erro');
+  const btn = document.getElementById('no-btn-criar');
+
+  erroEl.style.display = 'none';
+
+  if (!nomeOficina || !emailResponsavel || !senhaResponsavel) {
+    erroEl.textContent = 'Preencha nome da oficina, e-mail e senha.';
+    erroEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Criando...';
+
+  try {
+    const resp = await fetch(API_CRIAR_OFICINA, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nomeOficina, nomeResponsavel, emailResponsavel, senhaResponsavel }),
+    });
+    const result = await resp.json();
+
+    if (!resp.ok || result.error) {
+      erroEl.textContent = result.error || 'Erro ao criar oficina.';
+      erroEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Criar oficina';
+      return;
+    }
+
+    toast('Oficina "' + nomeOficina + '" criada com sucesso!', 'success');
+    closeModalNovaOficina();
+    await carregarOficinas();
+  } catch (e) {
+    erroEl.textContent = 'Erro de conexão: ' + e.message;
+    erroEl.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Criar oficina';
+}
+
+// ============================================================
+// EDITAR ACESSO (e-mail / senha)
+// ============================================================
+let oficinaEditandoId = null;
+
+function abrirModalEditarUsuario(oficinaId) {
+  const usuario = USUARIOS_POR_OFICINA[oficinaId];
+  if (!usuario) { toast('Nenhum usuário vinculado a esta oficina.', 'error'); return; }
+
+  oficinaEditandoId = oficinaId;
+  document.getElementById('eu-oficina-nome').textContent = usuario.nome || '—';
+  document.getElementById('eu-email-atual').value = usuario.email || '—';
+  document.getElementById('eu-novo-email').value = '';
+  document.getElementById('eu-nova-senha').value = '';
+  document.getElementById('eu-erro').style.display = 'none';
+  document.getElementById('modal-editar-usuario').classList.add('show');
+}
+
+function closeModalEditarUsuario() {
+  document.getElementById('modal-editar-usuario').classList.remove('show');
+  oficinaEditandoId = null;
+}
+
+async function salvarEdicaoUsuario() {
+  const usuario = USUARIOS_POR_OFICINA[oficinaEditandoId];
+  if (!usuario) return;
+
+  const novoEmail = document.getElementById('eu-novo-email').value.trim();
+  const novaSenha = document.getElementById('eu-nova-senha').value;
+  const erroEl = document.getElementById('eu-erro');
+  const btn = document.getElementById('eu-btn-salvar');
+
+  erroEl.style.display = 'none';
+
+  if (!novoEmail && !novaSenha) {
+    erroEl.textContent = 'Informe um novo e-mail e/ou uma nova senha.';
+    erroEl.style.display = 'block';
+    return;
+  }
+  if (novaSenha && novaSenha.length < 6) {
+    erroEl.textContent = 'A senha deve ter pelo menos 6 caracteres.';
+    erroEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+
+  try {
+    const resp = await fetch(API_EDITAR_USUARIO, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: usuario.user_id,
+        novoEmail: novoEmail || undefined,
+        novaSenha: novaSenha || undefined,
+      }),
+    });
+    const result = await resp.json();
+
+    if (!resp.ok || result.error) {
+      erroEl.textContent = result.error || 'Erro ao salvar alterações.';
+      erroEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Salvar alterações';
+      return;
+    }
+
+    toast('Acesso atualizado com sucesso!', 'success');
+    closeModalEditarUsuario();
+    await carregarOficinas();
+  } catch (e) {
+    erroEl.textContent = 'Erro de conexão: ' + e.message;
+    erroEl.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Salvar alterações';
+}
+
+// ============================================================
+// START
+// ============================================================
+checkSession();
+</script>
+</body>
+</html>
