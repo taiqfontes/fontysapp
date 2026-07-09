@@ -380,9 +380,9 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
         <div id="dash-metas-bloco" style="display:none;background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);overflow:hidden;margin-top:0;">
           <div style="padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
             <div style="font-size:13px;font-weight:500;color:var(--navy);display:flex;align-items:center;gap:8px;"><i class="ti ti-target" style="color:var(--blue)"></i> Metas do mês</div>
-            <button class="btn btn-outline btn-sm" onclick="abrirModalMetas()"><i class="ti ti-pencil"></i> Editar metas</button>
+            <button class="btn btn-outline btn-sm" onclick="navigate('config', document.querySelector('.nav-item[onclick*=\"config\"]'));showCfgPanel('metas',null)"><i class="ti ti-settings"></i> Configurar</button>
           </div>
-          <div id="dash-metas-conteudo" style="padding:16px 18px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;"></div>
+          <div id="dash-metas-conteudo"></div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:0">
           <div style="background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);overflow:hidden;">
@@ -818,8 +818,11 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
                 </div>
                 <div style="padding:18px 20px;">
                   <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;">
-                    <div class="form-group"><label class="form-label">Faturamento mensal (R$)</label>
-                      <input class="form-input" type="number" id="meta-fat" placeholder="Ex: 50000" step="1000">
+                    <div class="form-group"><label class="form-label">Meta — Serviços (R$)</label>
+                      <input class="form-input" type="number" id="meta-fat-servicos" placeholder="Ex: 30000" step="1000">
+                    </div>
+                    <div class="form-group"><label class="form-label">Meta — Peças (R$)</label>
+                      <input class="form-input" type="number" id="meta-fat-pecas" placeholder="Ex: 15000" step="1000">
                     </div>
                     <div class="form-group"><label class="form-label">Nº de OS por mês</label>
                       <input class="form-input" type="number" id="meta-os" placeholder="Ex: 80">
@@ -830,15 +833,12 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
                     <div class="form-group"><label class="form-label">Margem líquida mínima (%)</label>
                       <input class="form-input" type="number" id="meta-margem" placeholder="Ex: 15" step="0.5">
                     </div>
-                    <div class="form-group"><label class="form-label">Horas produtivas/mês</label>
-                      <input class="form-input" type="number" id="meta-horas" placeholder="Ex: 480">
-                    </div>
                     <div class="form-group"><label class="form-label">Taxa de retenção de clientes (%)</label>
                       <input class="form-input" type="number" id="meta-retencao" placeholder="Ex: 70" step="1">
                     </div>
                   </div>
                   <div style="margin-top:14px;padding:11px 14px;background:var(--blue-bg);border-radius:var(--radius-md);font-size:12px;color:var(--text-2)">
-                    <i class="ti ti-info-circle" style="color:var(--blue)"></i> As metas aparecem no Dashboard como indicadores de desempenho.
+                    <i class="ti ti-info-circle" style="color:var(--blue)"></i> As metas aparecem no Dashboard como indicadores de desempenho. Salve aqui e o Dashboard atualiza automaticamente.
                   </div>
                 </div>
               </div>
@@ -954,11 +954,11 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
   </div>
   <div class="modal-body">
     <div class="form-grid">
-      <div class="form-group"><label class="form-label">Faturamento (R$)</label><input class="form-input" type="number" id="meta-fat-modal" placeholder="Ex: 50000" step="1000"></div>
+      <div class="form-group"><label class="form-label">Meta — Serviços (R$)</label><input class="form-input" type="number" id="meta-fat-servicos-modal" placeholder="Ex: 30000" step="1000"></div>
+      <div class="form-group"><label class="form-label">Meta — Peças (R$)</label><input class="form-input" type="number" id="meta-fat-pecas-modal" placeholder="Ex: 15000" step="1000"></div>
       <div class="form-group"><label class="form-label">Nº de OS por mês</label><input class="form-input" type="number" id="meta-os-modal" placeholder="Ex: 80"></div>
       <div class="form-group"><label class="form-label">Ticket médio (R$)</label><input class="form-input" type="number" id="meta-ticket-modal" placeholder="Ex: 620" step="10"></div>
       <div class="form-group"><label class="form-label">Margem líquida mín. (%)</label><input class="form-input" type="number" id="meta-margem-modal" placeholder="Ex: 15" step="0.5"></div>
-      <div class="form-group"><label class="form-label">Horas produtivas/mês</label><input class="form-input" type="number" id="meta-horas-modal" placeholder="Ex: 480"></div>
       <div class="form-group"><label class="form-label">Retenção de clientes (%)</label><input class="form-input" type="number" id="meta-retencao-modal" placeholder="Ex: 70" step="1"></div>
     </div>
   </div>
@@ -1422,8 +1422,8 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
       <div class="form-group"><label class="form-label">Mecânico</label>
         <select class="form-input" id="seletor-svc-mec" style="font-size:12px;padding:6px 8px;"></select>
       </div>
-      <div class="form-group"><label class="form-label">Horas</label>
-        <input class="form-input" type="number" id="seletor-svc-qtd" value="1" step="0.5" min="0.5" style="font-size:12px;padding:6px 8px;">
+      <div class="form-group"><label class="form-label">Qtd.</label>
+        <input class="form-input" type="number" id="seletor-svc-qtd" value="1" step="1" min="1" style="font-size:12px;padding:6px 8px;">
       </div>
       <div class="form-group"><label class="form-label">Tabelado (R$)</label>
         <input class="form-input" type="number" id="seletor-svc-tab" step="0.01" style="font-size:12px;padding:6px 8px;" oninput="calcSvcFinal()">
@@ -1437,7 +1437,8 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
       <button class="btn btn-primary btn-sm" onclick="confirmarSvc()"><i class="ti ti-plus"></i> Adicionar ao orçamento</button>
     </div>
   </div>
-  <div class="modal-foot">
+  <div class="modal-foot" style="justify-content:space-between;">
+    <button class="btn btn-outline btn-sm" onclick="cadastrarNovoDoOrc('servico')"><i class="ti ti-plus"></i> Cadastrar novo serviço</button>
     <button class="btn btn-outline" onclick="closeModal('seletor-svc')">Cancelar</button>
   </div>
 </div>
@@ -1476,7 +1477,8 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
       <button class="btn btn-primary btn-sm" onclick="confirmarPec()"><i class="ti ti-plus"></i> Adicionar ao orçamento</button>
     </div>
   </div>
-  <div class="modal-foot">
+  <div class="modal-foot" style="justify-content:space-between;">
+    <button class="btn btn-outline btn-sm" onclick="cadastrarNovoDoOrc('peca')"><i class="ti ti-plus"></i> Cadastrar nova peça</button>
     <button class="btn btn-outline" onclick="closeModal('seletor-pec')">Cancelar</button>
   </div>
 </div>
@@ -2153,18 +2155,21 @@ async function carregarDashboard() {
   const em7 = new Date(); em7.setDate(em7.getDate()+7);
   const em7s = em7.toISOString().split('T')[0];
 
-  const [os, pec, fatD, recD, ultOS, vencD] = await Promise.all([
+  const [os, pec, fatD, recD, ultOS, vencD, fatCategD] = await Promise.all([
     db.from('ordens_servico').select('id',{count:'exact'}).eq('oficina_id',oid).in('status',['andamento','aguardando','finalizado']),
     db.from('pecas').select('id,estoque_atual,estoque_minimo').eq('oficina_id',oid),
     db.from('contas_receber').select('valor').eq('oficina_id',oid).eq('status','recebido').gte('data_pagamento',mesAtual+'-01'),
     db.from('contas_receber').select('valor').eq('oficina_id',oid).eq('status','aberto'),
     db.from('ordens_servico').select('numero,status,total,clientes(nome)').eq('oficina_id',oid).order('created_at',{ascending:false}).limit(5),
     db.from('contas_pagar').select('descricao,valor,data_vencimento').eq('oficina_id',oid).eq('status','aberto').lte('data_vencimento',em7s).gte('data_vencimento',hoje).order('data_vencimento').limit(5),
+    db.from('contas_receber').select('valor,categoria').eq('oficina_id',oid).eq('status','recebido').gte('data_pagamento',mesAtual+'-01'),
   ]);
 
   const fat = (fatD.data||[]).reduce((a,r)=>a+(r.valor||0),0);
   const aRec = (recD.data||[]).reduce((a,r)=>a+(r.valor||0),0);
   const pecAbaixo = (pec.data||[]).filter(p=>(p.estoque_atual||0)<=(p.estoque_minimo||0)).length;
+  const fatServicos = (fatCategD.data||[]).filter(r=>r.categoria==='Receita de Serviços').reduce((a,r)=>a+(r.valor||0),0);
+  const fatPecas = (fatCategD.data||[]).filter(r=>r.categoria==='Receita de Peças').reduce((a,r)=>a+(r.valor||0),0);
 
   document.getElementById('kpi-fat-mes').textContent = 'R$ '+(fat||0).toLocaleString('pt-BR',{minimumFractionDigits:0});
   document.getElementById('kpi-os-abertas').textContent = os.count || 0;
@@ -2174,7 +2179,7 @@ async function carregarDashboard() {
 
   // Metas do mês
   const { count: osCount } = await db.from('ordens_servico').select('id',{count:'exact'}).eq('oficina_id',oid).gte('data_abertura',mesAtual+'-01');
-  renderMetasDashboard(fat, osCount || 0);
+  renderMetasDashboard(fat, osCount || 0, fatServicos, fatPecas);
 
   // Últimas OS
   const stMap = {orc:'Orçamento',diagnostico:'Diagnóstico',aguardando:'Ag. Peças',andamento:'Em execução',finalizado:'Finalizado',entregue:'Entregue',quitado:'Quitado'};
@@ -3030,7 +3035,9 @@ async function editarServico(id) {
 async function salvarServico() {
   const nome = document.getElementById('svc-nome').value.trim();
   if (!nome) { toast('Informe o nome.','error'); return; }
-  const editId = document.getElementById('modal-svc').dataset.editId;
+  const modalEl = document.getElementById('modal-svc');
+  const editId = modalEl.dataset.editId;
+  const voltarOrc = modalEl.dataset.voltarOrc;
   const horas = parseFloat(document.getElementById('svc-horas').value) || 0;
   const minutos = parseFloat(document.getElementById('svc-minutos').value) || 0;
   const horasTotal = horas + minutos / 60;
@@ -3044,18 +3051,27 @@ async function salvarServico() {
     desconto_padrao: parseFloat(document.getElementById('svc-desconto').value)||0,
     status: 'Ativo',
   };
-  let error;
+  let error, novoId = null;
   if (editId) {
     ({ error } = await db.from('servicos').update(payload).eq('id', editId));
-    delete document.getElementById('modal-svc').dataset.editId;
+    delete modalEl.dataset.editId;
   } else {
-    ({ error } = await db.from('servicos').insert({ oficina_id: APP.oficina.id, ...payload }));
+    const { data, error: err } = await db.from('servicos').insert({ oficina_id: APP.oficina.id, ...payload }).select();
+    error = err;
+    novoId = data?.[0]?.id || null;
   }
   if (error) { toast('Erro: ' + error.message,'error'); return; }
   document.querySelector('#modal-svc .modal-title').textContent = 'Novo Serviço';
+  delete modalEl.dataset.voltarOrc;
   closeModal('svc');
   toast(editId ? 'Serviço atualizado!' : 'Serviço salvo!','success');
   await carregarServicos();
+  // Se veio do orçamento (dentro da OS), volta pro seletor com o item já selecionado
+  if (voltarOrc && !editId && novoId) {
+    await recarregarCatalogosOS();
+    abrirModalSeletor('servico');
+    selecionarSvc(novoId);
+  }
 }
 
 async function excluirServico(id) {
@@ -3290,7 +3306,9 @@ async function editarPeca(id) {
 async function salvarPeca() {
   const nome = document.getElementById('pec-nome').value.trim();
   if (!nome) { toast('Informe o nome.','error'); return; }
-  const editId = document.getElementById('modal-pec').dataset.editId;
+  const modalEl = document.getElementById('modal-pec');
+  const editId = modalEl.dataset.editId;
+  const voltarOrc = modalEl.dataset.voltarOrc;
   const estoque = parseFloat(document.getElementById('pec-estoque').value)||0;
   const custo = parseFloat(document.getElementById('pec-custo').value)||0;
   const preco = parseFloat(document.getElementById('pec-preco').value)||0;
@@ -3326,10 +3344,17 @@ async function salvarPeca() {
   }
   if (error) { toast('Erro: ' + error.message,'error'); return; }
   document.querySelector('#modal-pec .modal-title').textContent = 'Nova Peça';
+  delete modalEl.dataset.voltarOrc;
   closeModal('pec');
   toast(editId ? 'Peça atualizada!' : 'Peça salva!','success');
   await carregarPecas();
   await carregarDashboard();
+  // Se veio do orçamento (dentro da OS), volta pro seletor com o item já selecionado
+  if (voltarOrc && !editId && data?.[0]?.id) {
+    await recarregarCatalogosOS();
+    abrirModalSeletor('peca');
+    selecionarPec(data[0].id);
+  }
 }
 
 async function excluirPeca(id) {
@@ -3398,6 +3423,32 @@ async function abrirOSEdit(id) {
   await carregarItensOrc(os.id);
   switchOSTab('dados', document.querySelector('#modal-os-edit .m-tab'));
   openModal('os-edit');
+}
+
+// Recarrega as listas de serviços/peças usadas dentro da OS (sem fechar a OS),
+// usado após cadastrar um serviço/peça novo direto pelo seletor do orçamento.
+async function recarregarCatalogosOS() {
+  if (!APP.oficina) return;
+  const [{ data: svcs }, { data: pecs }] = await Promise.all([
+    db.from('servicos').select('id,nome,horas_previstas,markup,categoria,dificuldade,preco_venda,desconto_padrao').eq('oficina_id', APP.oficina.id).eq('status', 'Ativo'),
+    db.from('pecas').select('id,nome,custo_medio,unidade,estoque_atual,estoque_minimo,referencia,categoria,preco_venda,desconto_padrao,marca').eq('oficina_id', APP.oficina.id),
+  ]);
+  osServicos = svcs || [];
+  osPecas = pecs || [];
+}
+
+// Abre o cadastro de Serviço/Peça direto de dentro do orçamento, sem sair da OS.
+// Ao salvar (ou cancelar), o usuário volta automaticamente para o seletor.
+function cadastrarNovoDoOrc(tipo) {
+  if (tipo === 'servico') {
+    closeModal('seletor-svc');
+    document.getElementById('modal-svc').dataset.voltarOrc = '1';
+    openModal('svc');
+  } else {
+    closeModal('seletor-pec');
+    document.getElementById('modal-pec').dataset.voltarOrc = '1';
+    openModal('pec');
+  }
 }
 
 const STATUS_STEPS = [
@@ -3607,25 +3658,33 @@ function renderResumoTotaisOS() {
   const el = document.getElementById('ose-resumo-totais');
   if (!el) return;
   let totalServicos = 0, totalPecas = 0, totalTerceiros = 0, totalOutros = 0;
+  let custoPecas = 0, custoTerceiros = 0;
   let temAprovado = false;
   orcNumeros.forEach(n => {
     if (orcStatus[n] !== 'aprovado') return;
     temAprovado = true;
     (orcItens[n] || []).forEach(item => {
       const valor = (item.preco || 0) * (item.quantidade || 1);
-      if (item.tipo === 'Servico') totalServicos += valor;
-      else if (item.tipo === 'Peca') totalPecas += valor;
-      else if (item.tipo === 'ServicoTerceiro') totalTerceiros += valor;
+      const custo = (item.custo || 0) * (item.quantidade || 1);
+      if (item.tipo === 'ServicoTerceiro') { totalTerceiros += valor; custoTerceiros += custo; }
+      else if (item.tipo === 'Servico' || item.tipo === 'Serviço') totalServicos += valor;
+      else if (item.tipo === 'Peca' || item.tipo === 'Peça') { totalPecas += valor; custoPecas += custo; }
       else totalOutros += valor;
     });
   });
   if (!temAprovado) { el.innerHTML = ''; return; }
   const totalGeral = totalServicos + totalPecas + totalTerceiros + totalOutros;
+  const lucroBruto = totalGeral - custoPecas - custoTerceiros;
   const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   const card = (label, valor, cor) => `
     <div style="flex:1;min-width:120px;padding:10px 12px;background:var(--surface-2);border-radius:var(--radius-sm);border:1px solid var(--border);">
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-3);margin-bottom:4px;">${label}</div>
       <div style="font-size:15px;font-weight:700;color:${cor}">${fmt(valor)}</div>
+    </div>`;
+  const cardSm = (label, valor, cor) => `
+    <div style="flex:1;min-width:100px;padding:8px 10px;background:var(--surface-2);border-radius:var(--radius-sm);border:1px solid var(--border);opacity:0.85;">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-3);margin-bottom:3px;">${label}</div>
+      <div style="font-size:12px;font-weight:600;color:${cor}">${fmt(valor)}</div>
     </div>`;
   el.innerHTML = `
     <div style="margin-top:6px;">
@@ -3636,6 +3695,11 @@ function renderResumoTotaisOS() {
         ${totalTerceiros > 0 ? card('Serviços de terceiro', totalTerceiros, 'var(--navy)') : ''}
         ${totalOutros > 0 ? card('Outros', totalOutros, 'var(--navy)') : ''}
         ${card('Total geral', totalGeral, 'var(--success)')}
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+        ${cardSm('Custo de peças', custoPecas, 'var(--danger)')}
+        ${custoTerceiros > 0 ? cardSm('Custo terceiros', custoTerceiros, 'var(--danger)') : ''}
+        ${cardSm('Lucro bruto', lucroBruto, lucroBruto >= 0 ? 'var(--success)' : 'var(--danger)')}
       </div>
     </div>`;
 }
@@ -3776,7 +3840,7 @@ function renderItensOrc(n) {
       + '<div style="font-size:10px;color:var(--text-3);text-align:center">' + fmtMoeda(custo) + '</div>'
       + '<div style="font-size:10px;text-align:center;' + (desconto>0?'color:var(--text-3);text-decoration:line-through':'color:var(--navy);font-weight:500') + '">' + fmtMoeda(tabelado) + '</div>'
       + '<input class="form-input" type="number" value="' + desconto.toFixed(2) + '" step="0.01" min="0" style="font-size:10px;padding:3px 4px;text-align:center;color:var(--danger)" onchange="updateItemDescOrc(' + n + ',' + i + ',this.value)">'
-      + '<div style="font-size:11px;font-weight:600;color:var(--navy);text-align:center">' + fmtMoeda(preco) + '</div>'
+      + '<div style="font-size:11px;font-weight:600;color:var(--navy);text-align:center">' + fmtMoeda(preco * qtd) + '</div>'
       + '<div><div style="font-size:11px;font-weight:500;color:' + (lucro>=0?'var(--success)':'var(--danger)') + ';text-align:center">' + fmtMoeda(lucro) + '</div>'
       + '<div style="font-size:9px;color:var(--text-3);text-align:center">' + margem.toFixed(1) + '%</div></div>'
       + '<button class="action-btn" onclick="removeItemOrc(' + n + ',' + i + ')" style="color:var(--danger)"><i class="ti ti-trash"></i></button>'
@@ -3955,7 +4019,10 @@ function selecionarSvc(id) {
   const desc = s.desconto_padrao || 0;
   // Preenche form
   document.getElementById('seletor-svc-nome').textContent = s.nome;
-  document.getElementById('seletor-svc-qtd').value = s.horas_previstas || 1;
+  // Qtd. sempre inicia em 1: o preço do serviço já é o valor TOTAL do pacote
+  // (calculado a partir das horas previstas no cadastro), então a quantidade aqui
+  // representa "quantas vezes esse serviço será cobrado" — não as horas.
+  document.getElementById('seletor-svc-qtd').value = 1;
   document.getElementById('seletor-svc-tab').value = preco.toFixed(2);
   document.getElementById('seletor-svc-desc').value = desc.toFixed(2);
   calcSvcFinal();
@@ -4131,7 +4198,7 @@ async function salvarOSEdit() {
   for (const n of orcNumeros) {
     const foiAprovadoAgora = orcStatus[n] === 'aprovado' && orcStatusOriginal[n] !== 'aprovado';
     if (!foiAprovadoAgora) continue;
-    const itensPeca = (orcItens[n] || []).filter(item => item.tipo === 'Peca' && item.pecaId);
+    const itensPeca = (orcItens[n] || []).filter(item => (item.tipo === 'Peca' || item.tipo === 'Peça') && item.pecaId);
     for (const item of itensPeca) {
       const qtd = item.quantidade || 1;
       const { data: pecaAtual } = await db.from('pecas').select('estoque_atual, custo_medio').eq('id', item.pecaId).single();
@@ -4235,14 +4302,12 @@ function imprimirOrcamento(n) {
     + '    document.body.style.transformOrigin="top left";'
     + '    document.body.style.width=(100/scale)+"%";'
     + '  }'
+    + '  window.print();'
     + '};'
     + '<\/script>'
     + '<\/body><\/html>';
 
-  const win = window.open('', '_blank');
-  win.document.write(html);
-  win.document.close();
-  setTimeout(() => win.print(), 300);
+  abrirJanelaImpressao(html);
 }
 
 // IMPRESSÃO DA OS CONSOLIDADA (todos orçamentos aprovados)
@@ -4332,14 +4397,12 @@ function imprimirOS() {
     + '    document.body.style.transformOrigin="top left";'
     + '    document.body.style.width=(100/scale)+"%";'
     + '  }'
+    + '  window.print();'
     + '};'
     + '<\/script>'
     + '<\/body><\/html>';
 
-  const win = window.open('', '_blank');
-  win.document.write(html);
-  win.document.close();
-  setTimeout(() => win.print(), 300);
+  abrirJanelaImpressao(html);
 }
 
 // ============================================================
@@ -4417,8 +4480,25 @@ function imprimirChecklist() {
     +'<div style="margin-top:10px"><h2>Manutenção preventiva anterior?</h2><span class="radio-opt">'+(chk.prev==='Sim'?'●':'○')+' Sim</span><span class="radio-opt">'+(chk.prev==='Não'?'●':'○')+' Não</span></div>'
     +'<h2>Diagnóstico / Observações</h2><div style="min-height:60px;border:1px solid #ddd;border-radius:4px;padding:8px;font-size:11px">'+(chk.diagnostico||'')+'</div>'
     +'<div style="margin-top:12px;padding:10px;background:#f5f5f5;border-radius:4px;font-size:10px;color:#555">Estou ciente de que, durante a execução do serviço, poderá haver necessidade de novas peças ou serviços, que serão adicionados ao orçamento inicial mediante minha aprovação.</div>'
-    +'<div class="ass"><div class="ass-line">Assinatura do cliente</div><div class="ass-line">Técnico responsável</div></div></body></html>';
-  const win = window.open('', '_blank'); win.document.write(html); win.document.close(); win.print();
+    +'<div class="ass"><div class="ass-line">Assinatura do cliente</div><div class="ass-line">Técnico responsável</div></div>'
+    +'<script>window.onload=function(){window.print();};<\/script>'
+    +'</body></html>';
+  abrirJanelaImpressao(html);
+}
+
+// ============================================================
+// HELPER DE IMPRESSÃO — abre janela via Blob (rápido e sem travar)
+// A impressão é disparada pelo próprio script embutido no HTML,
+// no window.onload da janela filha, assim que ela termina de montar
+// (sem depender de setTimeout arbitrário nem de document.write).
+// ============================================================
+function abrirJanelaImpressao(html) {
+  const win = window.open('', '_blank');
+  if (!win) { toast('Seu navegador bloqueou a janela de impressão. Permita pop-ups para este site.', 'error'); return; }
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  win.location.href = url;
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
 // ============================================================
@@ -4836,26 +4916,27 @@ async function salvarConta(){
 
 async function salvarMetas(){
   const metas = {
-    meta_faturamento: parseFloat(document.getElementById('meta-fat')?.value)||0,
+    meta_fat_servicos: parseFloat(document.getElementById('meta-fat-servicos')?.value)||0,
+    meta_fat_pecas: parseFloat(document.getElementById('meta-fat-pecas')?.value)||0,
     meta_os_mes: parseFloat(document.getElementById('meta-os')?.value)||0,
     meta_ticket_medio: parseFloat(document.getElementById('meta-ticket')?.value)||0,
     meta_margem: parseFloat(document.getElementById('meta-margem')?.value)||0,
-    meta_horas_mes: parseFloat(document.getElementById('meta-horas')?.value)||0,
     meta_retencao: parseFloat(document.getElementById('meta-retencao')?.value)||0,
   };
   const {error} = await db.from('oficinas').update({ metas }).eq('id', APP.oficina.id);
   if(error){toast('Erro: '+error.message,'error');return;}
   APP.oficina.metas = metas;
-  toast('Metas salvas!','success');
+  toast('Metas salvas! Dashboard atualizado.','success');
+  carregarDashboard();
 }
 
 function carregarMetas(){
   const m = APP.oficina?.metas||{};
-  if(document.getElementById('meta-fat')) document.getElementById('meta-fat').value = m.meta_faturamento||'';
+  if(document.getElementById('meta-fat-servicos')) document.getElementById('meta-fat-servicos').value = m.meta_fat_servicos||'';
+  if(document.getElementById('meta-fat-pecas')) document.getElementById('meta-fat-pecas').value = m.meta_fat_pecas||'';
   if(document.getElementById('meta-os')) document.getElementById('meta-os').value = m.meta_os_mes||'';
   if(document.getElementById('meta-ticket')) document.getElementById('meta-ticket').value = m.meta_ticket_medio||'';
   if(document.getElementById('meta-margem')) document.getElementById('meta-margem').value = m.meta_margem||'';
-  if(document.getElementById('meta-horas')) document.getElementById('meta-horas').value = m.meta_horas_mes||'';
   if(document.getElementById('meta-retencao')) document.getElementById('meta-retencao').value = m.meta_retencao||'';
 }
 
@@ -6015,66 +6096,112 @@ function navigate(pagina, navItem) {
 // ============================================================
 // METAS NO DASHBOARD
 // ============================================================
-function renderMetasDashboard(fat, osCount) {
+function renderMetasDashboard(fat, osCount, fatServicos, fatPecas) {
   const m = APP.oficina?.metas || {};
+  const totalReal = fatServicos + fatPecas;
+
   const metas = [
-    { label: 'Faturamento', realizado: fat, meta: m.meta_faturamento || 0, fmt: v => fmtMoeda(v) },
+    { label: 'Faturamento — Serviços', realizado: fatServicos, meta: m.meta_fat_servicos || 0, fmt: v => fmtMoeda(v) },
+    { label: 'Faturamento — Peças', realizado: fatPecas, meta: m.meta_fat_pecas || 0, fmt: v => fmtMoeda(v) },
     { label: 'OS no mês', realizado: osCount, meta: m.meta_os_mes || 0, fmt: v => v },
     { label: 'Ticket médio', realizado: osCount > 0 ? fat / osCount : 0, meta: m.meta_ticket_medio || 0, fmt: v => fmtMoeda(v) },
   ];
+
   const temMeta = metas.some(item => item.meta > 0);
   const bloco = document.getElementById('dash-metas-bloco');
   if (!bloco) return;
   if (!temMeta) { bloco.style.display = 'none'; return; }
   bloco.style.display = '';
-  document.getElementById('dash-metas-conteudo').innerHTML = metas.map(item => {
+
+  const cardMeta = (item, grande) => {
     if (item.meta <= 0) return '';
     const pct = Math.min(100, Math.round((item.realizado / item.meta) * 100));
     const cor = pct >= 100 ? 'var(--success)' : pct >= 70 ? 'var(--blue)' : pct >= 40 ? 'var(--warning)' : 'var(--danger)';
     const emoji = pct >= 100 ? '✅' : pct >= 70 ? '📈' : '⚠️';
-    return `<div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
-        <div style="font-size:11px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;">${item.label}</div>
-        <div style="font-size:10px;color:var(--text-3)">${emoji} ${pct}%</div>
+    if (grande) {
+      return `<div style="padding:16px 20px;border-bottom:1px solid var(--border);">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+          <div style="font-size:11px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:0.6px;">${item.label}</div>
+          <div style="font-size:11px;color:${cor};font-weight:600;">${emoji} ${pct}% da meta</div>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:10px;">
+          <div style="font-size:22px;font-weight:700;color:var(--navy);">${item.fmt(item.realizado)}</div>
+          <div style="font-size:12px;color:var(--text-3);">de ${item.fmt(item.meta)}</div>
+        </div>
+        <div style="background:var(--border);border-radius:99px;height:8px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:${cor};border-radius:99px;transition:width 0.5s;"></div>
+        </div>
+      </div>`;
+    }
+    return `<div style="flex:1;">
+      <div style="font-size:10px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${item.label}</div>
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">
+        <div style="font-size:15px;font-weight:700;color:var(--navy);">${item.fmt(item.realizado)}</div>
+        <div style="font-size:11px;color:${cor};font-weight:600;">${pct}%</div>
       </div>
-      <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:6px;">${item.fmt(item.realizado)}</div>
-      <div style="background:var(--border);border-radius:99px;height:6px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:${cor};border-radius:99px;transition:width 0.4s;"></div>
+      <div style="background:var(--border);border-radius:99px;height:5px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:${cor};border-radius:99px;transition:width 0.5s;"></div>
       </div>
       <div style="font-size:10px;color:var(--text-3);margin-top:4px;">Meta: ${item.fmt(item.meta)}</div>
     </div>`;
-  }).join('');
+  };
+
+  // Total Geral (destaque no topo)
+  const metaTotal = (m.meta_fat_servicos || 0) + (m.meta_fat_pecas || 0);
+  const pctTotal = metaTotal > 0 ? Math.min(100, Math.round((totalReal / metaTotal) * 100)) : 0;
+  const corTotal = pctTotal >= 100 ? 'var(--success)' : pctTotal >= 70 ? 'var(--blue)' : pctTotal >= 40 ? 'var(--warning)' : 'var(--danger)';
+  const cardTotalGeral = `<div style="padding:16px 20px;border-bottom:1px solid var(--border);">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+      <div style="font-size:11px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:0.6px;">Total Geral (Serviços + Peças)</div>
+      ${metaTotal > 0 ? `<div style="font-size:11px;color:${corTotal};font-weight:600;">${pctTotal >= 100 ? '✅' : pctTotal >= 70 ? '📈' : '⚠️'} ${pctTotal}% da meta</div>` : ''}
+    </div>
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:10px;">
+      <div style="font-size:22px;font-weight:700;color:var(--success);">${fmtMoeda(totalReal)}</div>
+      ${metaTotal > 0 ? `<div style="font-size:12px;color:var(--text-3);">de ${fmtMoeda(metaTotal)}</div>` : ''}
+    </div>
+    ${metaTotal > 0 ? `<div style="background:var(--border);border-radius:99px;height:8px;overflow:hidden;">
+      <div style="height:100%;width:${pctTotal}%;background:${corTotal};border-radius:99px;transition:width 0.5s;"></div>
+    </div>` : ''}
+  </div>`;
+
+  // Serviços e Peças lado a lado abaixo
+  const metaServicos = { label: 'Serviços', realizado: fatServicos, meta: m.meta_fat_servicos || 0, fmt: v => fmtMoeda(v) };
+  const metaPecas = { label: 'Peças', realizado: fatPecas, meta: m.meta_fat_pecas || 0, fmt: v => fmtMoeda(v) };
+  const metaOS = { label: 'OS no mês', realizado: osCount, meta: m.meta_os_mes || 0, fmt: v => v };
+  const metaTicket = { label: 'Ticket médio', realizado: osCount > 0 ? fat / osCount : 0, meta: m.meta_ticket_medio || 0, fmt: v => fmtMoeda(v) };
+
+  const linhaSecundaria = [metaServicos, metaPecas, metaOS, metaTicket].filter(item => item.meta > 0);
+
+  const htmlSecundaria = linhaSecundaria.length > 0 ? `<div style="padding:14px 20px;display:flex;gap:24px;">
+    ${linhaSecundaria.map(item => cardMeta(item, false)).join('<div style="width:1px;background:var(--border);"></div>')}
+  </div>` : '';
+
+  document.getElementById('dash-metas-conteudo').innerHTML = cardTotalGeral + htmlSecundaria;
 }
 
 function abrirModalMetas() {
   const m = APP.oficina?.metas || {};
-  document.getElementById('meta-fat-modal').value = m.meta_faturamento || '';
+  document.getElementById('meta-fat-servicos-modal').value = m.meta_fat_servicos || '';
+  document.getElementById('meta-fat-pecas-modal').value = m.meta_fat_pecas || '';
   document.getElementById('meta-os-modal').value = m.meta_os_mes || '';
   document.getElementById('meta-ticket-modal').value = m.meta_ticket_medio || '';
   document.getElementById('meta-margem-modal').value = m.meta_margem || '';
-  document.getElementById('meta-horas-modal').value = m.meta_horas_mes || '';
   document.getElementById('meta-retencao-modal').value = m.meta_retencao || '';
   openModal('metas');
 }
 
 async function salvarMetasModal() {
   const metas = {
-    meta_faturamento: parseFloat(document.getElementById('meta-fat-modal').value) || 0,
+    meta_fat_servicos: parseFloat(document.getElementById('meta-fat-servicos-modal').value) || 0,
+    meta_fat_pecas: parseFloat(document.getElementById('meta-fat-pecas-modal').value) || 0,
     meta_os_mes: parseFloat(document.getElementById('meta-os-modal').value) || 0,
     meta_ticket_medio: parseFloat(document.getElementById('meta-ticket-modal').value) || 0,
     meta_margem: parseFloat(document.getElementById('meta-margem-modal').value) || 0,
-    meta_horas_mes: parseFloat(document.getElementById('meta-horas-modal').value) || 0,
     meta_retencao: parseFloat(document.getElementById('meta-retencao-modal').value) || 0,
   };
   const { error } = await db.from('oficinas').update({ metas }).eq('id', APP.oficina.id);
   if (error) { toast('Erro: ' + error.message, 'error'); return; }
   APP.oficina.metas = metas;
-  if (document.getElementById('meta-fat')) document.getElementById('meta-fat').value = metas.meta_faturamento || '';
-  if (document.getElementById('meta-os')) document.getElementById('meta-os').value = metas.meta_os_mes || '';
-  if (document.getElementById('meta-ticket')) document.getElementById('meta-ticket').value = metas.meta_ticket_medio || '';
-  if (document.getElementById('meta-margem')) document.getElementById('meta-margem').value = metas.meta_margem || '';
-  if (document.getElementById('meta-horas')) document.getElementById('meta-horas').value = metas.meta_horas_mes || '';
-  if (document.getElementById('meta-retencao')) document.getElementById('meta-retencao').value = metas.meta_retencao || '';
   closeModal('metas');
   toast('Metas salvas!', 'success');
   carregarDashboard();
@@ -6249,10 +6376,10 @@ async function carregarHistoricoVeiculo() {
     <div style="display:flex;flex-direction:column;gap:8px;">
     ${osList.map(os => {
       const itensAprovados = (os.orcamentos || []).filter(o => o.status === 'aprovado').flatMap(o => o.orcamento_itens || []);
-      const servicos = itensAprovados.filter(i => i.tipo === 'Servico').map(i => i.descricao).slice(0, 3);
-      const pecas = itensAprovados.filter(i => i.tipo === 'Peca').map(i => i.descricao).slice(0, 3);
-      const maisServ = itensAprovados.filter(i => i.tipo === 'Servico').length > 3;
-      const maisPec = itensAprovados.filter(i => i.tipo === 'Peca').length > 3;
+      const servicos = itensAprovados.filter(i => i.tipo === 'Servico' || i.tipo === 'Serviço').map(i => i.descricao).slice(0, 3);
+      const pecas = itensAprovados.filter(i => i.tipo === 'Peca' || i.tipo === 'Peça').map(i => i.descricao).slice(0, 3);
+      const maisServ = itensAprovados.filter(i => i.tipo === 'Servico' || i.tipo === 'Serviço').length > 3;
+      const maisPec = itensAprovados.filter(i => i.tipo === 'Peca' || i.tipo === 'Peça').length > 3;
       return `<div onclick="closeModal('detalhe-vei');setTimeout(()=>abrirOSPorId('${os.id}'),300)"
         style="padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-md);cursor:pointer;transition:background .12s;"
         onmouseover="this.style.background='var(--surface-2)'" onmouseout="this.style.background=''">
@@ -6481,8 +6608,8 @@ async function gerarRelatorioOS() {
         if (!osId) return;
         if (!itensPorOS[osId]) itensPorOS[osId] = { servicos:0, pecas:0, terceiros:0 };
         const v = item.valor_total || 0;
-        if (item.tipo === 'Servico') itensPorOS[osId].servicos += v;
-        else if (item.tipo === 'Peca') itensPorOS[osId].pecas += v;
+        if (item.tipo === 'Servico' || item.tipo === 'Serviço') itensPorOS[osId].servicos += v;
+        else if (item.tipo === 'Peca' || item.tipo === 'Peça') itensPorOS[osId].pecas += v;
         else if (item.tipo === 'ServicoTerceiro') itensPorOS[osId].terceiros += v;
       });
     }
@@ -6778,8 +6905,7 @@ function exportarPDF() {
   const tabela = document.getElementById('rel-tabela-print');
   if (!tabela) return;
   const nome = { os:'Ordens de Serviço', receber:'Contas a Receber', pagar:'Contas a Pagar', clientes:'Base de Clientes' }[relPanelAtual] || 'Relatório';
-  const win = window.open('', '_blank');
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${nome}</title><style>
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${nome}</title><style>
     body{font-family:Arial,sans-serif;font-size:11px;color:#0d2240;padding:20px;}
     h2{font-size:16px;margin-bottom:4px;}
     p{font-size:11px;color:#8a9bb0;margin-bottom:16px;}
@@ -6793,8 +6919,8 @@ function exportarPDF() {
   <p>Exportado em ${new Date().toLocaleDateString('pt-BR')} — ${APP.oficina?.nome || ''}</p>
   ${tabela.outerHTML}
   <script>window.onload=()=>{window.print();}<\/script>
-  </body></html>`);
-  win.document.close();
+  </body></html>`;
+  abrirJanelaImpressao(html);
 }
 
 
@@ -6826,7 +6952,16 @@ function openModal(id) {
     }
   }
 }
-function closeModal(id) { document.getElementById('modal-' + id).classList.remove('open'); }
+function closeModal(id) {
+  const modal = document.getElementById('modal-' + id);
+  modal.classList.remove('open');
+  // Se o cadastro de serviço/peça foi aberto a partir do orçamento e o usuário
+  // cancelou (sem salvar), volta pro seletor em vez de deixar a OS "perdida".
+  if ((id === 'svc' || id === 'pec') && modal.dataset.voltarOrc) {
+    delete modal.dataset.voltarOrc;
+    abrirModalSeletor(id === 'svc' ? 'servico' : 'peca');
+  }
+}
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
 });
