@@ -1214,9 +1214,6 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
           <span style="font-size:12px;color:var(--text-3)">min</span>
         </div>
       </div>
-      <div class="form-group"><label class="form-label">Markup (%)</label>
-        <input class="form-input" id="svc-markup" type="number" value="60" oninput="calcSvcPreview()">
-      </div>
       <div class="form-group"><label class="form-label">Preço de venda (R$)</label>
         <input class="form-input" id="svc-preco" type="number" step="0.01" placeholder="Calculado automaticamente" oninput="calcSvcPreview()">
       </div>
@@ -1232,6 +1229,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
       <div style="font-size:11px;color:rgba(255,255,255,0.5)">Lucro: <span id="svc-prev-lucro" style="color:#7de8b8;font-weight:600">—</span></div>
       <div style="font-size:11px;color:rgba(255,255,255,0.5)">Margem: <span id="svc-prev-margem" style="color:#7de8b8;font-weight:600">—</span></div>
     </div>
+    <div style="margin-top:8px;font-size:10px;color:var(--text-3);"><i class="ti ti-info-circle"></i> O preço por hora vem da aba <b>Precificação</b>. Ajuste o markup lá — aqui é só o tempo previsto e ajustes pontuais deste serviço.</div>
   </div>
   <div class="modal-foot">
     <button class="btn btn-outline" onclick="closeModal('svc')">Cancelar</button>
@@ -2144,6 +2142,11 @@ async function carregarOficinas() {
   if (APP.oficina) {
     document.getElementById('sidebar-oficina-name').childNodes[0].textContent = APP.oficina.nome;
     document.getElementById('topbar-sub').textContent = 'Dashboard — ' + APP.oficina.nome;
+    // Carrega os valores de Precificação salvos (custo/h e preço ao cliente/h),
+    // para que Serviços/Orçamento já usem os valores certos sem precisar visitar a aba Precificação antes.
+    const precSalvo = APP.oficina.padroes_os?.precificacao;
+    APP.custoHora = precSalvo?.custoHoraMecanico || 64.77;
+    APP.precoHoraCliente = precSalvo?.precoClienteHora || (APP.custoHora * 1.6);
   }
 }
 
@@ -2932,7 +2935,8 @@ function renderServicos() {
     document.getElementById('svc-table-wrap').innerHTML = `<div class="empty-state"><i class="ti ti-tool" style="color:var(--blue)"></i><div class="empty-state-title">${svcFiltro ? 'Nenhum serviço encontrado' : 'Nenhum serviço cadastrado'}</div></div>`;
     return;
   }
-  const custoHora = APP.custoHora || APP.oficina?.custo_hora || 64.77;
+  const custoHora = APP.custoHora || 64.77;
+  const precoHoraCliente = APP.precoHoraCliente || (custoHora * 1.6);
   document.getElementById('svc-table-wrap').innerHTML = `
     <table>
       <thead><tr>
@@ -2942,14 +2946,13 @@ function renderServicos() {
         <th style="width:80px;text-align:right">Custo</th>
         <th style="width:90px;text-align:right">Preço venda</th>
         <th style="width:80px;text-align:right">Lucro</th>
-        <th style="width:60px;text-align:center">Markup</th>
         <th style="width:95px">Dificuldade</th>
         <th style="width:55px;text-align:center">Status</th>
         <th style="width:60px"></th>
       </tr></thead>
       <tbody>${lista.map(s=>{
         const custo = (s.horas_previstas||1) * custoHora;
-        const preco = s.preco_venda || custo * (1 + (s.markup||60)/100);
+        const preco = s.preco_venda || (s.horas_previstas||1) * precoHoraCliente;
         const desc = s.desconto_padrao || 0;
         const precoFinal = Math.max(0, preco - desc);
         const lucro = precoFinal - custo;
@@ -2967,7 +2970,6 @@ function renderServicos() {
             <div style="font-size:12px;font-weight:500;color:${lucro>=0?'var(--success)':'var(--danger)'}">${fmtMoeda(lucro)}</div>
             <div style="font-size:10px;color:var(--text-3)">${margem.toFixed(1)}%</div>
           </td>
-          <td style="font-size:12px;color:var(--text-2);text-align:center">${s.markup||60}%</td>
           <td><span class="badge ${s.dificuldade==='Simples'?'badge-success':s.dificuldade==='Complexo'?'badge-danger':'badge-warning'}" style="font-size:10px">${s.dificuldade==='Simples'?'🟢':s.dificuldade==='Complexo'?'🔴':'🟡'} ${s.dificuldade}</span></td>
           <td style="text-align:center;font-size:11px;color:${s.status==='Ativo'?'var(--success)':'var(--text-3)'}">${s.status}</td>
           <td style="display:flex;gap:4px;">
@@ -2979,16 +2981,18 @@ function renderServicos() {
     </table>`;}
 
 function calcSvcPreview() {
-  const custoHora = APP.custoHora || APP.oficina?.custo_hora || 64.77;
+  const custoHora = APP.custoHora || 64.77;
+  const precoHoraCliente = APP.precoHoraCliente || (custoHora * 1.6);
   const horas = parseFloat(document.getElementById('svc-horas')?.value) || 0;
   const minutos = parseFloat(document.getElementById('svc-minutos')?.value) || 0;
   const horasTotal = horas + minutos / 60;
-  const markup = parseFloat(document.getElementById('svc-markup')?.value) || 60;
   const precoManual = parseFloat(document.getElementById('svc-preco')?.value) || 0;
   const desconto = parseFloat(document.getElementById('svc-desconto')?.value) || 0;
 
   const custo = horasTotal * custoHora;
-  const preco = precoManual > 0 ? precoManual : custo * (1 + markup / 100);
+  // Preço = tempo previsto x "Preço ao cliente/hora" calculado na aba Precificação
+  // (pode ser sobrescrito manualmente em "Preço de venda" para casos pontuais).
+  const preco = precoManual > 0 ? precoManual : horasTotal * precoHoraCliente;
   const precoFinal = Math.max(0, preco - desconto);
   const lucro = precoFinal - custo;
   const margem = precoFinal > 0 ? (lucro / precoFinal * 100) : 0;
@@ -3023,7 +3027,6 @@ async function editarServico(id) {
   const m = Math.round((horasDec - h) * 60);
   document.getElementById('svc-horas').value = h;
   document.getElementById('svc-minutos').value = m;
-  document.getElementById('svc-markup').value = s.markup || 60;
   document.getElementById('svc-preco').value = s.preco_venda || '';
   document.getElementById('svc-desconto').value = s.desconto_padrao || 0;
   calcSvcPreview();
@@ -3046,7 +3049,6 @@ async function salvarServico() {
     categoria: document.getElementById('svc-cat').value,
     dificuldade: document.getElementById('svc-dif').value,
     horas_previstas: Math.round(horasTotal * 100) / 100,
-    markup: parseFloat(document.getElementById('svc-markup').value)||60,
     preco_venda: parseFloat(document.getElementById('svc-preco').value)||0,
     desconto_padrao: parseFloat(document.getElementById('svc-desconto').value)||0,
     status: 'Ativo',
@@ -4086,10 +4088,11 @@ function renderListaSvc(filtro) {
     wrap.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-3);font-size:12px">Nenhum serviço encontrado</div>';
     return;
   }
-  const custoHora = 64.77;
+  const custoHora = APP.custoHora || 64.77;
+  const precoHoraCliente = APP.precoHoraCliente || (custoHora * 1.6);
   wrap.innerHTML = filtrados.map(s => {
     const custo = (s.horas_previstas||1) * custoHora;
-    const preco = s.preco_venda || custo * (1 + (s.markup||60)/100);
+    const preco = s.preco_venda || (s.horas_previstas||1) * precoHoraCliente;
     const desc = s.desconto_padrao || 0;
     const final = Math.max(0, preco - desc);
     return '<div onclick="selecionarSvc(\'' + s.id + '\')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background=\'var(--blue-bg)\'" onmouseout="this.style.background=\'\'">'
@@ -4104,9 +4107,10 @@ function selecionarSvc(id) {
   const s = osServicos.find(x => x.id === id);
   if (!s) return;
   svcSelecionado = s;
-  const custoHora = 64.77;
+  const custoHora = APP.custoHora || 64.77;
+  const precoHoraCliente = APP.precoHoraCliente || (custoHora * 1.6);
   const custo = (s.horas_previstas||1) * custoHora;
-  const preco = s.preco_venda || custo * (1 + (s.markup||60)/100);
+  const preco = s.preco_venda || (s.horas_previstas||1) * precoHoraCliente;
   const desc = s.desconto_padrao || 0;
   // Preenche form
   document.getElementById('seletor-svc-nome').textContent = s.nome;
@@ -4138,7 +4142,7 @@ function confirmarSvc() {
   const n = orcSelecionandoN;
   if (!orcItens[n]) orcItens[n] = [];
   const s = svcSelecionado;
-  const custoHora = 64.77;
+  const custoHora = APP.custoHora || 64.77;
   const custo = (s.horas_previstas||1) * custoHora;
   const tab = parseFloat(document.getElementById('seletor-svc-tab').value) || 0;
   const desc = parseFloat(document.getElementById('seletor-svc-desc').value) || 0;
@@ -4836,8 +4840,26 @@ async function carregarDRE(){
 // PRECIFICAÇÃO
 // ============================================================
 function iniciarPrecificacao(){
+  // Recarrega os últimos valores salvos, se existirem, em vez de sempre voltar ao padrão
+  const salvo = APP.oficina?.padroes_os?.precificacao?.inputs;
+  if (salvo) {
+    const set = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+    set('prec-desp', salvo.desp); set('prec-hd', salvo.hd); set('prec-dias', salvo.dias);
+    set('prec-mecs', salvo.mecs); set('prec-mk', salvo.mk); set('prec-imp', salvo.imp); set('prec-tx', salvo.tx);
+  }
   calcPrecSvc();
   calcPrecPec();
+}
+
+let precSalvarTimeout = null;
+function salvarPrecificacaoDebounced(dados) {
+  if (!APP.oficina) return;
+  clearTimeout(precSalvarTimeout);
+  precSalvarTimeout = setTimeout(async () => {
+    const padroes = { ...(APP.oficina.padroes_os || {}), precificacao: dados };
+    const { error } = await db.from('oficinas').update({ padroes_os: padroes }).eq('id', APP.oficina.id);
+    if (!error) APP.oficina.padroes_os = padroes;
+  }, 800);
 }
 
 function calcPrecSvc(){
@@ -4857,9 +4879,17 @@ function calcPrecSvc(){
   const taxaV=valorBruto*(tx/100);
   const liquido=valorBruto-taxaV;
   const margem=((liquido-custoSvc)/valorBruto)*100;
+  const precoHoraCliente = sh > 0 ? valorBruto / sh : valorBruto;
 
-  // Salva custo hora globalmente para usar em serviços
+  // Salva custo/h e preço ao cliente/h globalmente, e persiste no banco (padroes_os),
+  // para que Serviços e Orçamento usem esses valores mesmo sem passar por essa aba antes.
   APP.custoHora = custoHoraH;
+  APP.precoHoraCliente = precoHoraCliente;
+  salvarPrecificacaoDebounced({
+    custoHoraMecanico: custoHoraH,
+    precoClienteHora: precoHoraCliente,
+    inputs: { desp, hd, dias, mecs, mk, imp, tx },
+  });
 
   const el=document.getElementById('prec-custo-hora');
   if(el) el.textContent=fmtMoeda(custoHoraH);
@@ -4872,6 +4902,7 @@ function calcPrecSvc(){
     <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:13px"><span style="color:rgba(255,255,255,0.55)">(-) Imposto (${imp}%)</span><span style="color:#f5a5a0">- ${fmtMoeda(valorBruto*(imp/100))}</span></div>
     <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px"><span style="color:rgba(255,255,255,0.55)">(-) Taxa de transação (${tx}%)</span><span style="color:#f5a5a0">- ${fmtMoeda(taxaV)}</span></div>
     <div style="display:flex;justify-content:space-between;padding-top:10px;margin-top:6px;border-top:1px solid rgba(255,255,255,0.15)"><span style="font-size:12px;color:rgba(255,255,255,0.6)">💰 Preço ao cliente</span><span style="font-size:20px;font-weight:500;color:#fff">${fmtMoeda(valorBruto)}</span></div>
+    <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:11px"><span style="color:rgba(255,255,255,0.4)">= Preço ao cliente / hora (usado nos serviços)</span><span style="color:#7de8b8;font-weight:500">${fmtMoeda(precoHoraCliente)}/h</span></div>
     <div style="background:rgba(45,125,210,0.2);border-radius:6px;padding:10px 12px;margin-top:8px;display:flex;justify-content:space-between;"><span style="font-size:11px;color:#4a9fe8">Margem líquida real</span><span style="font-size:15px;font-weight:500;color:#7de8b8">${margem.toFixed(1)}%</span></div>`;
 }
 
@@ -7063,7 +7094,6 @@ function openModal(id) {
       document.querySelector('#modal-svc .modal-title').textContent = 'Novo Serviço';
       ['svc-nome','svc-preco','svc-desconto'].forEach(f => { const el=document.getElementById(f); if(el) el.value = ''; });
       const h = document.getElementById('svc-horas'); if(h) h.value = '1';
-      const m = document.getElementById('svc-markup'); if(m) m.value = '60';
     }
     setTimeout(calcSvcPreview, 50);
   }
