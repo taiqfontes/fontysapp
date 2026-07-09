@@ -371,16 +371,16 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
       <!-- DASHBOARD -->
       <div class="page active" id="page-dashboard">
         <div class="kpi-grid kpi-grid-4" id="dash-kpis">
-          <div class="kpi-card"><div class="kpi-label">Faturamento do mês</div><div class="kpi-val success" id="kpi-fat-mes">—</div><div class="kpi-sub" id="kpi-fat-sub">receitas recebidas</div></div>
-          <div class="kpi-card"><div class="kpi-label">OS em andamento</div><div class="kpi-val blue" id="kpi-os-abertas">—</div><div class="kpi-sub">em execução</div></div>
-          <div class="kpi-card"><div class="kpi-label">A receber</div><div class="kpi-val warning" id="kpi-a-receber">—</div><div class="kpi-sub">em aberto</div></div>
-          <div class="kpi-card"><div class="kpi-label">Estoque crítico</div><div class="kpi-val danger" id="kpi-pecas-min">—</div><div class="kpi-sub">peças abaixo do mínimo</div></div>
+          <div class="kpi-card" onclick="navegarKpi('receber')" style="cursor:pointer;"><div class="kpi-label">Faturamento do mês</div><div class="kpi-val success" id="kpi-fat-mes">—</div><div class="kpi-sub" id="kpi-fat-sub">receitas recebidas</div></div>
+          <div class="kpi-card" onclick="navegarKpi('os')" style="cursor:pointer;"><div class="kpi-label">OS em andamento</div><div class="kpi-val blue" id="kpi-os-abertas">—</div><div class="kpi-sub">em execução</div></div>
+          <div class="kpi-card" onclick="navegarKpi('receber')" style="cursor:pointer;"><div class="kpi-label">A receber</div><div class="kpi-val warning" id="kpi-a-receber">—</div><div class="kpi-sub">em aberto</div></div>
+          <div class="kpi-card" onclick="navegarKpi('os')" style="cursor:pointer;"><div class="kpi-label">Carros entregues</div><div class="kpi-val success" id="kpi-carros-entregues">—</div><div class="kpi-sub">no mês</div></div>
         </div>
         <!-- METAS DO MÊS -->
         <div id="dash-metas-bloco" style="display:none;background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);overflow:hidden;margin-top:0;">
           <div style="padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
             <div style="font-size:13px;font-weight:500;color:var(--navy);display:flex;align-items:center;gap:8px;"><i class="ti ti-target" style="color:var(--blue)"></i> Metas do mês</div>
-            <button class="btn btn-outline btn-sm" onclick="navigate('config', document.querySelector('.nav-item[onclick*=\"config\"]'));showCfgPanel('metas',null)"><i class="ti ti-settings"></i> Configurar</button>
+            <button class="btn btn-outline btn-sm" onclick="abrirModalMetas()"><i class="ti ti-settings"></i> Configurar</button>
           </div>
           <div id="dash-metas-conteudo"></div>
         </div>
@@ -818,11 +818,8 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
                 </div>
                 <div style="padding:18px 20px;">
                   <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;">
-                    <div class="form-group"><label class="form-label">Meta — Serviços (R$)</label>
-                      <input class="form-input" type="number" id="meta-fat-servicos" placeholder="Ex: 30000" step="1000">
-                    </div>
-                    <div class="form-group"><label class="form-label">Meta — Peças (R$)</label>
-                      <input class="form-input" type="number" id="meta-fat-pecas" placeholder="Ex: 15000" step="1000">
+                    <div class="form-group form-full"><label class="form-label">Meta — Faturamento Total (R$)</label>
+                      <input class="form-input" type="number" id="meta-fat-total" placeholder="Ex: 45000" step="1000">
                     </div>
                     <div class="form-group"><label class="form-label">Nº de OS por mês</label>
                       <input class="form-input" type="number" id="meta-os" placeholder="Ex: 80">
@@ -838,7 +835,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
                     </div>
                   </div>
                   <div style="margin-top:14px;padding:11px 14px;background:var(--blue-bg);border-radius:var(--radius-md);font-size:12px;color:var(--text-2)">
-                    <i class="ti ti-info-circle" style="color:var(--blue)"></i> As metas aparecem no Dashboard como indicadores de desempenho. Salve aqui e o Dashboard atualiza automaticamente.
+                    <i class="ti ti-info-circle" style="color:var(--blue)"></i> A divisão entre Serviços e Peças aparece automaticamente no Dashboard, calculada pelo faturamento já realizado. As metas aparecem no Dashboard como indicadores de desempenho.
                   </div>
                 </div>
               </div>
@@ -954,12 +951,14 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
   </div>
   <div class="modal-body">
     <div class="form-grid">
-      <div class="form-group"><label class="form-label">Meta — Serviços (R$)</label><input class="form-input" type="number" id="meta-fat-servicos-modal" placeholder="Ex: 30000" step="1000"></div>
-      <div class="form-group"><label class="form-label">Meta — Peças (R$)</label><input class="form-input" type="number" id="meta-fat-pecas-modal" placeholder="Ex: 15000" step="1000"></div>
+      <div class="form-group form-full"><label class="form-label">Meta — Faturamento Total (R$)</label><input class="form-input" type="number" id="meta-fat-total-modal" placeholder="Ex: 45000" step="1000"></div>
       <div class="form-group"><label class="form-label">Nº de OS por mês</label><input class="form-input" type="number" id="meta-os-modal" placeholder="Ex: 80"></div>
       <div class="form-group"><label class="form-label">Ticket médio (R$)</label><input class="form-input" type="number" id="meta-ticket-modal" placeholder="Ex: 620" step="10"></div>
       <div class="form-group"><label class="form-label">Margem líquida mín. (%)</label><input class="form-input" type="number" id="meta-margem-modal" placeholder="Ex: 15" step="0.5"></div>
       <div class="form-group"><label class="form-label">Retenção de clientes (%)</label><input class="form-input" type="number" id="meta-retencao-modal" placeholder="Ex: 70" step="1"></div>
+    </div>
+    <div style="margin-top:10px;padding:10px 12px;background:var(--blue-bg);border-radius:var(--radius-md);font-size:11px;color:var(--text-2)">
+      <i class="ti ti-info-circle" style="color:var(--blue)"></i> A divisão entre Serviços e Peças aparece automaticamente no Dashboard, calculada pelo faturamento já realizado — você só define a meta total.
     </div>
   </div>
   <div class="modal-foot">
@@ -2158,9 +2157,9 @@ async function carregarDashboard() {
   const em7 = new Date(); em7.setDate(em7.getDate()+7);
   const em7s = em7.toISOString().split('T')[0];
 
-  const [os, pec, fatD, recD, ultOS, vencD, fatCategD] = await Promise.all([
+  const [os, carrosEnt, fatD, recD, ultOS, vencD, fatCategD] = await Promise.all([
     db.from('ordens_servico').select('id',{count:'exact'}).eq('oficina_id',oid).in('status',['andamento','aguardando','finalizado']),
-    db.from('pecas').select('id,estoque_atual,estoque_minimo').eq('oficina_id',oid),
+    db.from('ordens_servico').select('id',{count:'exact'}).eq('oficina_id',oid).eq('status','entregue').gte('data_entrega',mesAtual+'-01'),
     db.from('contas_receber').select('valor').eq('oficina_id',oid).eq('status','recebido').gte('data_pagamento',mesAtual+'-01'),
     db.from('contas_receber').select('valor').eq('oficina_id',oid).eq('status','aberto'),
     db.from('ordens_servico').select('numero,status,total,clientes(nome)').eq('oficina_id',oid).order('created_at',{ascending:false}).limit(5),
@@ -2170,14 +2169,13 @@ async function carregarDashboard() {
 
   const fat = (fatD.data||[]).reduce((a,r)=>a+(r.valor||0),0);
   const aRec = (recD.data||[]).reduce((a,r)=>a+(r.valor||0),0);
-  const pecAbaixo = (pec.data||[]).filter(p=>(p.estoque_atual||0)<=(p.estoque_minimo||0)).length;
   const fatServicos = (fatCategD.data||[]).filter(r=>r.categoria==='Receita de Serviços').reduce((a,r)=>a+(r.valor||0),0);
   const fatPecas = (fatCategD.data||[]).filter(r=>r.categoria==='Receita de Peças').reduce((a,r)=>a+(r.valor||0),0);
 
   document.getElementById('kpi-fat-mes').textContent = 'R$ '+(fat||0).toLocaleString('pt-BR',{minimumFractionDigits:0});
   document.getElementById('kpi-os-abertas').textContent = os.count || 0;
   document.getElementById('kpi-a-receber').textContent = 'R$ '+(aRec||0).toLocaleString('pt-BR',{minimumFractionDigits:0});
-  document.getElementById('kpi-pecas-min').textContent = pecAbaixo;
+  document.getElementById('kpi-carros-entregues').textContent = carrosEnt.count || 0;
   document.getElementById('badge-os').textContent = os.count || 0;
 
   // Metas do mês
@@ -5067,10 +5065,17 @@ async function salvarConta(){
   await carregarBancario();
 }
 
+// Meta de faturamento total: usa o campo novo (meta_fat_total). Se a oficina só tinha
+// as metas antigas separadas (Serviços+Peças), soma elas como valor inicial (compatibilidade).
+function metaFatTotal(m) {
+  if (m.meta_fat_total != null && m.meta_fat_total !== '') return m.meta_fat_total;
+  return (m.meta_fat_servicos || 0) + (m.meta_fat_pecas || 0);
+}
+
 async function salvarMetas(){
   const metas = {
-    meta_fat_servicos: parseFloat(document.getElementById('meta-fat-servicos')?.value)||0,
-    meta_fat_pecas: parseFloat(document.getElementById('meta-fat-pecas')?.value)||0,
+    ...(APP.oficina?.metas || {}),
+    meta_fat_total: parseFloat(document.getElementById('meta-fat-total')?.value)||0,
     meta_os_mes: parseFloat(document.getElementById('meta-os')?.value)||0,
     meta_ticket_medio: parseFloat(document.getElementById('meta-ticket')?.value)||0,
     meta_margem: parseFloat(document.getElementById('meta-margem')?.value)||0,
@@ -5085,8 +5090,7 @@ async function salvarMetas(){
 
 function carregarMetas(){
   const m = APP.oficina?.metas||{};
-  if(document.getElementById('meta-fat-servicos')) document.getElementById('meta-fat-servicos').value = m.meta_fat_servicos||'';
-  if(document.getElementById('meta-fat-pecas')) document.getElementById('meta-fat-pecas').value = m.meta_fat_pecas||'';
+  if(document.getElementById('meta-fat-total')) document.getElementById('meta-fat-total').value = metaFatTotal(m)||'';
   if(document.getElementById('meta-os')) document.getElementById('meta-os').value = m.meta_os_mes||'';
   if(document.getElementById('meta-ticket')) document.getElementById('meta-ticket').value = m.meta_ticket_medio||'';
   if(document.getElementById('meta-margem')) document.getElementById('meta-margem').value = m.meta_margem||'';
@@ -6246,6 +6250,12 @@ function navigate(pagina, navItem) {
   if (PAGE_LOADERS[pagina]) PAGE_LOADERS[pagina]();
 }
 
+// Usado pelos cards do topo do Dashboard: clicar já leva direto pra tela correspondente
+function navegarKpi(pagina) {
+  const navItem = document.querySelector('.nav-item[onclick*="navigate(\'' + pagina + '\'"]');
+  navigate(pagina, navItem);
+}
+
 // ============================================================
 // METAS NO DASHBOARD
 // ============================================================
@@ -6254,38 +6264,21 @@ function renderMetasDashboard(fat, osCount, fatServicos, fatPecas) {
   const totalReal = fatServicos + fatPecas;
 
   const metas = [
-    { label: 'Faturamento — Serviços', realizado: fatServicos, meta: m.meta_fat_servicos || 0, fmt: v => fmtMoeda(v) },
-    { label: 'Faturamento — Peças', realizado: fatPecas, meta: m.meta_fat_pecas || 0, fmt: v => fmtMoeda(v) },
     { label: 'OS no mês', realizado: osCount, meta: m.meta_os_mes || 0, fmt: v => v },
     { label: 'Ticket médio', realizado: osCount > 0 ? fat / osCount : 0, meta: m.meta_ticket_medio || 0, fmt: v => fmtMoeda(v) },
   ];
 
-  const temMeta = metas.some(item => item.meta > 0);
+  const metaTotal = metaFatTotal(m);
+  const temMeta = metaTotal > 0 || metas.some(item => item.meta > 0) || totalReal > 0;
   const bloco = document.getElementById('dash-metas-bloco');
   if (!bloco) return;
   if (!temMeta) { bloco.style.display = 'none'; return; }
   bloco.style.display = '';
 
-  const cardMeta = (item, grande) => {
+  const cardMeta = (item) => {
     if (item.meta <= 0) return '';
     const pct = Math.min(100, Math.round((item.realizado / item.meta) * 100));
     const cor = pct >= 100 ? 'var(--success)' : pct >= 70 ? 'var(--blue)' : pct >= 40 ? 'var(--warning)' : 'var(--danger)';
-    const emoji = pct >= 100 ? '✅' : pct >= 70 ? '📈' : '⚠️';
-    if (grande) {
-      return `<div style="padding:16px 20px;border-bottom:1px solid var(--border);">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-          <div style="font-size:11px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:0.6px;">${item.label}</div>
-          <div style="font-size:11px;color:${cor};font-weight:600;">${emoji} ${pct}% da meta</div>
-        </div>
-        <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:10px;">
-          <div style="font-size:22px;font-weight:700;color:var(--navy);">${item.fmt(item.realizado)}</div>
-          <div style="font-size:12px;color:var(--text-3);">de ${item.fmt(item.meta)}</div>
-        </div>
-        <div style="background:var(--border);border-radius:99px;height:8px;overflow:hidden;">
-          <div style="height:100%;width:${pct}%;background:${cor};border-radius:99px;transition:width 0.5s;"></div>
-        </div>
-      </div>`;
-    }
     return `<div style="flex:1;">
       <div style="font-size:10px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${item.label}</div>
       <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">
@@ -6299,8 +6292,7 @@ function renderMetasDashboard(fat, osCount, fatServicos, fatPecas) {
     </div>`;
   };
 
-  // Total Geral (destaque no topo)
-  const metaTotal = (m.meta_fat_servicos || 0) + (m.meta_fat_pecas || 0);
+  // Total Geral (destaque no topo) — única meta editável de faturamento
   const pctTotal = metaTotal > 0 ? Math.min(100, Math.round((totalReal / metaTotal) * 100)) : 0;
   const corTotal = pctTotal >= 100 ? 'var(--success)' : pctTotal >= 70 ? 'var(--blue)' : pctTotal >= 40 ? 'var(--warning)' : 'var(--danger)';
   const cardTotalGeral = `<div style="padding:16px 20px;border-bottom:1px solid var(--border);">
@@ -6317,25 +6309,35 @@ function renderMetasDashboard(fat, osCount, fatServicos, fatPecas) {
     </div>` : ''}
   </div>`;
 
-  // Serviços e Peças lado a lado abaixo
-  const metaServicos = { label: 'Serviços', realizado: fatServicos, meta: m.meta_fat_servicos || 0, fmt: v => fmtMoeda(v) };
-  const metaPecas = { label: 'Peças', realizado: fatPecas, meta: m.meta_fat_pecas || 0, fmt: v => fmtMoeda(v) };
-  const metaOS = { label: 'OS no mês', realizado: osCount, meta: m.meta_os_mes || 0, fmt: v => v };
-  const metaTicket = { label: 'Ticket médio', realizado: osCount > 0 ? fat / osCount : 0, meta: m.meta_ticket_medio || 0, fmt: v => fmtMoeda(v) };
+  // Divisão visual Peças x Mão de obra dentro do total realizado (informativo — não é meta própria)
+  let cardDivisao = '';
+  if (totalReal > 0) {
+    const pctSvc = Math.round((fatServicos / totalReal) * 100);
+    const pctPec = 100 - pctSvc;
+    cardDivisao = `<div style="padding:14px 20px;border-bottom:1px solid var(--border);">
+      <div style="font-size:10px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Composição do faturamento</div>
+      <div style="display:flex;border-radius:99px;overflow:hidden;height:10px;margin-bottom:8px;">
+        <div style="width:${pctSvc}%;background:var(--blue);" title="Mão de obra"></div>
+        <div style="width:${pctPec}%;background:var(--purple);" title="Peças"></div>
+      </div>
+      <div style="display:flex;gap:20px;">
+        <div style="display:flex;align-items:center;gap:6px;font-size:12px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--blue);display:inline-block;"></span> Mão de obra: <b style="color:var(--navy)">${fmtMoeda(fatServicos)}</b> <span style="color:var(--text-3);">(${pctSvc}%)</span></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:12px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--purple);display:inline-block;"></span> Peças: <b style="color:var(--navy)">${fmtMoeda(fatPecas)}</b> <span style="color:var(--text-3);">(${pctPec}%)</span></div>
+      </div>
+    </div>`;
+  }
 
-  const linhaSecundaria = [metaServicos, metaPecas, metaOS, metaTicket].filter(item => item.meta > 0);
-
+  const linhaSecundaria = metas.filter(item => item.meta > 0);
   const htmlSecundaria = linhaSecundaria.length > 0 ? `<div style="padding:14px 20px;display:flex;gap:24px;">
-    ${linhaSecundaria.map(item => cardMeta(item, false)).join('<div style="width:1px;background:var(--border);"></div>')}
+    ${linhaSecundaria.map(item => cardMeta(item)).join('<div style="width:1px;background:var(--border);"></div>')}
   </div>` : '';
 
-  document.getElementById('dash-metas-conteudo').innerHTML = cardTotalGeral + htmlSecundaria;
+  document.getElementById('dash-metas-conteudo').innerHTML = cardTotalGeral + cardDivisao + htmlSecundaria;
 }
 
 function abrirModalMetas() {
   const m = APP.oficina?.metas || {};
-  document.getElementById('meta-fat-servicos-modal').value = m.meta_fat_servicos || '';
-  document.getElementById('meta-fat-pecas-modal').value = m.meta_fat_pecas || '';
+  document.getElementById('meta-fat-total-modal').value = metaFatTotal(m) || '';
   document.getElementById('meta-os-modal').value = m.meta_os_mes || '';
   document.getElementById('meta-ticket-modal').value = m.meta_ticket_medio || '';
   document.getElementById('meta-margem-modal').value = m.meta_margem || '';
@@ -6345,8 +6347,8 @@ function abrirModalMetas() {
 
 async function salvarMetasModal() {
   const metas = {
-    meta_fat_servicos: parseFloat(document.getElementById('meta-fat-servicos-modal').value) || 0,
-    meta_fat_pecas: parseFloat(document.getElementById('meta-fat-pecas-modal').value) || 0,
+    ...(APP.oficina?.metas || {}),
+    meta_fat_total: parseFloat(document.getElementById('meta-fat-total-modal').value) || 0,
     meta_os_mes: parseFloat(document.getElementById('meta-os-modal').value) || 0,
     meta_ticket_medio: parseFloat(document.getElementById('meta-ticket-modal').value) || 0,
     meta_margem: parseFloat(document.getElementById('meta-margem-modal').value) || 0,
