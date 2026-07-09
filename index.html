@@ -1423,7 +1423,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
         <select class="form-input" id="seletor-svc-mec" style="font-size:12px;padding:6px 8px;"></select>
       </div>
       <div class="form-group"><label class="form-label">Horas</label>
-        <input class="form-input" type="number" id="seletor-svc-qtd" value="1" step="0.5" min="0.5" style="font-size:12px;padding:6px 8px;">
+        <input class="form-input" type="text" id="seletor-svc-qtd" value="01:00" placeholder="00:00" inputmode="numeric" maxlength="5" oninput="maskHoras(this)" style="font-size:12px;padding:6px 8px;text-align:center;">
       </div>
       <div class="form-group"><label class="form-label">Tabelado (R$)</label>
         <input class="form-input" type="number" id="seletor-svc-tab" step="0.01" style="font-size:12px;padding:6px 8px;" oninput="calcSvcFinal()">
@@ -2960,7 +2960,7 @@ function renderServicos() {
             ${desc>0?`<div style="font-size:10px;color:var(--text-3)">Desc: -${fmtMoeda(desc)}</div>`:''}
           </td>
           <td><span class="badge badge-blue" style="font-size:10px">${s.categoria||'—'}</span></td>
-          <td style="font-size:12px;color:var(--text-2);text-align:center">${s.horas_previstas||1}h</td>
+          <td style="font-size:12px;color:var(--text-2);text-align:center">${horasParaHHMM(s.horas_previstas||1)}</td>
           <td style="font-size:12px;color:var(--text-3);text-align:right">${fmtMoeda(custo)}</td>
           <td style="font-size:12px;font-weight:500;color:var(--navy);text-align:right">${fmtMoeda(precoFinal)}</td>
           <td style="text-align:right">
@@ -3624,6 +3624,30 @@ let orcNumeros = []; // lista de números de orçamento ex: [1, 2, 3]
 // A "quantidade" ali representa HORAS trabalhadas, é apenas informativa/registro
 // e NÃO multiplica o valor (senão o total dobra/triplica de forma incorreta).
 function ehItemPeca(item) { return item.tipo === 'Peca' || item.tipo === 'Peça'; }
+
+// Converte horas decimais (ex: 1.5) para o formato "HH:MM" (ex: "01:30")
+function horasParaHHMM(decimal) {
+  let h = Math.floor(decimal || 0);
+  let m = Math.round(((decimal || 0) - h) * 60);
+  if (m === 60) { h += 1; m = 0; }
+  return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+}
+// Converte texto "HH:MM" (ou número decimal, por compatibilidade) para horas decimais
+function hhmmParaHoras(texto) {
+  if (texto == null || texto === '') return 0;
+  const str = String(texto).trim();
+  if (str.includes(':')) {
+    const [h, m] = str.split(':');
+    return (parseInt(h) || 0) + ((parseInt(m) || 0) / 60);
+  }
+  return parseFloat(str.replace(',', '.')) || 0;
+}
+// Máscara simples de digitação para campos de horas: só dígitos, formata HH:MM
+function maskHoras(el) {
+  let v = el.value.replace(/[^\d]/g, '').slice(0, 4);
+  if (v.length > 2) v = v.slice(0, v.length - 2) + ':' + v.slice(-2);
+  el.value = v;
+}
 function valorLinhaOrc(item) { return (item.preco || 0) * (ehItemPeca(item) ? (item.quantidade || 1) : 1); }
 function custoLinhaOrc(item) { return (item.custo || 0) * (ehItemPeca(item) ? (item.quantidade || 1) : 1); }
 
@@ -3863,10 +3887,9 @@ function renderItensOrc(n) {
     const bloqueado = isPeca && pecasBloqueadas;
     const qtdInput = bloqueado
       ? '<div style="font-size:11px;text-align:center;color:var(--text-3)">' + qtd + '</div>'
-      : '<div style="display:flex;align-items:center;justify-content:center;gap:3px;">'
-        + '<input class="form-input" type="number" value="' + qtd + '" min="0.5" step="0.5" title="' + (isPeca?'Quantidade':'Horas trabalhadas (apenas registro, não altera o valor)') + '" style="font-size:11px;padding:3px 4px;text-align:center;width:100%" onchange="updateItemOrc(' + n + ',' + i + ',\'quantidade\',this.value)">'
-        + (isPeca ? '' : '<span style="font-size:10px;color:var(--text-3);">h</span>')
-        + '</div>';
+      : isPeca
+        ? '<input class="form-input" type="number" value="' + qtd + '" min="1" step="1" title="Quantidade" style="font-size:11px;padding:3px 4px;text-align:center" onchange="updateItemOrc(' + n + ',' + i + ',\'quantidade\',this.value)">'
+        : '<input class="form-input" type="text" value="' + horasParaHHMM(qtd) + '" placeholder="00:00" inputmode="numeric" maxlength="5" title="Horas trabalhadas (apenas registro, não altera o valor)" style="font-size:11px;padding:3px 4px;text-align:center" oninput="maskHoras(this)" onchange="updateItemOrc(' + n + ',' + i + ',\'quantidade\',this.value)">';
     const descInput = bloqueado
       ? '<div style="font-size:10px;text-align:center;color:var(--text-3)">' + fmtMoeda(desconto) + '</div>'
       : '<input class="form-input" type="number" value="' + desconto.toFixed(2) + '" step="0.01" min="0" style="font-size:10px;padding:3px 4px;text-align:center;color:var(--danger)" onchange="updateItemDescOrc(' + n + ',' + i + ',this.value)">';
@@ -3930,12 +3953,17 @@ function pecaBloqueadaEdicao(n, item) {
 
 function updateItemOrc(n, i, campo, val) {
   if (!orcItens[n] || !orcItens[n][i]) return;
-  if (campo === 'quantidade' && pecaBloqueadaEdicao(n, orcItens[n][i])) {
+  const item = orcItens[n][i];
+  if (campo === 'quantidade' && pecaBloqueadaEdicao(n, item)) {
     toast('Reprove o orçamento para editar a quantidade de peças.', 'error');
     renderItensOrc(n);
     return;
   }
-  orcItens[n][i][campo] = parseFloat(val) || 0;
+  if (campo === 'quantidade' && !ehItemPeca(item)) {
+    item.quantidade = hhmmParaHoras(val) || 0;
+  } else {
+    item[campo] = parseFloat(val) || 0;
+  }
   renderItensOrc(n);
 }
 
@@ -4066,7 +4094,7 @@ function renderListaSvc(filtro) {
     const final = Math.max(0, preco - desc);
     return '<div onclick="selecionarSvc(\'' + s.id + '\')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background=\'var(--blue-bg)\'" onmouseout="this.style.background=\'\'">'
       + '<div><div style="font-weight:500;color:var(--navy)">' + s.nome + '</div>'
-      + '<div style="font-size:11px;color:var(--text-3);margin-top:2px">' + (s.categoria||'') + ' · ' + (s.horas_previstas||1) + 'h previstas</div></div>'
+      + '<div style="font-size:11px;color:var(--text-3);margin-top:2px">' + (s.categoria||'') + ' · ' + horasParaHHMM(s.horas_previstas||1) + ' previstas</div></div>'
       + '<div style="text-align:right"><div style="font-size:11px;color:var(--text-3)">Custo: ' + fmtMoeda(custo) + (desc>0?' · Desc: -'+fmtMoeda(desc):'') + '</div>'
       + '<div style="font-weight:600;color:var(--success)">' + fmtMoeda(final) + '</div></div></div>';
   }).join('');
@@ -4084,7 +4112,7 @@ function selecionarSvc(id) {
   document.getElementById('seletor-svc-nome').textContent = s.nome;
   // "Horas" é apenas informativo/registro (ex: para acompanhar o tempo real gasto).
   // O preço do serviço já é o valor TOTAL do pacote — não é multiplicado pelas horas.
-  document.getElementById('seletor-svc-qtd').value = s.horas_previstas || 1;
+  document.getElementById('seletor-svc-qtd').value = horasParaHHMM(s.horas_previstas || 1);
   document.getElementById('seletor-svc-tab').value = preco.toFixed(2);
   document.getElementById('seletor-svc-desc').value = desc.toFixed(2);
   calcSvcFinal();
@@ -4114,7 +4142,7 @@ function confirmarSvc() {
   const custo = (s.horas_previstas||1) * custoHora;
   const tab = parseFloat(document.getElementById('seletor-svc-tab').value) || 0;
   const desc = parseFloat(document.getElementById('seletor-svc-desc').value) || 0;
-  const qtd = parseFloat(document.getElementById('seletor-svc-qtd').value) || 1;
+  const qtd = hhmmParaHoras(document.getElementById('seletor-svc-qtd').value) || 1;
   const mecId = document.getElementById('seletor-svc-mec').value;
   const mecNome = APP.funcionarios.find(f => f.id === mecId)?.nome || '';
   const final = Math.max(0, tab - desc);
@@ -7018,8 +7046,11 @@ function exportarPDF() {
 }
 
 
+let modalZTop = 500;
 function openModal(id) {
-  document.getElementById('modal-' + id).classList.add('open');
+  const modalEl = document.getElementById('modal-' + id);
+  modalEl.style.zIndex = ++modalZTop; // sempre traz o modal recém-aberto pra frente de qualquer outro já aberto
+  modalEl.classList.add('open');
   // Preenche data automática ao abrir modal de OS
   if (id === 'os') {
     const dt = document.getElementById('os-data');
