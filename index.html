@@ -72,7 +72,7 @@ body{font-family:var(--font-body);background:var(--surface-2);color:var(--text);
 .sidebar-user-out:hover{color:rgba(255,255,255,0.7);}
 .main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
 .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:var(--topbar-h);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.topbar-title{font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--navy);}
+.topbar-title{font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--navy);text-transform:uppercase;letter-spacing:0.5px;}
 .topbar-sub{font-size:11px;color:var(--text-3);margin-top:1px;}
 .topbar-right{display:flex;align-items:center;gap:8px;}
 .content{padding:20px 24px;flex:1;}
@@ -1191,7 +1191,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
 </div>
 
 <!-- MODAL NOVO SERVIÇO -->
-<div class="modal-overlay" id="modal-svc" onclick="if(event.target===this)closeModal('svc')">
+<div class="modal-overlay" id="modal-svc" onclick="if(event.target===this)closeModal('svc')" style="z-index:700;">
 <div class="modal modal-md">
   <div class="modal-head">
     <div><div class="modal-title">Novo Serviço</div></div>
@@ -1241,7 +1241,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
 </div>
 
 <!-- MODAL NOVA PEÇA -->
-<div class="modal-overlay" id="modal-pec" onclick="if(event.target===this)closeModal('pec')">
+<div class="modal-overlay" id="modal-pec" onclick="if(event.target===this)closeModal('pec')" style="z-index:700;">
 <div class="modal modal-md">
   <div class="modal-head">
     <div><div class="modal-title">Nova Peça</div></div>
@@ -1422,8 +1422,8 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
       <div class="form-group"><label class="form-label">Mecânico</label>
         <select class="form-input" id="seletor-svc-mec" style="font-size:12px;padding:6px 8px;"></select>
       </div>
-      <div class="form-group"><label class="form-label">Qtd.</label>
-        <input class="form-input" type="number" id="seletor-svc-qtd" value="1" step="1" min="1" style="font-size:12px;padding:6px 8px;">
+      <div class="form-group"><label class="form-label">Horas</label>
+        <input class="form-input" type="number" id="seletor-svc-qtd" value="1" step="0.5" min="0.5" style="font-size:12px;padding:6px 8px;">
       </div>
       <div class="form-group"><label class="form-label">Tabelado (R$)</label>
         <input class="form-input" type="number" id="seletor-svc-tab" step="0.01" style="font-size:12px;padding:6px 8px;" oninput="calcSvcFinal()">
@@ -2273,7 +2273,7 @@ function renderClientes() {
         <th style="width:40px"></th>
       </tr></thead>
       <tbody>${lista.map(c=>`<tr onclick="abrirDetalheCliente('${c.id}')" style="cursor:pointer">
-        <td><div style="font-weight:500;color:var(--navy)">${c.nome}</div></td>
+        <td><div style="font-weight:500;color:var(--navy);text-transform:uppercase;">${c.nome}</div></td>
         <td><span class="badge ${c.tipo==='PF'?'badge-blue':'badge-purple'}">${c.tipo}</span></td>
         <td style="font-family:monospace;font-size:11px;color:var(--text-3)">${c.documento||'—'}</td>
         <td style="font-size:12px;color:var(--text-2)">${c.telefone||'—'}</td>
@@ -2956,7 +2956,7 @@ function renderServicos() {
         const margem = precoFinal > 0 ? (lucro/precoFinal*100) : 0;
         return `<tr>
           <td>
-            <div style="font-weight:500;color:var(--navy)">${s.nome}</div>
+            <div style="font-weight:500;color:var(--navy);text-transform:uppercase;">${s.nome}</div>
             ${desc>0?`<div style="font-size:10px;color:var(--text-3)">Desc: -${fmtMoeda(desc)}</div>`:''}
           </td>
           <td><span class="badge badge-blue" style="font-size:10px">${s.categoria||'—'}</span></td>
@@ -3137,7 +3137,7 @@ function renderPecas() {
         const lucro = final - custo;
         const margem = final > 0 ? (lucro/final*100) : 0;
         return `<tr>
-          <td><div style="font-weight:500;color:var(--navy)">${alerta?'⚠️ ':''} ${p.nome}${p.marca?' <span style="font-size:10px;color:var(--text-3)">('+p.marca+')</span>':''}</div><div style="font-size:10px;color:var(--text-3);font-family:monospace">${p.referencia||''}</div></td>
+          <td><div style="font-weight:500;color:var(--navy);text-transform:uppercase;">${alerta?'⚠️ ':''} ${p.nome}${p.marca?' <span style="font-size:10px;color:var(--text-3);text-transform:none;">('+p.marca+')</span>':''}</div><div style="font-size:10px;color:var(--text-3);font-family:monospace">${p.referencia||''}</div></td>
           <td><span class="badge badge-blue" style="font-size:10px">${p.categoria||'—'}</span></td>
           <td style="font-size:12px;color:var(--text-2);text-align:center">${p.unidade}</td>
           <td style="font-weight:600;text-align:center;color:${p.estoque_atual===0?'var(--danger)':alerta?'var(--warning)':'var(--success)'}">${p.estoque_atual}</td>
@@ -3618,6 +3618,15 @@ function switchOSTab(tab, el) {
 // ============================================================
 let orcNumeros = []; // lista de números de orçamento ex: [1, 2, 3]
 
+// Valor de uma linha do orçamento.
+// PEÇAS: a quantidade é uma contagem real de unidades -> multiplica o preço unitário.
+// SERVIÇOS (mão de obra e terceiros): o preço já é o valor TOTAL do serviço/pacote.
+// A "quantidade" ali representa HORAS trabalhadas, é apenas informativa/registro
+// e NÃO multiplica o valor (senão o total dobra/triplica de forma incorreta).
+function ehItemPeca(item) { return item.tipo === 'Peca' || item.tipo === 'Peça'; }
+function valorLinhaOrc(item) { return (item.preco || 0) * (ehItemPeca(item) ? (item.quantidade || 1) : 1); }
+function custoLinhaOrc(item) { return (item.custo || 0) * (ehItemPeca(item) ? (item.quantidade || 1) : 1); }
+
 async function carregarItensOrc(osId) {
   orcItens = {};
   orcStatus = {};
@@ -3629,17 +3638,24 @@ async function carregarItensOrc(osId) {
     orcNumeros.push(n);
     orcStatus[n] = orc.status;
     orcStatusOriginal[n] = orc.status; // snapshot para detectar mudança de status ao salvar
-    orcItens[n] = (orc.orcamento_itens || []).map(item => ({
-      id: item.id, orcId: orc.id, tipo: item.tipo,
-      descricao: item.descricao, quantidade: item.quantidade,
-      custo: item.valor_unitario,
-      preco: item.valor_total / item.quantidade,
-      precoTabelado: item.preco_tabelado || (item.valor_total / item.quantidade),
-      desconto: item.desconto || 0,
-      mecanicoId: item.funcionario_id || null,
-      mecanicoNome: item.funcionarios?.nome || '',
-      servicoId: item.servico_id, pecaId: item.peca_id,
-    }));
+    orcItens[n] = (orc.orcamento_itens || []).map(item => {
+      const qtd = item.quantidade || 1;
+      const ehPeca = item.tipo === 'Peca' || item.tipo === 'Peça';
+      // Peças: valor_total = preco unitário x quantidade -> recupera o unitário dividindo.
+      // Serviços: valor_total já É o preço (a "quantidade"/horas não multiplica).
+      const preco = ehPeca ? (item.valor_total / qtd) : (item.valor_total || 0);
+      return {
+        id: item.id, orcId: orc.id, tipo: item.tipo,
+        descricao: item.descricao, quantidade: qtd,
+        custo: item.valor_unitario,
+        preco,
+        precoTabelado: item.preco_tabelado || preco,
+        desconto: item.desconto || 0,
+        mecanicoId: item.funcionario_id || null,
+        mecanicoNome: item.funcionarios?.nome || '',
+        servicoId: item.servico_id, pecaId: item.peca_id,
+      };
+    });
   });
 
   // Garante pelo menos 1 orçamento
@@ -3664,8 +3680,8 @@ function renderResumoTotaisOS() {
     if (orcStatus[n] !== 'aprovado') return;
     temAprovado = true;
     (orcItens[n] || []).forEach(item => {
-      const valor = (item.preco || 0) * (item.quantidade || 1);
-      const custo = (item.custo || 0) * (item.quantidade || 1);
+      const valor = valorLinhaOrc(item);
+      const custo = custoLinhaOrc(item);
       if (item.tipo === 'ServicoTerceiro') { totalTerceiros += valor; custoTerceiros += custo; }
       else if (item.tipo === 'Servico' || item.tipo === 'Serviço') totalServicos += valor;
       else if (item.tipo === 'Peca' || item.tipo === 'Peça') { totalPecas += valor; custoPecas += custo; }
@@ -3734,7 +3750,7 @@ function renderOrcTabs() {
             </div>
             <div class="orc-item-header orc-item-header-svc">
               <span class="orc-item-label">Descrição</span>
-              <span class="orc-item-label">Qtd.</span>
+              <span class="orc-item-label">Horas</span>
               <span class="orc-item-label">Custo</span>
               <span class="orc-item-label">Tabelado</span>
               <span class="orc-item-label">Desc.</span>
@@ -3769,8 +3785,9 @@ function renderOrcTabs() {
               <span class="orc-item-label"></span>
             </div>
             <div id="orc${n}-itens-pec"></div>
-            <div style="display:flex;gap:6px;margin-top:10px;">
-              <button class="btn btn-outline btn-sm" onclick="addItemOrc(${n},'peca')"><i class="ti ti-plus"></i> Peça</button>
+            <div style="display:flex;gap:6px;margin-top:10px;align-items:center;">
+              <button class="btn btn-outline btn-sm" id="orc${n}-add-peca-btn" onclick="addItemOrc(${n},'peca')"><i class="ti ti-plus"></i> Peça</button>
+              <span id="orc${n}-pec-lock-msg" style="display:none;font-size:11px;color:var(--text-3);"><i class="ti ti-lock"></i> Orçamento aprovado — reprove para editar peças</span>
             </div>
             <div class="orc-total" id="orc${n}-total-pec">
               <span style="font-size:12px;color:rgba(255,255,255,0.6)">Subtotal Peças</span>
@@ -3817,6 +3834,14 @@ function renderItensOrc(n) {
   if (statusBadge) { statusBadge.textContent = stStyle.l; statusBadge.style.background = stStyle.bg; statusBadge.style.color = stStyle.c; }
   if (aprovBtn) aprovBtn.style.display = st === 'aprovado' ? 'none' : 'inline-flex';
 
+  // Peças de um orçamento aprovado não podem ser editadas/excluídas (afeta estoque/Kardex).
+  // É preciso reprovar o orçamento primeiro.
+  const pecasBloqueadas = st === 'aprovado';
+  const addPecaBtn = document.getElementById('orc' + n + '-add-peca-btn');
+  const pecLockMsg = document.getElementById('orc' + n + '-pec-lock-msg');
+  if (addPecaBtn) addPecaBtn.style.display = pecasBloqueadas ? 'none' : 'inline-flex';
+  if (pecLockMsg) pecLockMsg.style.display = pecasBloqueadas ? 'inline-flex' : 'none';
+
   const itens = orcItens[n] || [];
   // Serviços incluem mão de obra do catálogo E serviços de terceiro
   const servicos = itens.filter(i => i.tipo === 'Servico' || i.tipo === 'Serviço' || i.tipo === 'ServicoTerceiro');
@@ -3829,21 +3854,37 @@ function renderItensOrc(n) {
     const qtd = item.quantidade || 1;
     const tabelado = item.precoTabelado || preco;
     const desconto = item.desconto || 0;
-    const lucro = (preco * qtd) - (custo * qtd);
-    const margem = preco * qtd > 0 ? (lucro / (preco * qtd) * 100) : 0;
+    const valorFinal = valorLinhaOrc(item);
+    const custoFinal = custoLinhaOrc(item);
+    const lucro = valorFinal - custoFinal;
+    const margem = valorFinal > 0 ? (lucro / valorFinal * 100) : 0;
     const isTerceiro = item.tipo === 'ServicoTerceiro';
+    const isPeca = ehItemPeca(item);
+    const bloqueado = isPeca && pecasBloqueadas;
+    const qtdInput = bloqueado
+      ? '<div style="font-size:11px;text-align:center;color:var(--text-3)">' + qtd + '</div>'
+      : '<div style="display:flex;align-items:center;justify-content:center;gap:3px;">'
+        + '<input class="form-input" type="number" value="' + qtd + '" min="0.5" step="0.5" title="' + (isPeca?'Quantidade':'Horas trabalhadas (apenas registro, não altera o valor)') + '" style="font-size:11px;padding:3px 4px;text-align:center;width:100%" onchange="updateItemOrc(' + n + ',' + i + ',\'quantidade\',this.value)">'
+        + (isPeca ? '' : '<span style="font-size:10px;color:var(--text-3);">h</span>')
+        + '</div>';
+    const descInput = bloqueado
+      ? '<div style="font-size:10px;text-align:center;color:var(--text-3)">' + fmtMoeda(desconto) + '</div>'
+      : '<input class="form-input" type="number" value="' + desconto.toFixed(2) + '" step="0.01" min="0" style="font-size:10px;padding:3px 4px;text-align:center;color:var(--danger)" onchange="updateItemDescOrc(' + n + ',' + i + ',this.value)">';
+    const btnRemover = bloqueado
+      ? '<span class="action-btn" style="color:var(--text-3);cursor:not-allowed;" title="Reprove o orçamento para excluir peças"><i class="ti ti-lock"></i></span>'
+      : '<button class="action-btn" onclick="removeItemOrc(' + n + ',' + i + ')" style="color:var(--danger)"><i class="ti ti-trash"></i></button>';
     return '<div class="orc-item">'
       + '<div><div style="font-size:10px;color:' + (isTerceiro?'var(--purple)':'var(--text-3)') + ';margin-bottom:2px">' + (isTerceiro?'🚚 Terceiro':item.tipo)
       + (item.mecanicoNome ? ' · <span style="color:var(--blue)">' + item.mecanicoNome + '</span>' : '') + '</div>'
       + '<div style="font-size:12px;font-weight:500;color:var(--navy)">' + item.descricao + '</div></div>'
-      + '<input class="form-input" type="number" value="' + qtd + '" min="0.5" step="0.5" style="font-size:11px;padding:3px 4px;text-align:center" onchange="updateItemOrc(' + n + ',' + i + ',\'quantidade\',this.value)">'
+      + qtdInput
       + '<div style="font-size:10px;color:var(--text-3);text-align:center">' + fmtMoeda(custo) + '</div>'
       + '<div style="font-size:10px;text-align:center;' + (desconto>0?'color:var(--text-3);text-decoration:line-through':'color:var(--navy);font-weight:500') + '">' + fmtMoeda(tabelado) + '</div>'
-      + '<input class="form-input" type="number" value="' + desconto.toFixed(2) + '" step="0.01" min="0" style="font-size:10px;padding:3px 4px;text-align:center;color:var(--danger)" onchange="updateItemDescOrc(' + n + ',' + i + ',this.value)">'
-      + '<div style="font-size:11px;font-weight:600;color:var(--navy);text-align:center">' + fmtMoeda(preco * qtd) + '</div>'
+      + descInput
+      + '<div style="font-size:11px;font-weight:600;color:var(--navy);text-align:center">' + fmtMoeda(valorFinal) + '</div>'
       + '<div><div style="font-size:11px;font-weight:500;color:' + (lucro>=0?'var(--success)':'var(--danger)') + ';text-align:center">' + fmtMoeda(lucro) + '</div>'
       + '<div style="font-size:9px;color:var(--text-3);text-align:center">' + margem.toFixed(1) + '%</div></div>'
-      + '<button class="action-btn" onclick="removeItemOrc(' + n + ',' + i + ')" style="color:var(--danger)"><i class="ti ti-trash"></i></button>'
+      + btnRemover
       + '</div>';
   };
 
@@ -3863,10 +3904,10 @@ function atualizarTotalOrc(n) {
   const servicos = itens.filter(i => i.tipo === 'Servico' || i.tipo === 'Serviço' || i.tipo === 'ServicoTerceiro');
   const pecas = itens.filter(i => i.tipo === 'Peca' || i.tipo === 'Peça');
 
-  const totalSvc = servicos.reduce((a, item) => a + ((item.preco||0)*(item.quantidade||1)), 0);
-  const totalPec = pecas.reduce((a, item) => a + ((item.preco||0)*(item.quantidade||1)), 0);
+  const totalSvc = servicos.reduce((a, item) => a + valorLinhaOrc(item), 0);
+  const totalPec = pecas.reduce((a, item) => a + valorLinhaOrc(item), 0);
   const total = totalSvc + totalPec;
-  const custo = itens.reduce((a, item) => a + ((item.custo||0)*(item.quantidade||1)), 0);
+  const custo = itens.reduce((a, item) => a + custoLinhaOrc(item), 0);
   const lucro = total - custo;
   const margem = total > 0 ? (lucro/total*100) : 0;
 
@@ -3883,8 +3924,17 @@ function atualizarTotalOrc(n) {
     + '<span style="font-size:20px;font-weight:500;color:#fff">' + fmtMoeda(total) + '</span>';
 }
 
+function pecaBloqueadaEdicao(n, item) {
+  return ehItemPeca(item) && orcStatus[n] === 'aprovado';
+}
+
 function updateItemOrc(n, i, campo, val) {
   if (!orcItens[n] || !orcItens[n][i]) return;
+  if (campo === 'quantidade' && pecaBloqueadaEdicao(n, orcItens[n][i])) {
+    toast('Reprove o orçamento para editar a quantidade de peças.', 'error');
+    renderItensOrc(n);
+    return;
+  }
   orcItens[n][i][campo] = parseFloat(val) || 0;
   renderItensOrc(n);
 }
@@ -3892,6 +3942,11 @@ function updateItemOrc(n, i, campo, val) {
 function updateItemDescOrc(n, i, val) {
   if (!orcItens[n] || !orcItens[n][i]) return;
   const item = orcItens[n][i];
+  if (pecaBloqueadaEdicao(n, item)) {
+    toast('Reprove o orçamento para editar o desconto de peças.', 'error');
+    renderItensOrc(n);
+    return;
+  }
   item.desconto = parseFloat(val) || 0;
   // Recalcula preço final = tabelado - desconto
   const tabelado = item.precoTabelado || item.preco;
@@ -3901,6 +3956,10 @@ function updateItemDescOrc(n, i, val) {
 
 function removeItemOrc(n, i) {
   if (!orcItens[n]) return;
+  if (pecaBloqueadaEdicao(n, orcItens[n][i])) {
+    toast('Reprove o orçamento para excluir peças.', 'error');
+    return;
+  }
   orcItens[n].splice(i, 1);
   renderItensOrc(n);
 }
@@ -3940,6 +3999,10 @@ function salvarServicoTerceiro() {
 }
 
 function addItemOrc(n, tipo) {
+  if (tipo === 'peca' && orcStatus[n] === 'aprovado') {
+    toast('Reprove o orçamento para adicionar peças.', 'error');
+    return;
+  }
   orcSelecionandoN = n;
   orcSelecionandoTipo = tipo;
   abrirModalSeletor(tipo);
@@ -4019,10 +4082,9 @@ function selecionarSvc(id) {
   const desc = s.desconto_padrao || 0;
   // Preenche form
   document.getElementById('seletor-svc-nome').textContent = s.nome;
-  // Qtd. sempre inicia em 1: o preço do serviço já é o valor TOTAL do pacote
-  // (calculado a partir das horas previstas no cadastro), então a quantidade aqui
-  // representa "quantas vezes esse serviço será cobrado" — não as horas.
-  document.getElementById('seletor-svc-qtd').value = 1;
+  // "Horas" é apenas informativo/registro (ex: para acompanhar o tempo real gasto).
+  // O preço do serviço já é o valor TOTAL do pacote — não é multiplicado pelas horas.
+  document.getElementById('seletor-svc-qtd').value = s.horas_previstas || 1;
   document.getElementById('seletor-svc-tab').value = preco.toFixed(2);
   document.getElementById('seletor-svc-desc').value = desc.toFixed(2);
   calcSvcFinal();
@@ -4056,6 +4118,8 @@ function confirmarSvc() {
   const mecId = document.getElementById('seletor-svc-mec').value;
   const mecNome = APP.funcionarios.find(f => f.id === mecId)?.nome || '';
   const final = Math.max(0, tab - desc);
+  // quantidade = horas trabalhadas (registro/controle). O valor do serviço é o "final"
+  // (total do pacote), e NÃO é multiplicado pelas horas — ver valorLinhaOrc().
   orcItens[n].push({
     tipo:'Serviço', descricao:s.nome, quantidade:qtd,
     custo, preco:final, precoTabelado:tab, desconto:desc,
@@ -4163,14 +4227,14 @@ async function salvarOSEdit() {
       orcId = orcExist[0].id;
       await db.from('orcamentos').update({
         status: orcStatus[n],
-        total: (orcItens[n]||[]).reduce((a, item) => a + ((item.preco||0)*(item.quantidade||1)), 0),
+        total: (orcItens[n]||[]).reduce((a, item) => a + valorLinhaOrc(item), 0),
       }).eq('id', orcId);
       await db.from('orcamento_itens').delete().eq('orcamento_id', orcId);
     } else {
       const { data: newOrc } = await db.from('orcamentos').insert({
         os_id: osAtual.id, numero: n, titulo: 'Orçamento ' + n,
         status: orcStatus[n],
-        total: (orcItens[n]||[]).reduce((a, item) => a + ((item.preco||0)*(item.quantidade||1)), 0),
+        total: (orcItens[n]||[]).reduce((a, item) => a + valorLinhaOrc(item), 0),
       }).select();
       orcId = newOrc?.[0]?.id;
     }
@@ -4181,7 +4245,7 @@ async function salvarOSEdit() {
         servico_id: item.servicoId || null, peca_id: item.pecaId || null,
         funcionario_id: item.mecanicoId || null,
         quantidade: item.quantidade, valor_unitario: item.custo,
-        valor_total: (item.preco||0)*(item.quantidade||1),
+        valor_total: valorLinhaOrc(item),
         preco_tabelado: item.precoTabelado || item.preco || 0,
         desconto: item.desconto || 0,
       })));
@@ -4189,7 +4253,7 @@ async function salvarOSEdit() {
   }
 
   const totalGeral = orcNumeros.reduce((a, n) => {
-    if (orcStatus[n] === 'aprovado') return a + (orcItens[n]||[]).reduce((b, item) => b + ((item.preco||0)*(item.quantidade||1)), 0);
+    if (orcStatus[n] === 'aprovado') return a + (orcItens[n]||[]).reduce((b, item) => b + valorLinhaOrc(item), 0);
     return a;
   }, 0);
   await db.from('ordens_servico').update({ total: totalGeral }).eq('id', osAtual.id);
@@ -4239,13 +4303,28 @@ function imprimirOrcamento(n) {
 
   const renderSecao = (lista, titulo) => {
     if (lista.length === 0) return '';
-    const temDesc = lista.some(i => i.precoTabelado && i.desconto > 0);
-    const subtotal = lista.reduce((a, i) => a + ((i.preco||0)*(i.quantidade||1)), 0);
+    const ocultarQtdValor = titulo === 'Mão de Obra'; // impressão: mão de obra mostra só a Descrição e o Total
+    const temDesc = !ocultarQtdValor && lista.some(i => i.precoTabelado && i.desconto > 0);
+    const subtotal = lista.reduce((a, i) => a + valorLinhaOrc(i), 0);
+
+    if (ocultarQtdValor) {
+      const header = '<thead><tr style="background:#f0f0f0"><th style="padding:7px 8px;text-align:left">Descrição</th><th style="padding:7px 8px;text-align:right;width:110px">Total</th></tr></thead>';
+      const rows = lista.map(item => {
+        const total = valorLinhaOrc(item);
+        return '<tr><td style="padding:6px 8px;border-bottom:1px solid #eee">' + item.descricao + '</td>'
+          + '<td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:right;font-weight:600">' + fmtMoeda(total) + '</td></tr>';
+      }).join('');
+      return '<h2>' + titulo + '</h2><table>' + header
+        + '<tbody>' + rows
+        + '<tr style="background:#f5f5f5"><td style="padding:8px;font-weight:600;text-align:right">Subtotal ' + titulo + '</td><td style="padding:8px;font-weight:700;text-align:right">' + fmtMoeda(subtotal) + '</td></tr>'
+        + '</tbody></table>';
+    }
+
     const header = temDesc
       ? '<thead><tr style="background:#f0f0f0"><th style="padding:7px 8px;text-align:left">Descrição</th><th style="padding:7px 8px;text-align:center;width:50px">Qtd.</th><th style="padding:7px 8px;text-align:right;width:100px">Tabelado</th><th style="padding:7px 8px;text-align:right;width:80px">Desconto</th><th style="padding:7px 8px;text-align:right;width:100px">Valor Final</th></tr></thead>'
       : '<thead><tr style="background:#f0f0f0"><th style="padding:7px 8px;text-align:left">Descrição</th><th style="padding:7px 8px;text-align:center;width:60px">Qtd.</th><th style="padding:7px 8px;text-align:right;width:110px">Valor unit.</th><th style="padding:7px 8px;text-align:right;width:110px">Total</th></tr></thead>';
     const rows = lista.map(item => {
-      const total = (item.preco||0)*(item.quantidade||1);
+      const total = valorLinhaOrc(item);
       if (item.precoTabelado && item.desconto > 0) {
         return '<tr><td style="padding:6px 8px;border-bottom:1px solid #eee">' + item.descricao + '</td>'
           + '<td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:center">' + item.quantidade + '</td>'
@@ -4264,7 +4343,7 @@ function imprimirOrcamento(n) {
       + '<tr style="background:#f5f5f5"><td colspan="' + colspan + '" style="padding:8px;font-weight:600;text-align:right">Subtotal ' + titulo + '</td><td style="padding:8px;font-weight:700;text-align:right">' + fmtMoeda(subtotal) + '</td></tr>'
       + '</tbody></table>';
   };
-  const totalGeral = itens.reduce((a, i) => a + ((i.preco||0)*(i.quantidade||1)), 0);
+  const totalGeral = itens.reduce((a, i) => a + valorLinhaOrc(i), 0);
   const html = '<html><head><meta charset="UTF-8"><style>'
     + '@page{size:A4;margin:10mm}'
     + '*{box-sizing:border-box}'
@@ -4334,13 +4413,28 @@ function imprimirOS() {
 
   const renderSecao = (lista, titulo) => {
     if (lista.length === 0) return '';
-    const temDesc = lista.some(i => i.precoTabelado && i.desconto > 0);
-    const subtotal = lista.reduce((a, i) => a + ((i.preco||0)*(i.quantidade||1)), 0);
+    const ocultarQtdValor = titulo === 'Mão de Obra'; // impressão: mão de obra mostra só a Descrição e o Total
+    const temDesc = !ocultarQtdValor && lista.some(i => i.precoTabelado && i.desconto > 0);
+    const subtotal = lista.reduce((a, i) => a + valorLinhaOrc(i), 0);
+
+    if (ocultarQtdValor) {
+      const header = '<thead><tr style="background:#f0f0f0"><th style="padding:7px 8px;text-align:left">Descrição</th><th style="padding:7px 8px;text-align:right;width:110px">Total</th></tr></thead>';
+      const rows = lista.map(item => {
+        const total = valorLinhaOrc(item);
+        return '<tr><td style="padding:6px 8px;border-bottom:1px solid #eee">' + item.descricao + '</td>'
+          + '<td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:right;font-weight:600">' + fmtMoeda(total) + '</td></tr>';
+      }).join('');
+      return '<h2>' + titulo + '</h2><table>' + header
+        + '<tbody>' + rows
+        + '<tr style="background:#f5f5f5"><td style="padding:8px;font-weight:600;text-align:right">Subtotal ' + titulo + '</td><td style="padding:8px;font-weight:700;text-align:right">' + fmtMoeda(subtotal) + '</td></tr>'
+        + '</tbody></table>';
+    }
+
     const header = temDesc
       ? '<thead><tr style="background:#f0f0f0"><th style="padding:7px 8px;text-align:left">Descrição</th><th style="padding:7px 8px;text-align:center;width:50px">Qtd.</th><th style="padding:7px 8px;text-align:right;width:100px">Tabelado</th><th style="padding:7px 8px;text-align:right;width:80px">Desconto</th><th style="padding:7px 8px;text-align:right;width:100px">Valor Final</th></tr></thead>'
       : '<thead><tr style="background:#f0f0f0"><th style="padding:7px 8px;text-align:left">Descrição</th><th style="padding:7px 8px;text-align:center;width:60px">Qtd.</th><th style="padding:7px 8px;text-align:right;width:110px">Valor unit.</th><th style="padding:7px 8px;text-align:right;width:110px">Total</th></tr></thead>';
     const rows = lista.map(item => {
-      const total = (item.preco||0)*(item.quantidade||1);
+      const total = valorLinhaOrc(item);
       if (item.precoTabelado && item.desconto > 0) {
         return '<tr><td style="padding:6px 8px;border-bottom:1px solid #eee">' + item.descricao + '</td>'
           + '<td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:center">' + item.quantidade + '</td>'
@@ -4360,7 +4454,7 @@ function imprimirOS() {
       + '</tbody></table>';
   };
 
-  const totalGeral = [...todosPecas, ...todosServicos, ...todosOutros].reduce((a, i) => a + ((i.preco||0)*(i.quantidade||1)), 0);
+  const totalGeral = [...todosPecas, ...todosServicos, ...todosOutros].reduce((a, i) => a + valorLinhaOrc(i), 0);
 
   const html = '<html><head><meta charset="UTF-8"><style>'
     + '@page{size:A4;margin:10mm}'
