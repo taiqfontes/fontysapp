@@ -270,13 +270,16 @@ body{font-family:var(--font-body);background:var(--surface-2);color:var(--text);
 .dash-estoque-qtd{font-size:10.5px;color:var(--text-3);width:34px;text-align:right;flex-shrink:0;}
 .dash-empty{padding:22px 18px;text-align:center;font-size:11.5px;color:var(--text-3);}
 
-/* FILTROS */
-.filters-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:var(--topbar-h);z-index:91;background:var(--surface-2);height:54px;box-sizing:border-box;padding:10px 0;}
-/* Quando a linha de filtros é o primeiro elemento da página, cola direto embaixo do cabeçalho —
-   igual já acontece naturalmente quando a lista é rolada (mesmo respiro, parado ou rolando). */
-.page > .filters-row:first-child{margin-top:-20px;}
-/* Idem pra telas sem linha de filtros, onde a própria tabela é o primeiro elemento */
-.page > .table-card:first-child{margin-top:-20px;}
+/* FILTROS
+   Padrão: sticky (funciona bem mesmo em telas com cards de KPI antes dela, como
+   Contas a Receber/Pagar — não pode ser fixed ali, senão sobreporia os KPIs). */
+.filters-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:var(--sticky-top-filtros, var(--topbar-h));z-index:91;background:var(--surface-2);height:54px;box-sizing:border-box;padding:10px 0;}
+/* Nas telas onde a linha de filtros é o PRIMEIRO elemento (Clientes, Veículos, OS,
+   Agendamento — sem nada acima dela), é seguro usar fixed de verdade: zero movimento,
+   sem a fase de "alcançar" o lugar que o sticky tem. O espaço que ela deixa de ocupar
+   é reservado via margin-top no table-card logo abaixo (--spacer-filtros, medido em JS). */
+.page > .filters-row:first-child{position:fixed;top:var(--sticky-top-filtros, var(--topbar-h));left:var(--fixed-left, 254px);width:var(--fixed-width, calc(100% - 278px));}
+.page > .filters-row:first-child + .table-card{margin-top:var(--spacer-filtros, 54px);}
 .search-box{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:7px 11px;box-shadow:var(--shadow-card);}
 .search-box:focus-within{border-color:var(--blue);}
 .search-box i{color:var(--text-3);font-size:14px;}
@@ -285,15 +288,22 @@ body{font-family:var(--font-body);background:var(--surface-2);color:var(--text);
 
 /* TABELA */
 .table-card{background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);box-shadow:var(--shadow-card);}
-.table-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--border);position:sticky;top:var(--topbar-h);z-index:90;background:var(--surface);height:44px;box-sizing:border-box;border-radius:var(--radius-xl);}
-/* Quando existe uma linha de filtros logo antes da tabela, o cabeçalho da tabela empilha abaixo dela
-   (1px de sobreposição proposital, pra nunca deixar uma fresta onde o conteúdo role por baixo) */
-.filters-row + .table-card .table-hd{top:calc(var(--topbar-h) + 53px);}
+.table-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--border);position:sticky;top:var(--sticky-top-tablehd, var(--topbar-h));z-index:90;background:var(--surface);height:44px;box-sizing:border-box;border-radius:var(--radius-xl);}
+/* Mesma lógica: quando o table-hd é alcançável sem nenhum KPI/card acima na mesma coluna
+   de rolagem (ou seja, table-card é o 1º elemento da página, OU vem logo após uma linha
+   de filtros que também já é fixed), ele também vira fixed de verdade — zero movimento.
+   O espaço que ele deixa de ocupar dentro do card é reservado via padding-top. */
+.page > .table-card:first-child > .table-hd,
+.page > .filters-row:first-child + .table-card > .table-hd{position:fixed;top:var(--sticky-top-tablehd, var(--topbar-h));left:var(--fixed-left, 254px);width:var(--fixed-width, calc(100% - 278px));}
+.page > .table-card:first-child{padding-top:var(--spacer-tablehd, 44px);}
+.page > .filters-row:first-child + .table-card{padding-top:var(--spacer-tablehd, 44px);}
 .table-hd-title{font-size:13px;font-weight:500;color:var(--navy);}
 .table-count{font-size:11px;color:var(--text-3);margin-left:8px;}
 table{width:100%;border-collapse:collapse;table-layout:fixed;}
-thead th{text-align:left;padding:10px 13px;font-size:10px;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-2);background:var(--surface-2);border-bottom:2px solid var(--border);font-weight:700;position:sticky;top:calc(var(--topbar-h) + 44px);z-index:89;}
-.filters-row + .table-card thead th{top:calc(var(--topbar-h) + 96px);}
+/* thead continua sticky (não fixed): como são células de uma <table>, convertê-las pra fixed
+   quebraria o alinhamento das colunas com as linhas de baixo — sticky aqui é a opção segura. */
+thead th{text-align:left;padding:10px 13px;font-size:10px;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-2);background:var(--surface-2);border-bottom:2px solid var(--border);font-weight:700;position:sticky;top:var(--sticky-top-thead, calc(var(--topbar-h) + 44px));z-index:89;}
+
 tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;}
 tbody tr:hover{background:var(--blue-bg);}
 tbody tr:last-child{border-bottom:none;}
@@ -569,6 +579,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
       <div class="dash-search"><i class="ti ti-search"></i><input type="text" placeholder="Buscar OS, veículo ou cliente..." oninput="buscaGlobalDash(this)"></div>
       <div class="topbar-right" id="topbar-actions"></div>
     </header>
+    <div id="sticky-mask" style="display:none;position:fixed;background:var(--surface-2);z-index:85;pointer-events:none;"></div>
     <main class="content" id="main-content">
 
       <!-- DASHBOARD -->
@@ -7554,8 +7565,71 @@ function navigate(pagina, navItem) {
     if (el) el.value = new Date().toISOString().split('T')[0];
   }
   // Carrega dados da página
-  if (PAGE_LOADERS[pagina]) PAGE_LOADERS[pagina]();
+  const carregamento = PAGE_LOADERS[pagina] ? PAGE_LOADERS[pagina]() : null;
+  // Mede a altura/posição real dos cabeçalhos fixos pra empilhar sem fresta nem sobreposição
+  requestAnimationFrame(medirAlturasSticky);
+  setTimeout(medirAlturasSticky, 200);
+  if (carregamento && typeof carregamento.then === 'function') {
+    carregamento.then(() => requestAnimationFrame(medirAlturasSticky));
+  }
+  setTimeout(medirAlturasSticky, 900); // rede de segurança pra conexões mais lentas
 }
+
+// Mede a altura REAL (renderizada) do topbar e da linha de filtros da página ativa,
+// e usa isso pra posicionar os cabeçalhos fixos (table-hd / thead) sem depender de
+// contas de pixel feitas na mão — evita qualquer fresta por arredondamento de
+// sub-pixel entre navegadores, zoom ou densidade de tela.
+function medirAlturasSticky() {
+  const topbar = document.querySelector('.topbar');
+  const page = document.querySelector('.page.active');
+  if (!topbar || !page) return;
+  const overlap = 1; // folga mínima, só pra cobrir arredondamento de sub-pixel (usada no thead, que continua sticky)
+  const hTopbar = Math.floor(topbar.getBoundingClientRect().height) || 78;
+  const filtros = page.querySelector(':scope > .filters-row');
+  const hFiltros = filtros ? Math.floor(filtros.getBoundingClientRect().height) : 0;
+  const tableHd = page.querySelector('.table-hd');
+  const hTableHd = tableHd ? Math.floor(tableHd.getBoundingClientRect().height) : 44;
+
+  const topFiltros = hTopbar;
+  const topTableHd = filtros ? (hTopbar + hFiltros) : hTopbar;
+  const topThead = topTableHd + hTableHd - overlap;
+
+  // Posição horizontal exata do miolo de conteúdo (necessária pros elementos fixed,
+  // que saem do fluxo e perdem a largura/posição automática que o sticky herdava de graça)
+  const content = document.querySelector('.content');
+  let left = 254, width = window.innerWidth - 278;
+  if (content) {
+    const r = content.getBoundingClientRect();
+    left = Math.round(r.left + 24);
+    width = Math.round(r.width - 48);
+  }
+
+  const raiz = document.documentElement.style;
+  raiz.setProperty('--sticky-top-filtros', topFiltros + 'px');
+  raiz.setProperty('--sticky-top-tablehd', topTableHd + 'px');
+  raiz.setProperty('--sticky-top-thead', topThead + 'px');
+  raiz.setProperty('--fixed-left', left + 'px');
+  raiz.setProperty('--fixed-width', width + 'px');
+  raiz.setProperty('--spacer-filtros', hFiltros + 'px');
+  raiz.setProperty('--spacer-tablehd', hTableHd + 'px');
+
+  // Máscara: cobre toda a faixa de topo (do y=0 até o fim do table-hd fixo), garantindo
+  // que nenhuma linha da lista apareça por trás dos cabeçalhos fixos enquanto rola.
+  const mask = document.getElementById('sticky-mask');
+  const ehFixo = tableHd && getComputedStyle(tableHd).position === 'fixed';
+  if (mask) {
+    if (ehFixo) {
+      mask.style.display = 'block';
+      mask.style.top = '0px';
+      mask.style.left = left + 'px';
+      mask.style.width = width + 'px';
+      mask.style.height = (topThead + 36) + 'px'; // cobre até o fim da linha de colunas (thead)
+    } else {
+      mask.style.display = 'none';
+    }
+  }
+}
+window.addEventListener('resize', medirAlturasSticky);
 
 // Permite trocar o nome usado na saudação do Dashboard (grava em usuarios.nome)
 function editarNomeSaudacao() {
