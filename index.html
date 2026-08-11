@@ -128,6 +128,14 @@ body{font-family:var(--font-body);background:var(--surface-2);color:var(--text);
 .nav-item:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.88);}
 .nav-item.active{background:var(--blue);color:#fff;}
 .nav-item i{font-size:15px;flex-shrink:0;}
+.fin-subsidebar{display:none;flex-direction:column;position:fixed;top:var(--topbar-h);left:var(--sidebar-w);bottom:0;width:200px;background:var(--surface);border-right:1px solid var(--border);z-index:150;padding:16px 10px;overflow-y:auto;}
+.fin-subsidebar.show{display:flex;}
+.fin-subsidebar-title{font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-3);padding:4px 10px 10px;}
+.fin-nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius-md);cursor:pointer;font-size:12px;color:var(--text-2);margin-bottom:1px;border:none;background:none;width:100%;text-align:left;font-family:var(--font-body);transition:all .15s;outline:none;}
+.fin-nav-item:hover{background:var(--surface-2);}
+.fin-nav-item.active{background:var(--blue-bg);color:var(--blue);font-weight:500;}
+.fin-nav-item i{font-size:15px;flex-shrink:0;}
+.content.fin-shift{margin-left:200px;}
 .nav-badge{margin-left:auto;background:rgba(255,255,255,0.14);font-size:9px;padding:2px 6px;border-radius:10px;}
 .sidebar-footer{padding:11px 12px;border-top:1px solid rgba(255,255,255,0.08);position:relative;}
 .sidebar-user{display:flex;align-items:center;gap:9px;cursor:pointer;padding:5px;margin:-5px;border-radius:var(--radius-md);transition:background .15s;}
@@ -225,6 +233,14 @@ body{font-family:var(--font-body);background:var(--surface-2);color:var(--text);
 .dash-icon-btn:hover{box-shadow:var(--shadow-card-hover);color:var(--navy);}
 .dash-icon-dot{position:absolute;top:6px;right:7px;width:6px;height:6px;border-radius:50%;background:var(--danger);border:1.5px solid var(--surface);}
 .dash-hero-greet{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+.dash-mes-seletor{display:flex;align-items:center;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:2px;}
+.dash-mes-nav{flex-shrink:0;width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--text-2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:all .15s;}
+.dash-mes-nav:hover{background:var(--surface-2);}
+.dash-mes-ano-label{font-size:12px;font-weight:600;color:var(--navy);padding:0 4px;flex-shrink:0;min-width:34px;text-align:center;}
+.dash-mes-pill{flex-shrink:0;padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.dash-mes-pill:hover{background:var(--surface-2);}
+.dash-mes-pill.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+.dash-mes-pill.futuro{opacity:.4;}
 .dash-eyebrow{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--blue);margin-bottom:6px;}
 .dash-greeting{font-family:var(--font-display);font-size:30px;font-weight:700;letter-spacing:-0.5px;color:var(--navy);line-height:1.15;}
 .dash-greeting em{font-family:var(--font-body);font-style:normal;color:var(--blue);font-weight:800;}
@@ -531,11 +547,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
       <button class="nav-item" onclick="navigate('comercial',this)"><i class="ti ti-target-arrow"></i> Comercial</button>
       <div class="sidebar-nav-section">Administrativo</div>
       <button class="nav-item" onclick="navigate('rh',this)"><i class="ti ti-users-group"></i> RH</button>
-      <button class="nav-item" onclick="navigate('receber',this)"><i class="ti ti-circle-arrow-down"></i> Contas a Receber</button>
-      <button class="nav-item" onclick="navigate('pagar',this)"><i class="ti ti-circle-arrow-up"></i> Contas a Pagar</button>
-      <button class="nav-item" onclick="navigate('bancario',this)"><i class="ti ti-building-bank"></i> Contas Bancárias</button>
-      <button class="nav-item" onclick="navigate('fluxo',this)"><i class="ti ti-activity"></i> Fluxo de Caixa</button>
-      <button class="nav-item" onclick="navigate('dre',this)"><i class="ti ti-report-analytics"></i> DRE</button>
+      <button class="nav-item" id="nav-financeiro" onclick="navigate('receber',this)"><i class="ti ti-report-money"></i> Financeiro</button>
       <button class="nav-item" onclick="navigate('precificacao',this)"><i class="ti ti-calculator"></i> Precificação</button>
       <div class="sidebar-nav-section">Sistema</div>
       <button class="nav-item" onclick="navigate('relatorios',this)"><i class="ti ti-chart-bar"></i> Relatórios</button>
@@ -568,6 +580,17 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
       </div>
     </div>
   </aside>
+
+  <!-- SUB-SIDEBAR INTERNA — MÓDULO FINANCEIRO -->
+  <nav class="fin-subsidebar" id="fin-subsidebar">
+    <div class="fin-subsidebar-title">Financeiro</div>
+    <button class="fin-nav-item" data-fin-view="receber" onclick="navigate('receber')"><i class="ti ti-circle-arrow-down"></i> Contas a Receber</button>
+    <button class="fin-nav-item" data-fin-view="pagar" onclick="navigate('pagar')"><i class="ti ti-circle-arrow-up"></i> Contas a Pagar</button>
+    <button class="fin-nav-item" data-fin-view="movimentacoes" onclick="navigate('movimentacoes')"><i class="ti ti-arrows-left-right"></i> Movimentações</button>
+    <button class="fin-nav-item" data-fin-view="bancario" onclick="navigate('bancario')"><i class="ti ti-building-bank"></i> Contas Bancárias</button>
+    <button class="fin-nav-item" data-fin-view="dre" onclick="navigate('dre')"><i class="ti ti-report-analytics"></i> DRE</button>
+    <button class="fin-nav-item" data-fin-view="fluxo" onclick="navigate('fluxo')"><i class="ti ti-activity"></i> Fluxo de Caixa</button>
+  </nav>
 
   <!-- MAIN -->
   <div class="main">
@@ -602,6 +625,14 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
           </div>
         </div>
 
+        <div class="dash-mes-seletor" id="dash-mes-seletor">
+          <button class="dash-mes-nav" onclick="mudarAnoDash(-1)" title="Ano anterior"><i class="ti ti-chevron-left"></i></button>
+          <span class="dash-mes-ano-label" id="dash-mes-ano-label">—</span>
+          <button class="dash-mes-nav" onclick="mudarAnoDash(1)" title="Próximo ano"><i class="ti ti-chevron-right"></i></button>
+          <div style="width:1px;height:16px;background:var(--border);margin:0 4px;flex-shrink:0;"></div>
+          <div id="dash-mes-pills" style="display:flex;gap:6px;"></div>
+        </div>
+
         <div class="kpi2-grid" id="dash-kpis">
           <div class="kpi2-card" onclick="navegarKpi('os','__andamento')">
             <div class="kpi2-top"><div class="kpi2-icon" style="background:var(--blue-bg);color:var(--blue);"><i class="ti ti-clipboard-list"></i></div><span class="kpi2-chip" id="kpi-os-chip" style="display:none;"></span></div>
@@ -610,7 +641,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
           </div>
           <div class="kpi2-card" onclick="navegarKpi('receber','recebido')">
             <div class="kpi2-top"><div class="kpi2-icon" style="background:var(--success-bg);color:var(--success);"><i class="ti ti-chart-line"></i></div><span class="kpi2-chip" id="kpi-fat-chip" style="display:none;"></span></div>
-            <div class="kpi2-label">Faturamento do mês</div>
+            <div class="kpi2-label" id="kpi-fat-mes-label">Faturamento do mês</div>
             <div class="kpi2-val" id="kpi-fat-mes">—</div>
           </div>
           <div class="kpi2-card" onclick="navegarKpi('receber','aberto')">
@@ -620,7 +651,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
           </div>
           <div class="kpi2-card" onclick="navegarKpi('os','entregue')">
             <div class="kpi2-top"><div class="kpi2-icon" style="background:var(--purple-bg);color:var(--purple);"><i class="ti ti-car"></i></div><span class="kpi2-chip" id="kpi-ent-chip" style="display:none;"></span></div>
-            <div class="kpi2-label">Carros entregues</div>
+            <div class="kpi2-label" id="kpi-ent-label">Carros entregues</div>
             <div class="kpi2-val" id="kpi-carros-entregues">—</div>
           </div>
         </div>
@@ -908,6 +939,33 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
         </div>
       </div>
 
+      <!-- MOVIMENTAÇÕES -->
+      <div class="page" id="page-movimentacoes">
+        <div class="kpi-grid kpi-grid-4">
+          <div class="kpi-card"><div class="kpi-label">Entradas no período</div><div class="kpi-val success" id="kpi-mov-entradas">—</div><div class="kpi-sub" id="kpi-mov-qtd-entradas">lançamentos</div></div>
+          <div class="kpi-card"><div class="kpi-label">Saídas no período</div><div class="kpi-val danger" id="kpi-mov-saidas">—</div><div class="kpi-sub" id="kpi-mov-qtd-saidas">lançamentos</div></div>
+          <div class="kpi-card"><div class="kpi-label">Saldo do período</div><div class="kpi-val blue" id="kpi-mov-saldo">—</div><div class="kpi-sub">entradas − saídas</div></div>
+          <div class="kpi-card"><div class="kpi-label">Saldo total em contas</div><div class="kpi-val" id="kpi-mov-saldo-total">—</div><div class="kpi-sub">todas as contas ativas</div></div>
+        </div>
+        <div class="filters-row">
+          <div class="search-box"><i class="ti ti-search"></i><input type="text" placeholder="Buscar descrição..." oninput="filtrarMov(this.value)"></div>
+          <select class="filter-select" onchange="filtrarMovTipo(this.value)">
+            <option value="">Todos os tipos</option>
+            <option value="entrada">Entradas</option>
+            <option value="saida">Saídas</option>
+          </select>
+          <select class="filter-select" id="mov-filtro-conta" onchange="filtrarMovConta(this.value)">
+            <option value="">Todas as contas</option>
+          </select>
+          <input class="filter-select" type="date" id="mov-filtro-data-de" onchange="carregarMovimentacoes()" style="max-width:150px" title="De">
+          <input class="filter-select" type="date" id="mov-filtro-data-ate" onchange="carregarMovimentacoes()" style="max-width:150px" title="Até">
+        </div>
+        <div class="table-card">
+          <div class="table-hd"><div><span class="table-hd-title">Lançamentos</span><span class="table-count" id="mov-count"></span></div></div>
+          <div id="mov-table-wrap"><div class="loading"><div class="spinner"></div> Carregando...</div></div>
+        </div>
+      </div>
+
       <!-- PRECIFICAÇÃO -->
       <div class="page" id="page-precificacao">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
@@ -1010,7 +1068,10 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
             <div style="height:1px;background:var(--border);margin:4px 0;"></div>
             <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-3);font-weight:500;padding:11px 16px 5px;">Financeiro</div>
             <div class="cfg-item" id="cfg-item-contas" onclick="showCfgPanel('contas',this)"><i class="ti ti-building-bank"></i> Contas bancárias</div>
-            <div class="cfg-item" id="cfg-item-categorias" onclick="showCfgPanel('categorias',this)"><i class="ti ti-tags"></i> Categorias financeiras</div>
+            <div class="cfg-item" id="cfg-item-categorias" onclick="showCfgPanel('categorias',this)"><i class="ti ti-list-tree"></i> Contas contábeis</div>
+            <div class="cfg-item" id="cfg-item-catfin" onclick="showCfgPanel('catfin',this)"><i class="ti ti-tags"></i> Categorias financeiras</div>
+            <div class="cfg-item" id="cfg-item-tipodoc" onclick="showCfgPanel('tipodoc',this)"><i class="ti ti-file-description"></i> Tipos de documento</div>
+            <div class="cfg-item" id="cfg-item-centrocusto" onclick="showCfgPanel('centrocusto',this)"><i class="ti ti-hierarchy-2"></i> Centros de custo</div>
             <div class="cfg-item" id="cfg-item-metas" onclick="showCfgPanel('metas',this)"><i class="ti ti-target"></i> Metas e indicadores</div>
             <div style="height:1px;background:var(--border);margin:4px 0;"></div>
             <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-3);font-weight:500;padding:11px 16px 5px;">Operacional</div>
@@ -1120,6 +1181,42 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
                   <button class="btn btn-outline btn-sm" id="cat-filtro-despesa" onclick="filtrarCategorias('despesa',this)">↓ Despesas</button>
                 </div>
                 <div id="cfg-cat-lista" style="min-height:200px;"><div class="loading"><div class="spinner"></div> Carregando...</div></div>
+              </div>
+            </div>
+
+            <!-- CATEGORIAS FINANCEIRAS -->
+            <div id="cfg-panel-catfin" class="cfg-panel">
+              <div style="background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);overflow:hidden;">
+                <div style="padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                  <div style="font-size:13px;font-weight:500;color:var(--navy);display:flex;align-items:center;gap:8px;"><i class="ti ti-tags" style="color:var(--blue)"></i> Categorias Financeiras</div>
+                  <button class="btn btn-primary btn-sm" onclick="abrirModalCatFin()"><i class="ti ti-plus"></i> Nova categoria</button>
+                </div>
+                <div style="padding:10px 20px;font-size:11px;color:var(--text-3);border-bottom:1px solid var(--border);">
+                  Agrupamento operacional (ex: "Mão de Obra"), vinculado a uma Conta Contábil para alimentar o DRE automaticamente.
+                </div>
+                <div id="cfg-catfin-lista" style="min-height:160px;"><div class="loading"><div class="spinner"></div> Carregando...</div></div>
+              </div>
+            </div>
+
+            <!-- TIPOS DE DOCUMENTO -->
+            <div id="cfg-panel-tipodoc" class="cfg-panel">
+              <div style="background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);overflow:hidden;">
+                <div style="padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                  <div style="font-size:13px;font-weight:500;color:var(--navy);display:flex;align-items:center;gap:8px;"><i class="ti ti-file-description" style="color:var(--blue)"></i> Tipos de Documento</div>
+                  <button class="btn btn-primary btn-sm" onclick="abrirModalCfgSimples('tipos_documento')"><i class="ti ti-plus"></i> Novo tipo</button>
+                </div>
+                <div id="cfg-tipodoc-lista" style="min-height:160px;"><div class="loading"><div class="spinner"></div> Carregando...</div></div>
+              </div>
+            </div>
+
+            <!-- CENTROS DE CUSTO -->
+            <div id="cfg-panel-centrocusto" class="cfg-panel">
+              <div style="background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);overflow:hidden;">
+                <div style="padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                  <div style="font-size:13px;font-weight:500;color:var(--navy);display:flex;align-items:center;gap:8px;"><i class="ti ti-hierarchy-2" style="color:var(--blue)"></i> Centros de Custo</div>
+                  <button class="btn btn-primary btn-sm" onclick="abrirModalCfgSimples('centros_custo')"><i class="ti ti-plus"></i> Novo centro</button>
+                </div>
+                <div id="cfg-centrocusto-lista" style="min-height:160px;"><div class="loading"><div class="spinner"></div> Carregando...</div></div>
               </div>
             </div>
 
@@ -2010,6 +2107,75 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
 </div>
 </div>
 
+<!-- MODAL CATEGORIA FINANCEIRA -->
+<div class="modal-overlay" id="modal-catfin" onclick="if(event.target===this)closeModal('catfin')">
+<div class="modal" style="max-width:480px;">
+  <div class="modal-head">
+    <div><div class="modal-title" id="catfin-modal-title">Nova Categoria Financeira</div></div>
+    <button class="modal-close" onclick="closeModal('catfin')"><i class="ti ti-x"></i></button>
+  </div>
+  <div style="padding:18px 22px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;">
+      <div class="form-group form-full">
+        <label class="form-label">Nome da categoria</label>
+        <input class="form-input" id="catfin-nome" type="text" placeholder="Ex: Mão de Obra">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo</label>
+        <select class="form-input" id="catfin-tipo" onchange="popularSelectContaContabil()">
+          <option value="receita">↑ Receita</option>
+          <option value="despesa">↓ Despesa</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Conta contábil</label>
+        <select class="form-input" id="catfin-conta-contabil"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ordem de exibição</label>
+        <input class="form-input" id="catfin-ordem" type="number" value="0" min="0">
+      </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:10px;padding-top:20px;">
+        <div class="toggle on" id="catfin-ativo-toggle" onclick="this.classList.toggle('on')"></div>
+        <span style="font-size:13px;color:var(--navy)">Categoria ativa</span>
+      </div>
+    </div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn btn-outline" onclick="closeModal('catfin')">Cancelar</button>
+    <button class="btn btn-primary" onclick="salvarCatFin()"><i class="ti ti-check"></i> Salvar</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL GENÉRICO — TIPOS DE DOCUMENTO / CENTROS DE CUSTO -->
+<div class="modal-overlay" id="modal-cfg-simples" onclick="if(event.target===this)closeModal('cfg-simples')">
+<div class="modal" style="max-width:420px;">
+  <div class="modal-head">
+    <div><div class="modal-title" id="cfg-simples-modal-title">Novo</div></div>
+    <button class="modal-close" onclick="closeModal('cfg-simples')"><i class="ti ti-x"></i></button>
+  </div>
+  <div style="padding:18px 22px;">
+    <div class="form-group">
+      <label class="form-label" id="cfg-simples-label">Nome</label>
+      <input class="form-input" id="cfg-simples-nome" type="text">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Ordem de exibição</label>
+      <input class="form-input" id="cfg-simples-ordem" type="number" value="0" min="0">
+    </div>
+    <div class="form-group" style="display:flex;align-items:center;gap:10px;padding-top:4px;">
+      <div class="toggle on" id="cfg-simples-ativo-toggle" onclick="this.classList.toggle('on')"></div>
+      <span style="font-size:13px;color:var(--navy)">Ativo</span>
+    </div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn btn-outline" onclick="closeModal('cfg-simples')">Cancelar</button>
+    <button class="btn btn-primary" onclick="salvarCfgSimples()"><i class="ti ti-check"></i> Salvar</button>
+  </div>
+</div>
+</div>
+
 <!-- MODAL DETALHES DO CLIENTE — HISTÓRICO DE OS -->
 <div class="modal-overlay" id="modal-cli-detalhe" onclick="if(event.target===this)closeModal('cli-detalhe')">
 <div class="modal modal-lg">
@@ -2222,6 +2388,9 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
     <div id="baixa-rec-breakdown" style="display:none;margin-bottom:12px;"></div>
     <div class="form-grid" id="baixa-rec-form-grid">
       <div class="form-group"><label class="form-label">Data de recebimento</label><input class="form-input" type="date" id="baixa-rec-data"></div>
+      <div class="form-group"><label class="form-label">Conta bancária</label>
+        <select class="form-input" id="baixa-rec-conta"><option value="">Selecione...</option></select>
+      </div>
       <div class="form-group"><label class="form-label">Forma de pagamento</label>
         <select class="form-input" id="baixa-rec-forma" onchange="calcBaixaRec()">
           <option value="pix">PIX (0%)</option><option value="dinheiro">Dinheiro (0%)</option>
@@ -2301,6 +2470,9 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
   <div class="modal-body">
     <div class="form-grid">
       <div class="form-group"><label class="form-label">Data de pagamento</label><input class="form-input" type="date" id="baixa-pag-data"></div>
+      <div class="form-group"><label class="form-label">Conta bancária</label>
+        <select class="form-input" id="baixa-pag-conta"><option value="">Selecione...</option></select>
+      </div>
       <div class="form-group"><label class="form-label">Forma de pagamento</label>
         <select class="form-input" id="baixa-pag-forma"><option>PIX</option><option>Boleto</option><option>Transferência</option></select>
       </div>
@@ -2370,6 +2542,59 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
 </div>
 </div>
 
+<!-- MODAL LANÇAMENTO AVULSO -->
+<div class="modal-overlay" id="modal-mov-avulsa" onclick="if(event.target===this)closeModal('mov-avulsa')">
+<div class="modal modal-md">
+  <div class="modal-head">
+    <div><div class="modal-title">Lançamento Avulso</div><div class="modal-sub">Movimentação sem título de Contas a Receber/Pagar — ex: aporte, retirada, taxa isolada</div></div>
+    <button class="modal-close" onclick="closeModal('mov-avulsa')"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="modal-body">
+    <div class="form-grid">
+      <div class="form-group form-full" style="display:flex;gap:8px;">
+        <button class="btn btn-outline btn-sm" id="mov-avulsa-tipo-entrada" onclick="setTipoMovAvulsa('entrada')" style="flex:1;"><i class="ti ti-arrow-down-circle"></i> Entrada</button>
+        <button class="btn btn-outline btn-sm" id="mov-avulsa-tipo-saida" onclick="setTipoMovAvulsa('saida')" style="flex:1;"><i class="ti ti-arrow-up-circle"></i> Saída</button>
+      </div>
+      <div class="form-group form-full"><label class="form-label">Descrição</label><input class="form-input" id="mov-avulsa-desc" type="text" placeholder="Ex: Aporte de sócio"></div>
+      <div class="form-group"><label class="form-label">Valor (R$)</label><input class="form-input" id="mov-avulsa-valor" type="number" placeholder="0,00" step="0.01"></div>
+      <div class="form-group"><label class="form-label">Data</label><input class="form-input" type="date" id="mov-avulsa-data"></div>
+      <div class="form-group"><label class="form-label">Conta bancária</label><select class="form-input" id="mov-avulsa-conta"><option value="">Selecione...</option></select></div>
+      <div class="form-group"><label class="form-label">Categoria</label><select class="form-input" id="mov-avulsa-categoria"><option value="">Sem categoria</option></select></div>
+      <div class="form-group"><label class="form-label">Centro de custo</label><select class="form-input" id="mov-avulsa-centro"><option value="">Sem centro de custo</option></select></div>
+      <div class="form-group"><label class="form-label">Tipo de documento</label><select class="form-input" id="mov-avulsa-doc-tipo"><option value="">Não informado</option></select></div>
+      <div class="form-group"><label class="form-label">Nº do documento</label><input class="form-input" id="mov-avulsa-doc-num" type="text" placeholder="Opcional"></div>
+    </div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn btn-outline" onclick="closeModal('mov-avulsa')">Cancelar</button>
+    <button class="btn btn-primary" onclick="salvarMovAvulsa()"><i class="ti ti-check"></i> Lançar</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL TRANSFERÊNCIA ENTRE CONTAS -->
+<div class="modal-overlay" id="modal-transferencia" onclick="if(event.target===this)closeModal('transferencia')">
+<div class="modal modal-md">
+  <div class="modal-head">
+    <div><div class="modal-title">Transferência entre contas</div><div class="modal-sub">Não é receita nem despesa — não impacta a DRE</div></div>
+    <button class="modal-close" onclick="closeModal('transferencia')"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="modal-body">
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Conta de origem</label><select class="form-input" id="transf-origem"><option value="">Selecione...</option></select></div>
+      <div class="form-group"><label class="form-label">Conta de destino</label><select class="form-input" id="transf-destino"><option value="">Selecione...</option></select></div>
+      <div class="form-group"><label class="form-label">Valor (R$)</label><input class="form-input" id="transf-valor" type="number" placeholder="0,00" step="0.01"></div>
+      <div class="form-group"><label class="form-label">Data</label><input class="form-input" type="date" id="transf-data"></div>
+      <div class="form-group form-full"><label class="form-label">Descrição</label><input class="form-input" id="transf-desc" type="text" placeholder="Opcional"></div>
+    </div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn btn-outline" onclick="closeModal('transferencia')">Cancelar</button>
+    <button class="btn btn-primary" onclick="salvarTransferencia()"><i class="ti ti-check"></i> Transferir</button>
+  </div>
+</div>
+</div>
+
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
@@ -2409,6 +2634,7 @@ const PAGE_CONFIG = {
   agendamento: { title:"Agendamento", sub:"Próximas entregas e compromissos", actions:"" },
   receber:      { title:"Contas a Receber", sub:"Receitas, previsão e baixas", actions:"<button class='btn btn-outline btn-sm'><i class='ti ti-download'></i> Exportar</button><button class='btn btn-primary btn-sm' onclick='abrirModalRec()'><i class='ti ti-plus'></i> Novo Lançamento</button>" },
   pagar:        { title:"Contas a Pagar", sub:"Compromissos e notas de fornecedores", actions:"<button class='btn btn-outline btn-sm'><i class='ti ti-download'></i> Exportar</button><button class='btn btn-primary btn-sm' onclick='abrirModalPag()'><i class='ti ti-plus'></i> Novo Lançamento</button>" },
+  movimentacoes: { title:"Movimentações", sub:"Livro caixa — entradas, saídas e transferências", actions:"<button class='btn btn-outline btn-sm' onclick='abrirModalTransferencia()'><i class='ti ti-arrows-left-right'></i> Transferência</button><button class='btn btn-primary btn-sm' onclick='abrirModalMovAvulsa()'><i class='ti ti-plus'></i> Lançamento Avulso</button>" },
   bancario:     { title:"Contas Bancárias", sub:"Saldos e posição financeira", actions:"<button class='btn btn-outline btn-sm' onclick='carregarBancario()'><i class='ti ti-refresh'></i> Atualizar</button><button class='btn btn-primary btn-sm' onclick='showCfgPanel(\"contas\",null);navigate(\"config\",null)'><i class='ti ti-settings'></i> Gerenciar contas</button>" },
   fluxo:        { title:"Fluxo de Caixa", sub:"DFC — Regime de Caixa", actions:"<button class='btn btn-outline btn-sm' onclick='carregarFluxo()'><i class='ti ti-refresh'></i> Atualizar</button>" },
   dre:          { title:"DRE", sub:"Demonstrativo do Resultado — Competência", actions:"<button class='btn btn-outline btn-sm' onclick='carregarDRE()'><i class='ti ti-refresh'></i> Atualizar</button>" },
@@ -2519,6 +2745,9 @@ async function initApp() {
   // Carrega oficinas
   await carregarOficinas();
 
+  // Atualiza títulos vencidos (aberto -> atraso) antes de qualquer tela usar esse status
+  await atualizarAtrasos();
+
   // Carrega dados do dashboard
   await carregarDashboard();
 
@@ -2527,6 +2756,26 @@ async function initApp() {
   await carregarMecanicosBase();
   await carregarPlanoContas();
   await sincronizarCategoriasNosModais();
+}
+
+// Marca como 'atraso' qualquer título em 'aberto' cujo vencimento já passou.
+// Sem isso, os KPIs "Em atraso" e os badges vermelhos de Contas a Receber/Pagar nunca
+// disparam sozinhos, pois nenhum outro ponto do código faz essa transição de status.
+async function atualizarAtrasos() {
+  if (!APP.oficina) return;
+  const hojeStr = new Date().toISOString().split('T')[0];
+  await Promise.all([
+    db.from('contas_receber')
+      .update({ status: 'atraso' })
+      .eq('oficina_id', APP.oficina.id)
+      .eq('status', 'aberto')
+      .lt('data_vencimento', hojeStr),
+    db.from('contas_pagar')
+      .update({ status: 'atraso' })
+      .eq('oficina_id', APP.oficina.id)
+      .eq('status', 'aberto')
+      .lt('data_vencimento', hojeStr),
+  ]);
 }
 
 async function carregarOficinas() {
@@ -2579,18 +2828,60 @@ async function carregarOficinas() {
   }
 }
 
+// ============================================================
+// SELETOR DE MÊS DO DASHBOARD
+// ============================================================
+let dashMesSel = new Date().getMonth(); // 0-11
+let dashAnoSel = new Date().getFullYear();
+
+function renderMesSeletorDash() {
+  document.getElementById('dash-mes-ano-label').textContent = dashAnoSel;
+  const hoje = new Date();
+  const ehAnoAtual = dashAnoSel === hoje.getFullYear();
+  const mesLimite = ehAnoAtual ? hoje.getMonth() : 11;
+  document.getElementById('dash-mes-pills').innerHTML = MESES_PT.map((m, i) => {
+    const futuro = i > mesLimite;
+    const ativo = i === dashMesSel;
+    return `<button class="dash-mes-pill ${ativo ? 'active' : ''} ${futuro ? 'futuro' : ''}" onclick="selecionarMesDash(${i})">${m}</button>`;
+  }).join('');
+}
+
+function mudarAnoDash(delta) {
+  const hoje = new Date();
+  const novoAno = dashAnoSel + delta;
+  if (novoAno > hoje.getFullYear()) return; // não deixa ir pro futuro
+  dashAnoSel = novoAno;
+  // Se o ano virou o atual e o mês selecionado ainda não chegou, recua pro mês corrente
+  if (dashAnoSel === hoje.getFullYear() && dashMesSel > hoje.getMonth()) dashMesSel = hoje.getMonth();
+  carregarDashboard();
+}
+
+function selecionarMesDash(i) {
+  dashMesSel = i;
+  carregarDashboard();
+}
+
 async function carregarDashboard() {
   if (!APP.oficina) return;
   const oid = APP.oficina.id;
   const agora = new Date();
-  const mesAtual = agora.toISOString().slice(0,7);
   const hoje = agora.toISOString().split('T')[0];
   const em7 = new Date(); em7.setDate(em7.getDate()+7);
   const em7s = em7.toISOString().split('T')[0];
   const seteDiasAtras = new Date(); seteDiasAtras.setDate(seteDiasAtras.getDate()-6);
   const seteDiasAtrasS = seteDiasAtras.toISOString().split('T')[0];
-  const mesAnterior = new Date(agora); mesAnterior.setMonth(mesAnterior.getMonth()-1);
-  const mesAnteriorStr = mesAnterior.toISOString().slice(0,7);
+
+  // Mês consultado no seletor de meses do dashboard (padrão: mês atual real).
+  // Construído por soma manual (sem passar por Date/toISOString) para não sofrer
+  // deslocamento de fuso horário nas bordas do mês/ano.
+  renderMesSeletorDash();
+  const mesConsulta = dashAnoSel + '-' + String(dashMesSel + 1).padStart(2, '0');
+  let mesSegMes = dashMesSel + 1, mesSegAno = dashAnoSel;
+  if (mesSegMes > 11) { mesSegMes = 0; mesSegAno += 1; }
+  const mesConsultaFim = mesSegAno + '-' + String(mesSegMes + 1).padStart(2, '0') + '-01';
+  let mesAntMes = dashMesSel - 1, mesAntAno = dashAnoSel;
+  if (mesAntMes < 0) { mesAntMes = 11; mesAntAno -= 1; }
+  const mesConsultaAnterior = mesAntAno + '-' + String(mesAntMes + 1).padStart(2, '0');
 
   // Saudação e data por extenso
   const hora = agora.getHours();
@@ -2599,19 +2890,26 @@ async function carregarDashboard() {
   document.getElementById('dash-user-primeiro-nome').textContent = (APP.userNome || 'usuário').split(' ')[0];
   document.getElementById('dash-data-extenso').textContent = agora.toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long' }).toUpperCase();
 
+  // Labels dos KPIs que mudam de escopo — só sinalizam o mês quando não é o mês atual real,
+  // pra manter a leitura padrão ("do mês") quando o usuário está olhando o presente.
+  const ehMesAtualReal = dashAnoSel === agora.getFullYear() && dashMesSel === agora.getMonth();
+  const rotuloMes = ehMesAtualReal ? '' : (' — ' + MESES_PT[dashMesSel] + '/' + dashAnoSel);
+  document.getElementById('kpi-fat-mes-label').textContent = ehMesAtualReal ? 'Faturamento do mês' : 'Faturamento' + rotuloMes;
+  document.getElementById('kpi-ent-label').textContent = ehMesAtualReal ? 'Carros entregues' : 'Entregues' + rotuloMes;
+
   const [osAndamento, osAtrasadas, carrosEnt, osProntas, fatD, fatMesAntD, recAbertoD, recAtrasoD, ultOS, vencD, osHojeD, fatCategD, fatSemanaD, pecasD] = await Promise.all([
     db.from('ordens_servico').select('id',{count:'exact'}).eq('oficina_id',oid).in('status',['andamento','aguardando','finalizado']),
     db.from('ordens_servico').select('id',{count:'exact'}).eq('oficina_id',oid).in('status',['andamento','aguardando']).lt('data_previsao',hoje),
-    db.from('ordens_servico').select('id',{count:'exact'}).eq('oficina_id',oid).eq('status','entregue').gte('data_entrega',mesAtual+'-01'),
+    db.from('ordens_servico').select('id',{count:'exact'}).eq('oficina_id',oid).eq('status','entregue').gte('data_entrega',mesConsulta+'-01').lt('data_entrega',mesConsultaFim),
     db.from('ordens_servico').select('id',{count:'exact'}).eq('oficina_id',oid).eq('status','finalizado'),
-    db.from('contas_receber').select('valor').eq('oficina_id',oid).eq('status','recebido').gte('data_pagamento',mesAtual+'-01'),
-    db.from('contas_receber').select('valor').eq('oficina_id',oid).eq('status','recebido').gte('data_pagamento',mesAnteriorStr+'-01').lt('data_pagamento',mesAtual+'-01'),
+    db.from('contas_receber').select('valor').eq('oficina_id',oid).eq('status','recebido').gte('data_pagamento',mesConsulta+'-01').lt('data_pagamento',mesConsultaFim),
+    db.from('contas_receber').select('valor').eq('oficina_id',oid).eq('status','recebido').gte('data_pagamento',mesConsultaAnterior+'-01').lt('data_pagamento',mesConsulta+'-01'),
     db.from('contas_receber').select('valor').eq('oficina_id',oid).eq('status','aberto'),
     db.from('contas_receber').select('id',{count:'exact'}).eq('oficina_id',oid).eq('status','atraso'),
     db.from('ordens_servico').select('id,numero,status,total,clientes(nome),veiculos(marca,modelo,placa)').eq('oficina_id',oid).in('status',['andamento','aguardando','finalizado']).order('created_at',{ascending:false}).limit(6),
     db.from('contas_pagar').select('descricao,valor,data_vencimento').eq('oficina_id',oid).eq('status','aberto').lte('data_vencimento',em7s).gte('data_vencimento',hoje).order('data_vencimento').limit(4),
     db.from('ordens_servico').select('numero,data_previsao,clientes(nome),veiculos(placa)').eq('oficina_id',oid).eq('data_previsao',hoje).limit(4),
-    db.from('contas_receber').select('valor,categoria').eq('oficina_id',oid).eq('status','recebido').gte('data_pagamento',mesAtual+'-01'),
+    db.from('contas_receber').select('valor,categoria').eq('oficina_id',oid).eq('status','recebido').gte('data_pagamento',mesConsulta+'-01').lt('data_pagamento',mesConsultaFim),
     db.from('contas_receber').select('valor,data_pagamento').eq('oficina_id',oid).eq('status','recebido').gte('data_pagamento',seteDiasAtrasS),
     db.from('pecas').select('id,nome,estoque_atual,estoque_minimo').eq('oficina_id',oid),
   ]);
@@ -2651,7 +2949,7 @@ async function carregarDashboard() {
     (osProntas.count>0 ? ' e ' + osProntas.count + ' veículo' + (osProntas.count===1?'':'s') + ' pronto' + (osProntas.count===1?'':'s') + ' para retirada.' : '.');
 
   // Metas do mês
-  const { count: osCount } = await db.from('ordens_servico').select('id',{count:'exact'}).eq('oficina_id',oid).gte('data_abertura',mesAtual+'-01');
+  const { count: osCount } = await db.from('ordens_servico').select('id',{count:'exact'}).eq('oficina_id',oid).gte('data_abertura',mesConsulta+'-01').lt('data_abertura',mesConsultaFim);
   renderMetasDashboard(fat, osCount || 0, fatServicos, fatPecas);
 
   // Ordens de serviço em andamento (com veículo)
@@ -3525,13 +3823,17 @@ async function carregarVeiculosOS() {
 }
 
 // Gera número sequencial simples: 001, 002, 003... sem reset anual.
-// Excluídas saem do banco e liberam espaço na contagem; canceladas continuam contando.
+// Usa o MAIOR número já usado (não a contagem de registros), para que excluir uma OS
+// nunca faça um número ser reaproveitado/duplicado. Canceladas continuam contando normalmente.
 async function gerarNumeroOS() {
-  const { count } = await db.from('ordens_servico')
-    .select('id', { count: 'exact', head: true })
+  const { data } = await db.from('ordens_servico')
+    .select('numero')
     .eq('oficina_id', APP.oficina.id);
-  const seq = (count || 0) + 1;
-  return String(seq).padStart(3, '0');
+  const maiorNumero = (data || []).reduce((max, r) => {
+    const n = parseInt(r.numero, 10);
+    return isNaN(n) ? max : Math.max(max, n);
+  }, 0);
+  return String(maiorNumero + 1).padStart(3, '0');
 }
 
 async function salvarOS() {
@@ -3568,7 +3870,7 @@ async function estornarPecasOS(osId) {
   const { data: itens } = await db.from('orcamento_itens')
     .select('peca_id, quantidade')
     .in('orcamento_id', orcIds)
-    .eq('tipo', 'Peca')
+    .in('tipo', ['Peca', 'Peça'])
     .not('peca_id', 'is', null);
 
   if (!itens || itens.length === 0) return;
@@ -4102,6 +4404,7 @@ const PAGE_LOADERS = {
   receber: carregarReceber,
   pagar: carregarPagar,
   bancario: carregarBancario,
+  movimentacoes: carregarMovimentacoes,
   fluxo: carregarFluxo,
   dre: carregarDRE,
   precificacao: iniciarPrecificacao,
@@ -5476,31 +5779,31 @@ async function carregarFluxo(){
   const ano=parseInt(document.getElementById('flx-ano')?.value||new Date().getFullYear());
   const de=ano+'-01-01', ate=ano+'-12-31';
 
-  const [{data:recD},{data:pagD}]=await Promise.all([
-    db.from('contas_receber').select('valor,valor_liquido,data_pagamento,origem,categoria,so_caixa,forma_pagamento').eq('oficina_id',APP.oficina.id).eq('status','recebido').gte('data_pagamento',de).lte('data_pagamento',ate),
-    db.from('contas_pagar').select('valor,data_pagamento,categoria,origem').eq('oficina_id',APP.oficina.id).eq('status','pago').gte('data_pagamento',de).lte('data_pagamento',ate),
-  ]);
+  // Fluxo de Caixa = regime de CAIXA de verdade: lê do livro caixa (movimentacoes),
+  // não mais de contas_receber/contas_pagar. Transferências entre contas próprias
+  // ficam de fora (não são entrada nem saída real de caixa da empresa).
+  const { data: movs, error } = await db.from('movimentacoes')
+    .select('tipo,origem,valor,data')
+    .eq('oficina_id',APP.oficina.id)
+    .neq('origem','transferencia')
+    .gte('data',de).lte('data',ate);
+  if (error) { toast('Erro ao carregar fluxo de caixa: ' + error.message, 'error'); return; }
 
   // Agrupa por mês
   const entM=Array(12).fill(0), saiM=Array(12).fill(0);
-  const aporteM=Array(12).fill(0), svcM=Array(12).fill(0);
-  const fornM=Array(12).fill(0), despM=Array(12).fill(0), impM=Array(12).fill(0);
+  const recM=Array(12).fill(0), avEntM=Array(12).fill(0);
+  const pagM=Array(12).fill(0), avSaiM=Array(12).fill(0);
 
-  (recD||[]).forEach(r=>{
-    const m=new Date(r.data_pagamento+'T12:00:00').getMonth();
-    const v=r.valor_liquido||r.valor||0;
-    entM[m]+=v;
-    if(['aporte','emprestimo'].includes(r.origem)) aporteM[m]+=v;
-    else svcM[m]+=v;
-  });
-  (pagD||[]).forEach(p=>{
-    const m=new Date(p.data_pagamento+'T12:00:00').getMonth();
-    const v=p.valor||0;
-    saiM[m]+=v;
-    const cat=(p.categoria||'').toLowerCase();
-    if(cat.includes('peça')||cat.includes('peca')||p.origem==='nota') fornM[m]+=v;
-    else if(cat.includes('imposto')||cat.includes('simples')) impM[m]+=v;
-    else despM[m]+=v;
+  (movs||[]).forEach(m=>{
+    const mes=new Date(m.data+'T12:00:00').getMonth();
+    const v=m.valor||0;
+    if (m.tipo==='entrada') {
+      entM[mes]+=v;
+      if (m.origem==='receber') recM[mes]+=v; else avEntM[mes]+=v;
+    } else {
+      saiM[mes]+=v;
+      if (m.origem==='pagar') pagM[mes]+=v; else avSaiM[mes]+=v;
+    }
   });
 
   const totalEnt=entM.reduce((a,v)=>a+v,0);
@@ -5532,12 +5835,11 @@ async function carregarFluxo(){
     +'<th class="rel-col-total">Total</th></tr></thead><tbody>';
 
   html+=flxRow('↑ ENTRADAS',entM,'rel-row-grupo',false,0,'color:#7de8b8');
-  html+=flxRow('Receita de serviços',svcM,'rel-row-linha',false,16);
-  if(aporteM.some(v=>v>0)) html+=flxRow('Aportes / Empréstimos',aporteM,'rel-row-linha',false,16);
+  html+=flxRow('Recebimentos (Contas a Receber)',recM,'rel-row-linha',false,16);
+  html+=flxRow('Lançamentos avulsos',avEntM,'rel-row-linha',false,16);
   html+=flxRow('↓ SAÍDAS',saiM,'rel-row-grupo',false,0,'color:#f5a5a0');
-  if(fornM.some(v=>v>0)) html+=flxRow('Compras de peças',fornM,'rel-row-linha',true,16);
-  if(despM.some(v=>v>0)) html+=flxRow('Despesas operacionais',despM,'rel-row-linha',true,16);
-  if(impM.some(v=>v>0)) html+=flxRow('Impostos',impM,'rel-row-linha',true,16);
+  html+=flxRow('Pagamentos (Contas a Pagar)',pagM,'rel-row-linha',true,16);
+  html+=flxRow('Lançamentos avulsos',avSaiM,'rel-row-linha',true,16);
 
   // Saldo mensal
   html+='<tr class="rel-row-resultado"><td>SALDO DO PERÍODO</td>'
@@ -5550,6 +5852,12 @@ async function carregarFluxo(){
     +'<td class="rel-col-total" style="color:#7de8b8">'+fN(acum,false)+'</td></tr>';
 
   html+='</tbody></table>';
+
+  if (!movs || movs.length===0) {
+    html='<div class="empty-state"><i class="ti ti-activity" style="color:var(--blue)"></i>'
+      +'<div class="empty-state-title">Sem movimentações em '+ano+'</div>'
+      +'<div style="font-size:12px;color:var(--text-3);margin-top:6px;max-width:420px;margin-left:auto;margin-right:auto;">O Fluxo de Caixa agora é alimentado pelo livro caixa (Movimentações). Baixas feitas antes dessa atualização não geraram lançamento retroativo — apenas baixas e lançamentos novos aparecem aqui.</div></div>';
+  }
   document.getElementById('flx-wrap').innerHTML=html;
 }
 
@@ -5562,10 +5870,17 @@ async function carregarDRE(){
   const ano=parseInt(document.getElementById('dre-ano')?.value||new Date().getFullYear());
   const de=ano+'-01-01', ate=ano+'-12-31';
 
-  const [{data:recD},{data:pagD}]=await Promise.all([
+  // A categoria selecionada em Contas a Pagar (texto) vem sempre do mesmo nome
+  // cadastrado no Plano de Contas (é o que preenche o <select> lá). Buscamos o
+  // Plano de Contas aqui, fresco, pra montar um mapa nome -> grupo_dre confiável —
+  // muito mais preciso que adivinhar por palavra-chave na descrição.
+  const [{data:recD},{data:pagD},{data:contasContabeis}]=await Promise.all([
     db.from('contas_receber').select('valor,valor_liquido,valor_taxa_transacao,valor_taxa_antecipacao,data_referencia,categoria,origem,so_caixa').eq('oficina_id',APP.oficina.id).eq('status','recebido').gte('data_referencia',de).lte('data_referencia',ate),
     db.from('contas_pagar').select('valor,data_referencia,categoria,origem').eq('oficina_id',APP.oficina.id).eq('status','pago').gte('data_referencia',de).lte('data_referencia',ate),
+    db.from('plano_contas').select('nome,grupo_dre').eq('oficina_id',APP.oficina.id),
   ]);
+  const mapaGrupoDre = {};
+  (contasContabeis||[]).forEach(c => { mapaGrupoDre[c.nome] = c.grupo_dre; });
 
   const recBM=Array(12).fill(0), dedM=Array(12).fill(0);
   const cmvM=Array(12).fill(0), despOpM=Array(12).fill(0);
@@ -5582,13 +5897,23 @@ async function carregarDRE(){
   (pagD||[]).forEach(p=>{
     const m=new Date(p.data_referencia+'T12:00:00').getMonth();
     const v=p.valor||0;
-    const cat=(p.categoria||'').toLowerCase();
-    const orig=(p.origem||'').toLowerCase();
-    if(cat.includes('peça')||cat.includes('peca')||orig==='nota') cmvM[m]+=v;
-    else if(cat.includes('salário')||cat.includes('folha')||cat.includes('rh')||cat.includes('funcionário')) rhM[m]+=v;
-    else if(cat.includes('financeira')||cat.includes('juros')||cat.includes('taxa')) despFinM[m]+=v;
-    else if(cat.includes('imposto')||cat.includes('simples')||cat.includes('tributo')) impM[m]+=v;
-    else despOpM[m]+=v;
+    const grupo = mapaGrupoDre[p.categoria];
+    if (grupo==='cmv') cmvM[m]+=v;
+    else if (grupo==='desp_pessoal') rhM[m]+=v;
+    else if (grupo==='desp_financeira') despFinM[m]+=v;
+    else if (grupo==='imposto') impM[m]+=v;
+    else if (grupo==='desp_operacional') despOpM[m]+=v;
+    else {
+      // Categoria não encontrada no Plano de Contas (registro antigo ou digitado
+      // fora do padrão) — cai na heurística por palavra-chave como rede de segurança.
+      const cat=(p.categoria||'').toLowerCase();
+      const orig=(p.origem||'').toLowerCase();
+      if(cat.includes('peça')||cat.includes('peca')||orig==='nota') cmvM[m]+=v;
+      else if(cat.includes('salário')||cat.includes('folha')||cat.includes('rh')||cat.includes('funcionário')) rhM[m]+=v;
+      else if(cat.includes('financeira')||cat.includes('juros')||cat.includes('taxa')) despFinM[m]+=v;
+      else if(cat.includes('imposto')||cat.includes('simples')||cat.includes('tributo')) impM[m]+=v;
+      else despOpM[m]+=v;
+    }
   });
 
   const recLiqM=recBM.map((v,i)=>v-dedM[i]);
@@ -5756,6 +6081,9 @@ async function carregarConfig(){
   carregarPadroesOS();
   carregarRegime();
   await carregarPlanoContas();
+  await carregarCategoriasFin();
+  await carregarTiposDocumento();
+  await carregarCentrosCusto();
 }
 
 function onRegimeChange(){
@@ -6269,6 +6597,213 @@ async function excluirCategoria(id) {
   });
 }
 
+// ============================================================
+// CONFIGURAÇÕES FINANCEIRAS — Categorias Financeiras, Tipos de
+// Documento e Centros de Custo (tabelas novas, aditivas — não
+// interferem no fluxo já existente de Contas a Receber/Pagar).
+// ============================================================
+let categoriasFinTodas = [], tiposDocumentoTodos = [], centrosCustoTodos = [];
+
+// --- CATEGORIAS FINANCEIRAS ---
+async function carregarCategoriasFin() {
+  if (!APP.oficina) return;
+  const { data } = await db.from('categorias_financeiras')
+    .select('*, plano_contas(nome)').eq('oficina_id', APP.oficina.id).order('tipo').order('ordem').order('nome');
+  categoriasFinTodas = data || [];
+  renderCategoriasFin();
+}
+
+function renderCategoriasFin() {
+  const el = document.getElementById('cfg-catfin-lista');
+  if (!el) return;
+  if (categoriasFinTodas.length === 0) {
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-3);font-size:13px">Nenhuma categoria financeira. Clique em "+ Nova categoria".</div>';
+    return;
+  }
+  const renderGrupo = (itens, titulo, cor) => {
+    if (itens.length === 0) return '';
+    return '<div style="padding:10px 20px 4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:' + cor + '">' + titulo + '</div>'
+      + itens.map(c => `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 20px;border-bottom:1px solid var(--border);${!c.ativo ? 'opacity:.4' : ''}">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <i class="ti ti-point-filled" style="color:${cor};font-size:10px"></i>
+            <div><div style="font-size:13px;font-weight:500;color:var(--navy)">${c.nome}</div>
+            <div style="font-size:10px;color:var(--text-3);margin-top:1px">${c.plano_contas?.nome || 'Sem conta contábil'}</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span class="badge ${c.ativo ? 'badge-success' : 'badge-gray'}" style="font-size:10px">${c.ativo ? 'Ativa' : 'Inativa'}</span>
+            <button class="action-btn" onclick="editarCatFin('${c.id}')" title="Editar"><i class="ti ti-pencil"></i></button>
+            <button class="action-btn" onclick="excluirCatFin('${c.id}')" style="color:var(--danger)" title="Excluir"><i class="ti ti-trash"></i></button>
+          </div>
+        </div>`).join('');
+  };
+  el.innerHTML = renderGrupo(categoriasFinTodas.filter(c => c.tipo === 'receita'), '↑ Receitas', 'var(--success)')
+    + renderGrupo(categoriasFinTodas.filter(c => c.tipo === 'despesa'), '↓ Despesas', 'var(--danger)');
+}
+
+// Popula o select de conta contábil no modal de categoria financeira, filtrado pelo tipo escolhido.
+function popularSelectContaContabil() {
+  const tipo = document.getElementById('catfin-tipo').value;
+  const sel = document.getElementById('catfin-conta-contabil');
+  const valAtual = sel.value;
+  const opcoes = planoCategorias.filter(c => c.tipo === tipo && c.ativo);
+  sel.innerHTML = '<option value="">Nenhuma</option>' + opcoes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+  if (valAtual) sel.value = valAtual;
+}
+
+function abrirModalCatFin() {
+  delete document.getElementById('modal-catfin').dataset.editId;
+  document.getElementById('catfin-modal-title').textContent = 'Nova Categoria Financeira';
+  document.getElementById('catfin-nome').value = '';
+  document.getElementById('catfin-tipo').value = 'receita';
+  document.getElementById('catfin-ordem').value = categoriasFinTodas.length + 1;
+  document.getElementById('catfin-ativo-toggle').classList.add('on');
+  popularSelectContaContabil();
+  openModal('catfin');
+}
+
+function editarCatFin(id) {
+  const c = categoriasFinTodas.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('modal-catfin').dataset.editId = id;
+  document.getElementById('catfin-modal-title').textContent = 'Editar Categoria Financeira';
+  document.getElementById('catfin-nome').value = c.nome;
+  document.getElementById('catfin-tipo').value = c.tipo;
+  popularSelectContaContabil();
+  document.getElementById('catfin-conta-contabil').value = c.conta_contabil_id || '';
+  document.getElementById('catfin-ordem').value = c.ordem || 0;
+  document.getElementById('catfin-ativo-toggle').classList.toggle('on', !!c.ativo);
+  openModal('catfin');
+}
+
+async function salvarCatFin() {
+  const nome = document.getElementById('catfin-nome').value.trim();
+  if (!nome) { toast('Informe o nome.', 'error'); return; }
+  const editId = document.getElementById('modal-catfin').dataset.editId;
+  const payload = {
+    nome,
+    tipo: document.getElementById('catfin-tipo').value,
+    conta_contabil_id: document.getElementById('catfin-conta-contabil').value || null,
+    ordem: parseInt(document.getElementById('catfin-ordem').value) || 0,
+    ativo: document.getElementById('catfin-ativo-toggle').classList.contains('on'),
+  };
+  let error;
+  if (editId) ({ error } = await db.from('categorias_financeiras').update(payload).eq('id', editId));
+  else ({ error } = await db.from('categorias_financeiras').insert({ oficina_id: APP.oficina.id, ...payload }));
+  if (error) { toast('Erro: ' + error.message, 'error'); return; }
+  closeModal('catfin');
+  toast(editId ? 'Categoria atualizada!' : 'Categoria criada!', 'success');
+  await carregarCategoriasFin();
+}
+
+function excluirCatFin(id) {
+  abrirConfirm('Excluir categoria', 'Deseja excluir esta categoria financeira? Movimentações existentes não serão afetadas.', async (ok) => {
+    if (!ok) return;
+    await db.from('categorias_financeiras').delete().eq('id', id);
+    toast('Categoria excluída.', 'success');
+    await carregarCategoriasFin();
+  });
+}
+
+// --- TIPOS DE DOCUMENTO E CENTROS DE CUSTO ---
+// Compartilham o mesmo modal genérico (nome + ordem + ativo), diferenciados por CFG_SIMPLES_META.
+const CFG_SIMPLES_META = {
+  tipos_documento:  { label: 'Nome do tipo de documento', tituloNovo: 'Novo Tipo de Documento', tituloEditar: 'Editar Tipo de Documento', listaId: 'cfg-tipodoc-lista', icone: 'ti-file-description' },
+  centros_custo:    { label: 'Nome do centro de custo',   tituloNovo: 'Novo Centro de Custo',   tituloEditar: 'Editar Centro de Custo',   listaId: 'cfg-centrocusto-lista', icone: 'ti-hierarchy-2' },
+};
+let cfgSimplesTabela = null;
+
+async function carregarTiposDocumento() {
+  if (!APP.oficina) return;
+  const { data } = await db.from('tipos_documento').select('*').eq('oficina_id', APP.oficina.id).order('ordem').order('nome');
+  tiposDocumentoTodos = data || [];
+  renderCfgSimplesLista('tipos_documento', tiposDocumentoTodos);
+}
+
+async function carregarCentrosCusto() {
+  if (!APP.oficina) return;
+  const { data } = await db.from('centros_custo').select('*').eq('oficina_id', APP.oficina.id).order('ordem').order('nome');
+  centrosCustoTodos = data || [];
+  renderCfgSimplesLista('centros_custo', centrosCustoTodos);
+}
+
+function renderCfgSimplesLista(tabela, itens) {
+  const meta = CFG_SIMPLES_META[tabela];
+  const el = document.getElementById(meta.listaId);
+  if (!el) return;
+  if (!itens.length) {
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-3);font-size:13px">Nenhum registro cadastrado.</div>';
+    return;
+  }
+  el.innerHTML = itens.map(c => `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 20px;border-bottom:1px solid var(--border);${!c.ativo ? 'opacity:.4' : ''}">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <i class="ti ${meta.icone}" style="color:var(--blue);font-size:14px"></i>
+        <div style="font-size:13px;font-weight:500;color:var(--navy)">${c.nome}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="badge ${c.ativo ? 'badge-success' : 'badge-gray'}" style="font-size:10px">${c.ativo ? 'Ativo' : 'Inativo'}</span>
+        <button class="action-btn" onclick="editarCfgSimples('${tabela}','${c.id}')" title="Editar"><i class="ti ti-pencil"></i></button>
+        <button class="action-btn" onclick="excluirCfgSimples('${tabela}','${c.id}')" style="color:var(--danger)" title="Excluir"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function abrirModalCfgSimples(tabela) {
+  cfgSimplesTabela = tabela;
+  const meta = CFG_SIMPLES_META[tabela];
+  delete document.getElementById('modal-cfg-simples').dataset.editId;
+  document.getElementById('cfg-simples-modal-title').textContent = meta.tituloNovo;
+  document.getElementById('cfg-simples-label').textContent = meta.label;
+  document.getElementById('cfg-simples-nome').value = '';
+  const lista = tabela === 'tipos_documento' ? tiposDocumentoTodos : centrosCustoTodos;
+  document.getElementById('cfg-simples-ordem').value = lista.length + 1;
+  document.getElementById('cfg-simples-ativo-toggle').classList.add('on');
+  openModal('cfg-simples');
+}
+
+function editarCfgSimples(tabela, id) {
+  cfgSimplesTabela = tabela;
+  const meta = CFG_SIMPLES_META[tabela];
+  const lista = tabela === 'tipos_documento' ? tiposDocumentoTodos : centrosCustoTodos;
+  const c = lista.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('modal-cfg-simples').dataset.editId = id;
+  document.getElementById('cfg-simples-modal-title').textContent = meta.tituloEditar;
+  document.getElementById('cfg-simples-label').textContent = meta.label;
+  document.getElementById('cfg-simples-nome').value = c.nome;
+  document.getElementById('cfg-simples-ordem').value = c.ordem || 0;
+  document.getElementById('cfg-simples-ativo-toggle').classList.toggle('on', !!c.ativo);
+  openModal('cfg-simples');
+}
+
+async function salvarCfgSimples() {
+  const nome = document.getElementById('cfg-simples-nome').value.trim();
+  if (!nome) { toast('Informe o nome.', 'error'); return; }
+  const editId = document.getElementById('modal-cfg-simples').dataset.editId;
+  const payload = {
+    nome,
+    ordem: parseInt(document.getElementById('cfg-simples-ordem').value) || 0,
+    ativo: document.getElementById('cfg-simples-ativo-toggle').classList.contains('on'),
+  };
+  let error;
+  if (editId) ({ error } = await db.from(cfgSimplesTabela).update(payload).eq('id', editId));
+  else ({ error } = await db.from(cfgSimplesTabela).insert({ oficina_id: APP.oficina.id, ...payload }));
+  if (error) { toast('Erro: ' + error.message, 'error'); return; }
+  closeModal('cfg-simples');
+  toast('Salvo!', 'success');
+  if (cfgSimplesTabela === 'tipos_documento') await carregarTiposDocumento();
+  else await carregarCentrosCusto();
+}
+
+function excluirCfgSimples(tabela, id) {
+  abrirConfirm('Excluir registro', 'Deseja excluir este registro? Lançamentos existentes não serão afetados.', async (ok) => {
+    if (!ok) return;
+    await db.from(tabela).delete().eq('id', id);
+    toast('Excluído.', 'success');
+    if (tabela === 'tipos_documento') await carregarTiposDocumento();
+    else await carregarCentrosCusto();
+  });
+}
+
 // Sincroniza os selects de categoria nos modais de Receber e Pagar
 async function sincronizarCategoriasNosModais() {
   if (!planoCategorias.length) return;
@@ -6417,6 +6952,7 @@ let recAtual=null;
 async function carregarReceber() {
   if (!APP.oficina) return;
   document.getElementById('rec-table-wrap').innerHTML='<div class="loading"><div class="spinner"></div> Carregando...</div>';
+  await atualizarAtrasos();
   const { data } = await db.from('contas_receber').select('*').eq('oficina_id',APP.oficina.id).order('data_vencimento');
   recTodos = data || [];
   const mesAtual = new Date().toISOString().slice(0,7);
@@ -6582,6 +7118,76 @@ async function salvarReceber(){
 
 // Garante que o modal volte ao modo normal (ação de dar baixa), caso tenha ficado
 // em modo "resumo" (somente leitura) da última vez que foi aberto.
+// Popula um <select> com as contas bancárias ativas da oficina.
+// Usado pelos modais de baixa (Receber/Pagar) — a movimentação gerada
+// na baixa precisa saber em qual conta o dinheiro entrou/saiu.
+// Registra uma ou mais movimentações (livro caixa) numa única conta bancária
+// e atualiza o saldo_atual dessa conta de uma vez. Usado pela baixa de
+// Contas a Receber (tipo 'entrada') e Contas a Pagar (tipo 'saida').
+// lancamentos: [{ origem, origem_id, valor, data, descricao, forma_pagamento }]
+async function registrarMovimentacoes(contaBancariaId, tipo, lancamentos) {
+  if (!lancamentos.length) return { error: null };
+  const inserts = lancamentos.map(l => ({
+    oficina_id: APP.oficina.id,
+    tipo, origem: l.origem, origem_id: l.origem_id || null,
+    data: l.data, valor: l.valor,
+    conta_bancaria_id: contaBancariaId,
+    categoria_id: l.categoria_id || null,
+    centro_custo_id: l.centro_custo_id || null,
+    tipo_documento_id: l.tipo_documento_id || null,
+    numero_documento: l.numero_documento || null,
+    descricao: l.descricao,
+    forma_pagamento: l.forma_pagamento || null,
+  }));
+  const { error: errMov } = await db.from('movimentacoes').insert(inserts);
+  if (errMov) return { error: errMov };
+
+  const totalMov = lancamentos.reduce((a, l) => a + (l.valor || 0), 0);
+  const { data: conta } = await db.from('contas_bancarias').select('saldo_atual').eq('id', contaBancariaId).single();
+  const saldoAtual = conta?.saldo_atual || 0;
+  const novoSaldo = tipo === 'entrada' ? saldoAtual + totalMov : saldoAtual - totalMov;
+  const { error: errSaldo } = await db.from('contas_bancarias').update({ saldo_atual: novoSaldo }).eq('id', contaBancariaId);
+  return { error: errSaldo || null };
+}
+
+// Transferência entre duas contas bancárias — gera as DUAS pernas (saída na origem,
+// entrada no destino) ligadas por transferencia_grupo_id, e NÃO deve ser somada em
+// receitas/despesas (o DRE e as KPIs de entrada/saída da tela de Movimentações filtram
+// origem='transferencia' à parte).
+async function registrarTransferencia(contaOrigemId, contaDestinoId, valor, data, descricao) {
+  if (contaOrigemId === contaDestinoId) return { error: { message: 'Selecione contas diferentes.' } };
+  const grupoId = (crypto.randomUUID ? crypto.randomUUID() : (Date.now() + '-' + Math.random()));
+  const base = { oficina_id: APP.oficina.id, origem: 'transferencia', transferencia_grupo_id: grupoId, data, valor, descricao: descricao || 'Transferência entre contas' };
+  const { error: errIns } = await db.from('movimentacoes').insert([
+    { ...base, tipo: 'saida', conta_bancaria_id: contaOrigemId },
+    { ...base, tipo: 'entrada', conta_bancaria_id: contaDestinoId },
+  ]);
+  if (errIns) return { error: errIns };
+
+  const [{ data: contaO }, { data: contaD }] = await Promise.all([
+    db.from('contas_bancarias').select('saldo_atual').eq('id', contaOrigemId).single(),
+    db.from('contas_bancarias').select('saldo_atual').eq('id', contaDestinoId).single(),
+  ]);
+  const { error: e1 } = await db.from('contas_bancarias').update({ saldo_atual: (contaO?.saldo_atual || 0) - valor }).eq('id', contaOrigemId);
+  const { error: e2 } = await db.from('contas_bancarias').update({ saldo_atual: (contaD?.saldo_atual || 0) + valor }).eq('id', contaDestinoId);
+  return { error: e1 || e2 || null };
+}
+
+async function popularSelectContasBancarias(selectId, valorAtual) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  const { data } = await db.from('contas_bancarias')
+    .select('id,banco,apelido,saldo_atual')
+    .eq('oficina_id', APP.oficina.id)
+    .eq('status', 'ativo')
+    .order('apelido');
+  const contas = data || [];
+  sel.innerHTML = '<option value="">Selecione...</option>' +
+    contas.map(c => `<option value="${c.id}">${c.apelido || c.banco}</option>`).join('');
+  if (contas.length === 1) sel.value = contas[0].id;
+  if (valorAtual) sel.value = valorAtual;
+}
+
 function resetBaixaRecModoAcao(){
   document.getElementById('baixa-rec-titulo').textContent = 'Confirmar Recebimento';
   document.getElementById('baixa-rec-breakdown').style.display = 'none';
@@ -6599,6 +7205,7 @@ function abrirBaixaRec(id){
   document.getElementById('baixa-rec-data').value=hoje();
   document.getElementById('baixa-rec-taxa').value='0';
   document.getElementById('baixa-rec-antec').value='0';
+  popularSelectContasBancarias('baixa-rec-conta');
   calcBaixaRec();
   openModal('baixa-rec');
 }
@@ -6618,6 +7225,7 @@ function abrirBaixaRecOS(osId){
   document.getElementById('baixa-rec-data').value=hoje();
   document.getElementById('baixa-rec-taxa').value='0';
   document.getElementById('baixa-rec-antec').value='0';
+  popularSelectContasBancarias('baixa-rec-conta');
   calcBaixaRec();
   openModal('baixa-rec');
 }
@@ -6683,6 +7291,8 @@ async function confirmarBaixaRec(){
   if(!recAtual && !recGrupoAtual)return;
   const dataPag=document.getElementById('baixa-rec-data').value;
   const forma=document.getElementById('baixa-rec-forma').value;
+  const contaBancariaId=document.getElementById('baixa-rec-conta').value;
+  if(!contaBancariaId){ toast('Selecione a conta bancária de destino.','error'); return; }
   const taxaPct=(parseFloat(document.getElementById('baixa-rec-taxa').value)||0)/100;
   const antecPct=(parseFloat(document.getElementById('baixa-rec-antec').value)||0)/100;
 
@@ -6695,14 +7305,22 @@ async function confirmarBaixaRec(){
       return db.from('contas_receber').update({
         status:'recebido', data_pagamento:dataPag, forma_pagamento:forma,
         valor_taxa_transacao:bruto*taxaPct, valor_taxa_antecipacao:bruto*antecPct,
-        valor_liquido:liq,
+        valor_liquido:liq, valor_recebido:bruto,
       }).eq('id', r.id);
     });
     const resultados = await Promise.all(updates);
     const erro = resultados.find(r => r.error);
     if (erro) { toast('Erro: ' + erro.error.message, 'error'); return; }
+
+    const lancamentos = recGrupoAtual.map(r => {
+      const bruto = r.valor || 0;
+      const liq = bruto - (bruto*taxaPct) - (bruto*antecPct);
+      return { origem:'receber', origem_id:r.id, valor:liq, data:dataPag, descricao:r.descricao, forma_pagamento:forma };
+    });
+    const { error: errMov } = await registrarMovimentacoes(contaBancariaId, 'entrada', lancamentos);
     closeModal('baixa-rec');
-    toast('Recebimento confirmado! (' + recGrupoAtual.length + ' títulos)', 'success');
+    if (errMov) toast('Recebimento confirmado, mas houve erro ao lançar no caixa: ' + errMov.message, 'error');
+    else toast('Recebimento confirmado! (' + recGrupoAtual.length + ' títulos)', 'success');
     recGrupoAtual=null;
     await carregarReceber();
     return;
@@ -6717,10 +7335,16 @@ async function confirmarBaixaRec(){
     valor_taxa_transacao:bruto*taxaPct,
     valor_taxa_antecipacao:bruto*antecPct,
     valor_liquido:liq,
+    valor_recebido:bruto,
   }).eq('id',recAtual.id);
   if(error){toast('Erro: '+error.message,'error');return;}
+
+  const { error: errMov } = await registrarMovimentacoes(contaBancariaId, 'entrada', [
+    { origem:'receber', origem_id:recAtual.id, valor:liq, data:dataPag, descricao:recAtual.descricao, forma_pagamento:forma },
+  ]);
   closeModal('baixa-rec');
-  toast('Recebimento confirmado!','success');
+  if (errMov) toast('Recebimento confirmado, mas houve erro ao lançar no caixa: ' + errMov.message, 'error');
+  else toast('Recebimento confirmado!','success');
   recAtual=null;
   await carregarReceber();
 }
@@ -6734,6 +7358,7 @@ let pagAtual=null;
 async function carregarPagar(){
   if(!APP.oficina)return;
   document.getElementById('pag-table-wrap').innerHTML='<div class="loading"><div class="spinner"></div> Carregando...</div>';
+  await atualizarAtrasos();
   const {data}=await db.from('contas_pagar').select('*').eq('oficina_id',APP.oficina.id).order('data_vencimento');
   pagTodos=data||[];
   const mesAtual=new Date().toISOString().slice(0,7);
@@ -6886,18 +7511,30 @@ function abrirBaixaPag(id){
   if(!pagAtual)return;
   document.getElementById('baixa-pag-sub').textContent=pagAtual.descricao+' · '+fmtMoeda(pagAtual.valor);
   document.getElementById('baixa-pag-data').value=hoje();
+  popularSelectContasBancarias('baixa-pag-conta');
   openModal('baixa-pag');
 }
 
 async function confirmarBaixaPag(){
   if(!pagAtual)return;
+  const contaBancariaId=document.getElementById('baixa-pag-conta').value;
+  if(!contaBancariaId){ toast('Selecione a conta bancária de origem.','error'); return; }
+  const dataPag=document.getElementById('baixa-pag-data').value;
+  const forma=document.getElementById('baixa-pag-forma').value;
   const {error}=await db.from('contas_pagar').update({
     status:'pago',
-    data_pagamento:document.getElementById('baixa-pag-data').value,
+    data_pagamento:dataPag,
+    forma_pagamento:forma,
+    valor_pago:pagAtual.valor,
   }).eq('id',pagAtual.id);
   if(error){toast('Erro: '+error.message,'error');return;}
+
+  const { error: errMov } = await registrarMovimentacoes(contaBancariaId, 'saida', [
+    { origem:'pagar', origem_id:pagAtual.id, valor:pagAtual.valor, data:dataPag, descricao:pagAtual.descricao, forma_pagamento:forma },
+  ]);
   closeModal('baixa-pag');
-  toast('Pagamento confirmado!','success');
+  if (errMov) toast('Pagamento confirmado, mas houve erro ao lançar no caixa: ' + errMov.message, 'error');
+  else toast('Pagamento confirmado!','success');
   pagAtual=null;
   await carregarPagar();
 }
@@ -6943,6 +7580,169 @@ async function carregarBancario(){
         <div style="font-size:22px;font-weight:500;color:${(c.saldo_atual||0)<0?'var(--danger)':'var(--navy)'}">${fmtMoeda(c.saldo_atual)}</div>
       </div>
     </div>`).join('');
+}
+
+// ============================================================
+// MOVIMENTAÇÕES — livro caixa (regime de CAIXA)
+// ============================================================
+let movTodas = [], movFiltroTexto = '', movFiltroTipo = '', movFiltroConta = '';
+
+async function carregarMovimentacoes() {
+  if (!APP.oficina) return;
+  document.getElementById('mov-table-wrap').innerHTML = '<div class="loading"><div class="spinner"></div> Carregando...</div>';
+
+  // Popula o filtro de contas (uma vez é suficiente, mas é barato o bastante pra refazer)
+  const { data: contas } = await db.from('contas_bancarias').select('id,banco,apelido,saldo_atual').eq('oficina_id', APP.oficina.id).order('apelido');
+  const selConta = document.getElementById('mov-filtro-conta');
+  if (selConta) {
+    const valAtual = selConta.value;
+    selConta.innerHTML = '<option value="">Todas as contas</option>' + (contas || []).map(c => `<option value="${c.id}">${c.apelido || c.banco}</option>`).join('');
+    if (valAtual) selConta.value = valAtual;
+  }
+  const totalContas = (contas || []).reduce((a, c) => a + (c.saldo_atual || 0), 0);
+  document.getElementById('kpi-mov-saldo-total').textContent = fmtMoeda(totalContas);
+
+  const de = document.getElementById('mov-filtro-data-de')?.value;
+  const ate = document.getElementById('mov-filtro-data-ate')?.value;
+  let query = db.from('movimentacoes').select('*,contas_bancarias(apelido,banco)').eq('oficina_id', APP.oficina.id);
+  if (de) query = query.gte('data', de);
+  if (ate) query = query.lte('data', ate);
+  const { data, error } = await query.order('data', { ascending: false }).order('created_at', { ascending: false });
+  if (error) { toast('Erro ao carregar movimentações: ' + error.message, 'error'); return; }
+  movTodas = data || [];
+
+  const entradas = movTodas.filter(m => m.tipo === 'entrada' && m.origem !== 'transferencia');
+  const saidas = movTodas.filter(m => m.tipo === 'saida' && m.origem !== 'transferencia');
+  const totalEntradas = entradas.reduce((a, m) => a + (m.valor || 0), 0);
+  const totalSaidas = saidas.reduce((a, m) => a + (m.valor || 0), 0);
+  document.getElementById('kpi-mov-entradas').textContent = fmtMoeda(totalEntradas);
+  document.getElementById('kpi-mov-qtd-entradas').textContent = entradas.length + ' lançamento' + (entradas.length !== 1 ? 's' : '');
+  document.getElementById('kpi-mov-saidas').textContent = fmtMoeda(totalSaidas);
+  document.getElementById('kpi-mov-qtd-saidas').textContent = saidas.length + ' lançamento' + (saidas.length !== 1 ? 's' : '');
+  document.getElementById('kpi-mov-saldo').textContent = fmtMoeda(totalEntradas - totalSaidas);
+
+  renderMovimentacoes();
+}
+
+function filtrarMov(v) { movFiltroTexto = v.toLowerCase(); renderMovimentacoes(); }
+function filtrarMovTipo(v) { movFiltroTipo = v; renderMovimentacoes(); }
+function filtrarMovConta(v) { movFiltroConta = v; renderMovimentacoes(); }
+
+const MOV_ORIGEM_LABEL = { receber: 'Receber', pagar: 'Pagar', avulsa: 'Avulsa', transferencia: 'Transferência' };
+
+function renderMovimentacoes() {
+  const lista = movTodas.filter(m => {
+    const tOk = !movFiltroTexto || m.descricao?.toLowerCase().includes(movFiltroTexto);
+    const tipoOk = !movFiltroTipo || m.tipo === movFiltroTipo;
+    const contaOk = !movFiltroConta || m.conta_bancaria_id === movFiltroConta;
+    return tOk && tipoOk && contaOk;
+  });
+  document.getElementById('mov-count').textContent = lista.length + ' lançamento' + (lista.length !== 1 ? 's' : '');
+  if (lista.length === 0) {
+    document.getElementById('mov-table-wrap').innerHTML = `<div class="empty-state"><i class="ti ti-activity" style="color:var(--blue)"></i><div class="empty-state-title">Nenhuma movimentação encontrada</div></div>`;
+    return;
+  }
+  document.getElementById('mov-table-wrap').innerHTML = `<table>
+    <thead><tr>
+      <th style="width:90px">Data</th>
+      <th style="width:230px">Descrição</th>
+      <th style="width:100px">Origem</th>
+      <th style="width:150px">Conta</th>
+      <th style="width:120px">Forma</th>
+      <th style="width:120px;text-align:right">Valor</th>
+    </tr></thead>
+    <tbody>${lista.map(m => {
+      const isEntrada = m.tipo === 'entrada';
+      const cor = isEntrada ? 'var(--success)' : 'var(--danger)';
+      const sinal = isEntrada ? '+ ' : '− ';
+      return `<tr>
+        <td style="font-size:12px;">${m.data ? new Date(m.data + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
+        <td><div style="font-weight:500;color:var(--navy)">${m.descricao || '—'}</div></td>
+        <td><span class="badge badge-gray" style="font-size:10px">${MOV_ORIGEM_LABEL[m.origem] || m.origem}</span></td>
+        <td style="font-size:12px;color:var(--text-2)">${m.contas_bancarias?.apelido || m.contas_bancarias?.banco || '—'}</td>
+        <td style="font-size:12px;color:var(--text-3)">${FORMA_PAG_LABEL[m.forma_pagamento] || m.forma_pagamento || '—'}</td>
+        <td style="text-align:right;font-weight:500;color:${cor}">${sinal}${fmtMoeda(m.valor)}</td>
+      </tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+// --- LANÇAMENTO AVULSO ---
+let movAvulsaTipo = 'entrada';
+
+function setTipoMovAvulsa(tipo) {
+  movAvulsaTipo = tipo;
+  document.getElementById('mov-avulsa-tipo-entrada').classList.toggle('btn-primary', tipo === 'entrada');
+  document.getElementById('mov-avulsa-tipo-entrada').classList.toggle('btn-outline', tipo !== 'entrada');
+  document.getElementById('mov-avulsa-tipo-saida').classList.toggle('btn-primary', tipo === 'saida');
+  document.getElementById('mov-avulsa-tipo-saida').classList.toggle('btn-outline', tipo !== 'saida');
+}
+
+async function abrirModalMovAvulsa() {
+  setTipoMovAvulsa('entrada');
+  document.getElementById('mov-avulsa-desc').value = '';
+  document.getElementById('mov-avulsa-valor').value = '';
+  document.getElementById('mov-avulsa-data').value = hoje();
+  document.getElementById('mov-avulsa-doc-num').value = '';
+  await popularSelectContasBancarias('mov-avulsa-conta');
+
+  const selCat = document.getElementById('mov-avulsa-categoria');
+  selCat.innerHTML = '<option value="">Sem categoria</option>' + categoriasFinTodas.filter(c => c.ativo).map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+  const selCentro = document.getElementById('mov-avulsa-centro');
+  selCentro.innerHTML = '<option value="">Sem centro de custo</option>' + centrosCustoTodos.filter(c => c.ativo).map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+  const selDoc = document.getElementById('mov-avulsa-doc-tipo');
+  selDoc.innerHTML = '<option value="">Não informado</option>' + tiposDocumentoTodos.filter(c => c.ativo).map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+
+  openModal('mov-avulsa');
+}
+
+async function salvarMovAvulsa() {
+  const desc = document.getElementById('mov-avulsa-desc').value.trim();
+  const valor = parseFloat(document.getElementById('mov-avulsa-valor').value) || 0;
+  const contaBancariaId = document.getElementById('mov-avulsa-conta').value;
+  if (!desc) { toast('Informe a descrição.', 'error'); return; }
+  if (!valor || valor <= 0) { toast('Informe um valor válido.', 'error'); return; }
+  if (!contaBancariaId) { toast('Selecione a conta bancária.', 'error'); return; }
+
+  const { error } = await registrarMovimentacoes(contaBancariaId, movAvulsaTipo, [{
+    origem: 'avulsa',
+    valor, data: document.getElementById('mov-avulsa-data').value || hoje(),
+    descricao: desc,
+    categoria_id: document.getElementById('mov-avulsa-categoria').value || null,
+    centro_custo_id: document.getElementById('mov-avulsa-centro').value || null,
+    tipo_documento_id: document.getElementById('mov-avulsa-doc-tipo').value || null,
+    numero_documento: document.getElementById('mov-avulsa-doc-num').value.trim() || null,
+  }]);
+  if (error) { toast('Erro ao lançar: ' + error.message, 'error'); return; }
+  closeModal('mov-avulsa');
+  toast('Lançamento registrado!', 'success');
+  await carregarMovimentacoes();
+}
+
+// --- TRANSFERÊNCIA ENTRE CONTAS ---
+async function abrirModalTransferencia() {
+  document.getElementById('transf-valor').value = '';
+  document.getElementById('transf-desc').value = '';
+  document.getElementById('transf-data').value = hoje();
+  await popularSelectContasBancarias('transf-origem');
+  await popularSelectContasBancarias('transf-destino');
+  openModal('transferencia');
+}
+
+async function salvarTransferencia() {
+  const origemId = document.getElementById('transf-origem').value;
+  const destinoId = document.getElementById('transf-destino').value;
+  const valor = parseFloat(document.getElementById('transf-valor').value) || 0;
+  const data = document.getElementById('transf-data').value || hoje();
+  const desc = document.getElementById('transf-desc').value.trim();
+  if (!origemId || !destinoId) { toast('Selecione as duas contas.', 'error'); return; }
+  if (origemId === destinoId) { toast('A conta de origem e destino não podem ser a mesma.', 'error'); return; }
+  if (!valor || valor <= 0) { toast('Informe um valor válido.', 'error'); return; }
+
+  const { error } = await registrarTransferencia(origemId, destinoId, valor, data, desc);
+  if (error) { toast('Erro ao transferir: ' + error.message, 'error'); return; }
+  closeModal('transferencia');
+  toast('Transferência realizada!', 'success');
+  await carregarMovimentacoes();
 }
 
 // ============================================================
@@ -7546,12 +8346,25 @@ async function excluirFornecedor(id) {
   await carregarFornecedores();
 }
 
+const FIN_VIEWS = ['receber', 'pagar', 'movimentacoes', 'bancario', 'dre', 'fluxo'];
+
 function navigate(pagina, navItem) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const page = document.getElementById('page-' + pagina);
   if (page) page.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  if (navItem) navItem.classList.add('active');
+  const isFin = FIN_VIEWS.includes(pagina);
+  if (isFin) {
+    // Dentro do módulo Financeiro, o item "Financeiro" da sidebar principal fica
+    // marcado como ativo (não existe mais um nav-item por tela financeira ali),
+    // e a sub-sidebar interna assume a navegação entre Receber/Pagar/DRE/etc.
+    document.getElementById('nav-financeiro')?.classList.add('active');
+  } else if (navItem) {
+    navItem.classList.add('active');
+  }
+  document.getElementById('fin-subsidebar')?.classList.toggle('show', isFin);
+  document.getElementById('main-content')?.classList.toggle('fin-shift', isFin);
+  document.querySelectorAll('.fin-nav-item').forEach(n => n.classList.toggle('active', n.dataset.finView === pagina));
   const cfg = PAGE_CONFIG[pagina] || { title: pagina, sub: '', actions: '' };
   document.getElementById('topbar-title').textContent = cfg.title;
   document.getElementById('topbar-sub').textContent = (APP.oficina?.nome || '') + (cfg.sub ? ' — ' + cfg.sub : '');
