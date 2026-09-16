@@ -1170,6 +1170,20 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
 
             <!-- CATEGORIAS / PLANO DE CONTAS -->
             <div id="cfg-panel-categorias" class="cfg-panel">
+              <div style="background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);overflow:hidden;margin-bottom:16px;">
+                <div style="padding:13px 20px;border-bottom:1px solid var(--border);">
+                  <div style="font-size:13px;font-weight:500;color:var(--navy);display:flex;align-items:center;gap:8px;"><i class="ti ti-link" style="color:var(--blue)"></i> Vínculo de Receita de OS</div>
+                  <div style="font-size:11px;color:var(--text-3);margin-top:4px;">Define pra qual conta do Plano de Contas vai a receita gerada ao faturar uma OS — sem isso configurado, o sistema usa um texto padrão que pode não bater com sua hierarquia.</div>
+                </div>
+                <div style="padding:16px 20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;">
+                  <div class="form-group"><label class="form-label">Serviços</label><select class="form-input" id="cfg-conta-receita-servicos"><option value="">Não configurado</option></select></div>
+                  <div class="form-group"><label class="form-label">Peças</label><select class="form-input" id="cfg-conta-receita-pecas"><option value="">Não configurado</option></select></div>
+                  <div class="form-group"><label class="form-label">Terceiros</label><select class="form-input" id="cfg-conta-receita-terceiros"><option value="">Não configurado</option></select></div>
+                </div>
+                <div style="padding:0 20px 16px;">
+                  <button class="btn btn-primary btn-sm" onclick="salvarVinculoReceitaOS()"><i class="ti ti-check"></i> Salvar vínculo</button>
+                </div>
+              </div>
               <div style="background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);overflow:hidden;">
                 <div style="padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
                   <div style="font-size:13px;font-weight:500;color:var(--navy);display:flex;align-items:center;gap:8px;"><i class="ti ti-tags" style="color:var(--blue)"></i> Plano de Contas</div>
@@ -1890,6 +1904,45 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
 </div>
 
 <!-- MODAL NOVO FORNECEDOR -->
+<!-- MODAL DETALHE FORNECEDOR -->
+<div class="modal-overlay" id="modal-detalhe-forn" onclick="if(event.target===this)closeModal('detalhe-forn')">
+<div class="modal modal-lg">
+  <div class="modal-head">
+    <div><div class="modal-title" id="dforn-nome">Fornecedor</div><div class="modal-sub" id="dforn-sub">—</div></div>
+    <button class="modal-close" onclick="closeModal('detalhe-forn')"><i class="ti ti-x"></i></button>
+  </div>
+  <div style="display:flex;align-items:center;border-bottom:1px solid var(--border);padding:0 20px;">
+    <button id="dforn-tab-dados" onclick="switchDetalheFornTab('dados')" style="padding:10px 16px;font-size:12px;font-weight:500;border:none;background:none;cursor:pointer;color:var(--blue);border-bottom:2px solid var(--blue);margin-bottom:-1px;">Dados</button>
+    <button id="dforn-tab-hist" onclick="switchDetalheFornTab('hist')" style="padding:10px 16px;font-size:12px;font-weight:500;border:none;background:none;cursor:pointer;color:var(--text-3);border-bottom:2px solid transparent;margin-bottom:-1px;">Histórico de Notas/Compromissos</button>
+  </div>
+  <div id="dforn-panel-dados" class="modal-body">
+    <div class="form-grid">
+      <div class="form-group form-full"><label class="form-label">Razão social</label><input class="form-input" id="dforn-nome-input" type="text"></div>
+      <div class="form-group"><label class="form-label">CNPJ</label><input class="form-input" id="dforn-cnpj" type="text" style="font-family:monospace"></div>
+      <div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="dforn-tel" type="text"></div>
+      <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" id="dforn-email" type="email"></div>
+      <div class="form-group"><label class="form-label">Representante</label><input class="form-input" id="dforn-rep" type="text"></div>
+      <div class="form-group"><label class="form-label">Prazo de pagamento</label>
+        <select class="form-input" id="dforn-prazo"><option>À vista</option><option>15 dias</option><option>30 dias</option><option>60 dias</option><option>90 dias</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Forma preferencial</label>
+        <select class="form-input" id="dforn-forma"><option>PIX</option><option>Boleto</option><option>Transferência</option></select>
+      </div>
+      <div class="form-group form-full"><label class="form-label">Endereço</label><input class="form-input" id="dforn-end" type="text"></div>
+      <div class="form-group form-full"><label class="form-label">Categorias (separadas por vírgula)</label><input class="form-input" id="dforn-cats" type="text" placeholder="Peças, Lubrificantes..."></div>
+    </div>
+  </div>
+  <div id="dforn-panel-hist" class="modal-body" style="display:none;">
+    <div id="dforn-hist-conteudo"><div class="loading"><div class="spinner"></div> Carregando...</div></div>
+  </div>
+  <div class="modal-foot" id="dforn-modal-foot">
+    <button class="btn btn-outline" onclick="excluirFornecedor(document.getElementById('modal-detalhe-forn').dataset.fornId)" style="margin-right:auto;color:var(--danger);"><i class="ti ti-trash"></i> Excluir</button>
+    <button class="btn btn-outline" onclick="closeModal('detalhe-forn')">Fechar</button>
+    <button class="btn btn-primary" onclick="salvarDetalheFornecedor()"><i class="ti ti-check"></i> Salvar</button>
+  </div>
+</div>
+</div>
+
 <div class="modal-overlay" id="modal-forn" onclick="if(event.target===this)closeModal('forn')">
 <div class="modal modal-md">
   <div class="modal-head">
@@ -2079,6 +2132,18 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
         </select>
       </div>
       <div class="form-group">
+        <label class="form-label">Grau</label>
+        <select class="form-input" id="cat-grau" onchange="onCatGrau()">
+          <option value="1">Grau 1 — Categoria raiz</option>
+          <option value="2">Grau 2 — Subcategoria</option>
+          <option value="3" selected>Grau 3 — Conta final</option>
+        </select>
+      </div>
+      <div class="form-group form-full" id="cat-pai-wrap">
+        <label class="form-label">Conta pai</label>
+        <select class="form-input" id="cat-pai"><option value="">Nenhuma</option></select>
+      </div>
+      <div class="form-group" id="cat-grupo-wrap">
         <label class="form-label">Grupo na DRE</label>
         <select class="form-input" id="cat-grupo">
           <option value="receita_bruta">Receita Bruta</option>
@@ -2336,36 +2401,77 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
 <div id="pdf-orcamento" class="pdf-content"></div>
 
 <div class="modal-overlay" id="modal-rec" onclick="if(event.target===this)closeModal('rec')">
-<div class="modal modal-md">
+<div class="modal modal-lg">
   <div class="modal-head">
     <div><div class="modal-title">Novo Lançamento</div><div class="modal-sub">Contas a Receber</div></div>
     <button class="modal-close" onclick="closeModal('rec')"><i class="ti ti-x"></i></button>
   </div>
   <div class="modal-body">
     <div class="form-grid">
-      <div class="form-group form-full"><label class="form-label">Origem</label>
-        <select class="form-input" id="rec-origem" onchange="onRecOrigem()">
-          <option value="os">OS — Ordem de Serviço</option>
-          <option value="avulso">Avulso</option>
-          <option value="aporte">Aporte de Sócio</option>
-          <option value="emprestimo">Empréstimo recebido</option>
-        </select>
+      <div class="form-group"><label class="form-label">Número</label><input class="form-input" id="rec-numero" type="text" disabled placeholder="Gerado automaticamente" style="opacity:.65;"></div>
+      <div class="form-group"><label class="form-label">Data de emissão (competência)</label><input class="form-input" type="date" id="rec-emissao" oninput="gerarPreviewParcelas('rec')"></div>
+
+      <div class="form-group"><label class="form-label">Número documento</label><input class="form-input" id="rec-doc-num" type="text" placeholder="Ex: NF 001"></div>
+      <div class="form-group form-full" style="position:relative;">
+        <label class="form-label">Cliente</label>
+        <div style="display:flex;gap:8px;">
+          <input class="form-input" id="rec-cliente-nome" type="text" placeholder="Digite pra buscar o cliente..." oninput="buscaClienteRec(this.value)" onfocus="buscaClienteRec(this.value)" autocomplete="off" style="flex:1;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="cadastrarClienteRapidoReceber()" title="Cadastrar novo cliente" style="flex-shrink:0;white-space:nowrap;"><i class="ti ti-user-plus"></i> Cadastrar cliente</button>
+        </div>
+        <input type="hidden" id="rec-cliente">
+        <div id="rec-cliente-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);max-height:220px;overflow-y:auto;z-index:20;margin-top:2px;"></div>
       </div>
+
+      <div class="form-group"><label class="form-label">Tipo de documento</label><select class="form-input" id="rec-tipo-documento"><option value="">Selecione...</option></select></div>
+      <div class="form-group">
+        <label class="form-label" style="display:flex;justify-content:space-between;align-items:center;">Plano de contas <a href="#" onclick="event.preventDefault();cadastrarPlanoContasRapido('rec')" style="font-size:11px;font-weight:400;color:var(--blue);">+ Adicionar nova conta</a></label>
+        <select class="form-input" id="rec-plano-contas"><option value="">Selecione...</option></select>
+      </div>
+
+      <div class="form-group form-full"><label class="form-label">Banco</label><select class="form-input" id="rec-banco"><option value="">Selecione (opcional)</option></select></div>
+
       <div class="form-group form-full"><label class="form-label">Descrição</label><input class="form-input" id="rec-desc" type="text" placeholder="Ex: OS-001 — João Silva"></div>
-      <div class="form-group form-full" id="rec-cat-wrap"><label class="form-label">Categoria</label>
-        <select class="form-input" id="rec-cat">
-          <option>Receita de Serviços</option>
+
+      <div class="form-group"><label class="form-label">Valor total (R$)</label><input class="form-input" id="rec-valor" type="number" placeholder="0,00" step="0.01" oninput="gerarPreviewParcelas('rec')"></div>
+      <div class="form-group"><label class="form-label">Parcelas</label><input class="form-input" id="rec-parcelas" type="number" min="1" value="1" oninput="gerarPreviewParcelas('rec')"></div>
+      <div class="form-group"><label class="form-label">Vencimento (1ª parcela)</label><input class="form-input" type="date" id="rec-venc" oninput="gerarPreviewParcelas('rec')"></div>
+      <div class="form-group"><label class="form-label">Intervalo</label>
+        <select class="form-input" id="rec-freq" onchange="gerarPreviewParcelas('rec')">
+          <option value="mensal">Mensal</option><option value="bimestral">Bimestral</option><option value="trimestral">Trimestral</option><option value="anual">Anual</option>
         </select>
       </div>
-      <div class="form-group"><label class="form-label">Data de referência (competência)</label><input class="form-input" type="date" id="rec-ref"></div>
-      <div class="form-group"><label class="form-label">Vencimento</label><input class="form-input" type="date" id="rec-venc"></div>
-      <div class="form-group"><label class="form-label">Valor (R$)</label><input class="form-input" type="number" id="rec-valor" placeholder="0,00" step="0.01"></div>
-      <div class="form-group"><label class="form-label">Forma de pagamento</label>
-        <select class="form-input" id="rec-forma"><option>PIX</option><option>Dinheiro</option><option>Cartão débito</option><option>Cartão crédito</option><option>Boleto</option></select>
+
+      <div class="form-group form-full" style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--surface-2);border-radius:var(--radius-md);border:1px solid var(--border);">
+        <div><div style="font-size:13px;font-weight:500;color:var(--navy)">Recorrente</div><div style="font-size:11px;color:var(--text-3);margin-top:2px">Cada parcela é um fato gerador novo — a emissão avança junto com o vencimento</div></div>
+        <div class="toggle" id="rec-recorrente-toggle" onclick="this.classList.toggle('on');gerarPreviewParcelas('rec')"></div>
       </div>
-      <div id="rec-socaixa-wrap" style="display:none;grid-column:1/-1">
-        <div style="background:var(--warning-bg);border-radius:var(--radius-md);padding:10px 13px;border:1px solid var(--warning-border);font-size:12px;color:var(--warning)">
-          <i class="ti ti-info-circle"></i> Este lançamento é <strong>somente caixa</strong> — não impacta o DRE, apenas o Fluxo de Caixa.
+
+      <div class="form-group form-full" style="display:flex;align-items:center;gap:10px;">
+        <div class="toggle" id="rec-socaixa-toggle" onclick="this.classList.toggle('on')"></div>
+        <span style="font-size:12px;color:var(--text-2)">Aporte de sócio / Empréstimo — não impacta o DRE, só o Fluxo de Caixa</span>
+      </div>
+
+      <div class="form-group form-full" id="rec-preview-wrap" style="display:none;">
+        <label class="form-label">Preview das parcelas</label>
+        <div style="border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;">
+          <table style="width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px;">
+            <colgroup><col style="width:60px;"><col><col><col style="width:100px;"></colgroup>
+            <thead><tr style="background:var(--surface-2);">
+              <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-3);">Parcela</th>
+              <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-3);">Emissão</th>
+              <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-3);">Vencimento</th>
+              <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-3);">Valor</th>
+            </tr></thead>
+          </table>
+          <div style="max-height:180px;overflow-y:auto;border-top:1px solid var(--border);">
+            <table style="width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px;">
+              <colgroup><col style="width:60px;"><col><col><col style="width:100px;"></colgroup>
+              <tbody id="rec-preview-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;padding:8px 4px 0;font-size:12px;">
+          <span style="color:var(--text-3)">Total:</span><strong id="rec-preview-total" style="color:var(--navy)">R$ 0,00</strong>
         </div>
       </div>
     </div>
@@ -2417,38 +2523,71 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
 
 <!-- MODAL NOVO LANÇAMENTO PAGAR -->
 <div class="modal-overlay" id="modal-pag" onclick="if(event.target===this)closeModal('pag')">
-<div class="modal modal-md">
+<div class="modal modal-lg">
   <div class="modal-head">
     <div><div class="modal-title">Novo Lançamento</div><div class="modal-sub">Contas a Pagar</div></div>
     <button class="modal-close" onclick="closeModal('pag')"><i class="ti ti-x"></i></button>
   </div>
   <div class="modal-body">
     <div class="form-grid">
-      <div class="form-group form-full"><label class="form-label">Origem</label>
-        <select class="form-input" id="pag-origem"><option value="comp">Compromisso</option><option value="nota">Nota de peças</option></select>
+      <div class="form-group"><label class="form-label">Data de emissão (competência)</label><input class="form-input" type="date" id="pag-emissao" oninput="gerarPreviewParcelas('pag')"></div>
+      <div class="form-group"><label class="form-label">Número documento</label><input class="form-input" id="pag-doc-num" type="text" placeholder="Ex: NF 293"></div>
+
+      <div class="form-group form-full" style="position:relative;">
+        <label class="form-label">Fornecedor</label>
+        <div style="display:flex;gap:8px;">
+          <input class="form-input" id="pag-fornecedor-nome" type="text" placeholder="Digite pra buscar o fornecedor..." oninput="buscaFornecedorPag(this.value)" onfocus="buscaFornecedorPag(this.value)" autocomplete="off" style="flex:1;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="cadastrarFornecedorRapido()" title="Cadastrar novo fornecedor" style="flex-shrink:0;white-space:nowrap;"><i class="ti ti-user-plus"></i> Cadastrar fornecedor</button>
+        </div>
+        <input type="hidden" id="pag-fornecedor">
+        <div id="pag-fornecedor-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);max-height:220px;overflow-y:auto;z-index:20;margin-top:2px;"></div>
       </div>
+
+      <div class="form-group"><label class="form-label">Tipo de documento</label><select class="form-input" id="pag-tipo-documento"><option value="">Selecione...</option></select></div>
+      <div class="form-group">
+        <label class="form-label" style="display:flex;justify-content:space-between;align-items:center;">Plano de contas <a href="#" onclick="event.preventDefault();cadastrarPlanoContasRapido('pag')" style="font-size:11px;font-weight:400;color:var(--blue);">+ Adicionar nova conta</a></label>
+        <select class="form-input" id="pag-plano-contas"><option value="">Selecione...</option></select>
+      </div>
+
+      <div class="form-group form-full"><label class="form-label">Banco</label><select class="form-input" id="pag-banco"><option value="">Selecione (opcional)</option></select></div>
+
       <div class="form-group form-full"><label class="form-label">Descrição</label><input class="form-input" id="pag-desc" type="text" placeholder="Ex: Aluguel — Junho/2026"></div>
-      <div class="form-group"><label class="form-label">Categoria</label>
-        <select class="form-input" id="pag-cat">
-          <option>Despesas Operacionais</option>
+
+      <div class="form-group"><label class="form-label">Valor total (R$)</label><input class="form-input" id="pag-valor" type="number" placeholder="0,00" step="0.01" oninput="gerarPreviewParcelas('pag')"></div>
+      <div class="form-group"><label class="form-label">Parcelas</label><input class="form-input" id="pag-parcelas" type="number" min="1" value="1" oninput="gerarPreviewParcelas('pag')"></div>
+      <div class="form-group"><label class="form-label">Vencimento (1ª parcela)</label><input class="form-input" type="date" id="pag-venc" oninput="gerarPreviewParcelas('pag')"></div>
+      <div class="form-group"><label class="form-label">Intervalo</label>
+        <select class="form-input" id="pag-freq" onchange="gerarPreviewParcelas('pag')">
+          <option value="mensal">Mensal</option><option value="bimestral">Bimestral</option><option value="trimestral">Trimestral</option><option value="anual">Anual</option>
         </select>
       </div>
-      <div class="form-group"><label class="form-label">Parcelas</label>
-        <select class="form-input" id="pag-parcelas"><option value="1">À vista</option><option value="2">2×</option><option value="3">3×</option><option value="6">6×</option><option value="12">12×</option></select>
+
+      <div class="form-group form-full" style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--surface-2);border-radius:var(--radius-md);border:1px solid var(--border);">
+        <div><div style="font-size:13px;font-weight:500;color:var(--navy)">Recorrente</div><div style="font-size:11px;color:var(--text-3);margin-top:2px">Cada parcela é um fato gerador novo — a emissão avança junto com o vencimento</div></div>
+        <div class="toggle" id="pag-recorrente-toggle" onclick="this.classList.toggle('on');gerarPreviewParcelas('pag')"></div>
       </div>
-      <div class="form-group"><label class="form-label">Data de referência (competência)</label><input class="form-input" type="date" id="pag-ref"></div>
-      <div class="form-group"><label class="form-label">Vencimento (1ª parcela)</label><input class="form-input" type="date" id="pag-venc"></div>
-      <div class="form-group"><label class="form-label">Valor total (R$)</label><input class="form-input" type="number" id="pag-valor" placeholder="0,00" step="0.01"></div>
-      <div class="form-group"><label class="form-label">Forma de pagamento</label>
-        <select class="form-input" id="pag-forma"><option>PIX</option><option>Boleto</option><option>Transferência</option></select>
-      </div>
-      <div style="grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--surface-2);border-radius:var(--radius-md);border:1px solid var(--border);">
-        <div><div style="font-size:13px;font-weight:500;color:var(--navy)">Compromisso recorrente</div><div style="font-size:11px;color:var(--text-3);margin-top:2px">Gera lançamentos futuros automaticamente</div></div>
-        <div class="toggle" id="toggle-recorrente" onclick="this.classList.toggle('on');toggleRecorrente()"></div>
-      </div>
-      <div id="recorrente-wrap" style="display:none;grid-column:1/-1">
-        <div class="form-group"><label class="form-label">Frequência</label>
-          <select class="form-input" id="pag-freq"><option value="mensal">Mensal</option><option value="bimestral">Bimestral</option><option value="trimestral">Trimestral</option><option value="anual">Anual</option></select>
+
+      <div class="form-group form-full" id="pag-preview-wrap" style="display:none;">
+        <label class="form-label">Preview das parcelas</label>
+        <div style="border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;">
+          <table style="width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px;">
+            <colgroup><col style="width:60px;"><col><col><col style="width:100px;"></colgroup>
+            <thead><tr style="background:var(--surface-2);">
+              <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-3);">Parcela</th>
+              <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-3);">Emissão</th>
+              <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-3);">Vencimento</th>
+              <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-3);">Valor</th>
+            </tr></thead>
+          </table>
+          <div style="max-height:180px;overflow-y:auto;border-top:1px solid var(--border);">
+            <table style="width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px;">
+              <colgroup><col style="width:60px;"><col><col><col style="width:100px;"></colgroup>
+              <tbody id="pag-preview-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;padding:8px 4px 0;font-size:12px;">
+          <span style="color:var(--text-3)">Total:</span><strong id="pag-preview-total" style="color:var(--navy)">R$ 0,00</strong>
         </div>
       </div>
     </div>
@@ -2624,7 +2763,7 @@ const CORES_AV = ["#2d7dd2","#1a8f5c","#6c3fc5","#b8860b","#c0392b","#0e7c7b"];
 const PAGE_CONFIG = {
   dashboard:    { title:"Dashboard", sub:"Visão geral do negócio", actions:"" },
   os:           { title:"Ordens de Serviço", sub:"Gestão completa de OS", actions:"<button class='btn btn-primary btn-sm' onclick='openModal(\"os\")'><i class='ti ti-plus'></i> Novo Orçamento</button>" },
-  clientes:     { title:"Clientes", sub:"Cadastro e CRM", actions:"<button class='btn btn-outline btn-sm'><i class='ti ti-download'></i> Exportar</button><button class='btn btn-primary btn-sm' onclick='openModal(\"cli\")'><i class='ti ti-plus'></i> Novo Cliente</button>" },
+  clientes:     { title:"Clientes", sub:"Cadastro e CRM", actions:"<button class='btn btn-outline btn-sm'><i class='ti ti-download'></i> Exportar</button><button class='btn btn-primary btn-sm' onclick='abrirModalNovoCliente()'><i class='ti ti-plus'></i> Novo Cliente</button>" },
   veiculos:     { title:"Veículos", sub:"Cadastro e alertas de revisão", actions:"<button class='btn btn-primary btn-sm' onclick='abrirModalVeiculo()'><i class='ti ti-plus'></i> Novo Veículo</button>" },
   servicos:     { title:"Serviços", sub:"Catálogo de mão de obra", actions:"<button class='btn btn-primary btn-sm' onclick='openModal(\"svc\")'><i class='ti ti-plus'></i> Novo Serviço</button>" },
   pecas:        { title:"Peças", sub:"Estoque e kardex", actions:"<button class='btn btn-primary btn-sm' onclick='openModal(\"pec\")'><i class='ti ti-plus'></i> Nova Peça</button>" },
@@ -3191,6 +3330,7 @@ async function salvarCliente() {
   const voltarVei = modalEl.dataset.voltarVei;
   const voltarOs = modalEl.dataset.voltarOs;
   const voltarAgend = modalEl.dataset.voltarAgend;
+  const voltarRec = modalEl.dataset.voltarRec;
   const documento = document.getElementById('cli-doc').value.trim();
 
   // CPF/CNPJ é obrigatório e precisa ser válido (dígito verificador)
@@ -3229,10 +3369,11 @@ async function salvarCliente() {
     novoId = data?.[0]?.id || null;
   }
   if (error) { toast('Erro ao salvar: ' + error.message,'error'); return; }
-  const eraNovoSemOrigem = !editId && !voltarVei && !voltarOs && !voltarAgend;
+  const eraNovoSemOrigem = !editId && !voltarVei && !voltarOs && !voltarAgend && !voltarRec;
   delete modalEl.dataset.voltarVei;
   delete modalEl.dataset.voltarOs;
   delete modalEl.dataset.voltarAgend;
+  delete modalEl.dataset.voltarRec;
   if (eraNovoSemOrigem && novoId) {
     // Cadastro direto (sem vir de outra tela): mantém o modal aberto, já em modo edição,
     // e mostra o convite pra adicionar um veículo. Se o cliente não quiser, é só fechar no X.
@@ -3265,10 +3406,53 @@ async function salvarCliente() {
     openModal('agend');
     selecionarClienteAgendamento(novoId, nome, payload.telefone || '');
   }
+  // Se veio do cadastro rápido dentro do Novo Lançamento (Contas a Receber), mesma ideia
+  if (voltarRec && !editId && novoId) {
+    await carregarCacheClientesLancamento(novoId);
+    openModal('rec');
+  }
+}
+
+// Abre o cadastro de cliente por cima do modal de Contas a Receber, sem perder
+// o que já foi preenchido lá. Ao salvar, volta automaticamente e já seleciona.
+function cadastrarClienteRapidoReceber() {
+  closeModal('rec');
+  const modalEl = document.getElementById('modal-cli');
+  modalEl.dataset.voltarRec = '1';
+  delete modalEl.dataset.editId;
+  document.getElementById('cli-aviso-veiculo').style.display = 'none';
+  document.getElementById('cli-btn-add-vei').style.display = '';
+  document.querySelector('#modal-cli .modal-title').textContent = 'Novo Cliente';
+  ['cli-nome','cli-doc','cli-tel','cli-email','cli-nasc','cli-cep','cli-numero','cli-rua','cli-bairro','cli-cidade','cli-estado'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  openModal('cli');
 }
 
 // Abre o cadastro de cliente por cima do modal de Veículo, sem perder o que já foi preenchido lá.
 // Ao salvar (ou cancelar), volta automaticamente pro modal de Veículo.
+// Reset completo pra "Novo Cliente" — usado pelo botão da tela de Clientes.
+// Sem isso, abrir o modal depois de editar outro cliente reaproveitava o
+// editId antigo e o "Salvar" acabava sobrescrevendo o cliente errado.
+function abrirModalNovoCliente() {
+  const modalEl = document.getElementById('modal-cli');
+  delete modalEl.dataset.editId;
+  delete modalEl.dataset.voltarVei;
+  delete modalEl.dataset.voltarOs;
+  delete modalEl.dataset.voltarAgend;
+  delete modalEl.dataset.voltarRec;
+  document.getElementById('cli-modal-title').textContent = 'Novo Cliente';
+  const radioPF = document.querySelector('input[name="cli-tipo"][value="PF"]');
+  if (radioPF) radioPF.checked = true;
+  document.getElementById('cli-doc').placeholder = '000.000.000-00';
+  document.getElementById('cli-aviso-veiculo').style.display = 'none';
+  document.getElementById('cli-btn-add-vei').style.display = '';
+  ['cli-nome','cli-doc','cli-tel','cli-email','cli-nasc','cli-cep','cli-numero','cli-rua','cli-bairro','cli-cidade','cli-estado'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  openModal('cli');
+}
+
 function cadastrarClienteRapido() {
   closeModal('vei');
   document.getElementById('modal-cli').dataset.voltarVei = '1';
@@ -3439,12 +3623,17 @@ async function abrirModalVeiculo() {
   await carregarClientesBase();
   // Limpa todos os campos
   ['vei-placa','vei-placa-ant','vei-marca','vei-modelo','vei-versao','vei-cor','vei-motor',
+   'vei-anofab','vei-anomod',
    'vei-comb','vei-cambio','vei-cilindrada','vei-chassi','vei-grupo','vei-tipo','vei-segmento','vei-subsegmento',
    'vei-carroceria','vei-especie','vei-passageiros','vei-eixos','vei-cap-tracao',
    'vei-origem','vei-nacionalidade','vei-sit-chassi','vei-sit-veiculo','vei-sit-geral'
   ].forEach(id => {
     const el = document.getElementById(id); if(el) el.value = '';
   });
+  const selCliente = document.getElementById('vei-cliente');
+  if (selCliente) selCliente.value = '';
+  const selIntervalo = document.getElementById('vei-intervalo');
+  if (selIntervalo) selIntervalo.value = '10000';
   document.getElementById('vei-placa-status').textContent = '';
   delete document.getElementById('modal-vei').dataset.editId;
   document.querySelector('#modal-vei .modal-title').textContent = 'Novo Veículo';
@@ -4584,6 +4773,20 @@ async function gerarContasReceberOS(os) {
   const total = totalServicos + totalPecas + totalTerceiros;
   if (total <= 0) { toast('OS sem valor — adicione itens ao orçamento.', 'error'); return; }
 
+  // Se a oficina configurou o vínculo (Configurações → Contas contábeis →
+  // Vínculo de Receita de OS), usa a conta de Grau 3 de verdade — inclusive
+  // no texto da categoria, que passa a refletir o nome real da conta em vez
+  // do texto fixo antigo. Sem configurar, comportamento idêntico a sempre.
+  const idsVinculo = [APP.oficina?.conta_receita_servicos_id, APP.oficina?.conta_receita_pecas_id, APP.oficina?.conta_receita_terceiros_id].filter(Boolean);
+  let contasVinculo = {};
+  if (idsVinculo.length > 0) {
+    const { data: contas } = await db.from('plano_contas').select('id,nome').in('id', idsVinculo);
+    (contas || []).forEach(c => { contasVinculo[c.id] = c.nome; });
+  }
+  const contaServicos = APP.oficina?.conta_receita_servicos_id;
+  const contaPecas = APP.oficina?.conta_receita_pecas_id;
+  const contaTerceiros = APP.oficina?.conta_receita_terceiros_id;
+
   const hoje = new Date().toISOString().split('T')[0];
   const cliente = os.clientes?.nome || 'Cliente';
   const inserts = [];
@@ -4591,7 +4794,8 @@ async function gerarContasReceberOS(os) {
   if (totalServicos > 0) inserts.push({
     oficina_id: APP.oficina.id, os_id: os.id, origem: 'os',
     descricao: os.numero + ' — ' + cliente + ' (Serviços)',
-    categoria: 'Receita de Serviços',
+    categoria: contaServicos && contasVinculo[contaServicos] ? contasVinculo[contaServicos] : 'Receita de Serviços',
+    plano_contas_id: contaServicos || null,
     data_referencia: hoje, data_vencimento: hoje,
     valor: totalServicos, valor_liquido: totalServicos,
     status: 'aberto', so_caixa: false,
@@ -4600,7 +4804,8 @@ async function gerarContasReceberOS(os) {
   if (totalPecas > 0) inserts.push({
     oficina_id: APP.oficina.id, os_id: os.id, origem: 'os',
     descricao: os.numero + ' — ' + cliente + ' (Peças)',
-    categoria: 'Receita de Peças',
+    categoria: contaPecas && contasVinculo[contaPecas] ? contasVinculo[contaPecas] : 'Receita de Peças',
+    plano_contas_id: contaPecas || null,
     data_referencia: hoje, data_vencimento: hoje,
     valor: totalPecas, valor_liquido: totalPecas,
     status: 'aberto', so_caixa: false,
@@ -4609,7 +4814,8 @@ async function gerarContasReceberOS(os) {
   if (totalTerceiros > 0) inserts.push({
     oficina_id: APP.oficina.id, os_id: os.id, origem: 'os',
     descricao: os.numero + ' — ' + cliente + ' (Serviços de Terceiros)',
-    categoria: 'Serviços de Terceiros',
+    categoria: contaTerceiros && contasVinculo[contaTerceiros] ? contasVinculo[contaTerceiros] : 'Serviços de Terceiros',
+    plano_contas_id: contaTerceiros || null,
     data_referencia: hoje, data_vencimento: hoje,
     valor: totalTerceiros, valor_liquido: totalTerceiros,
     status: 'aberto', so_caixa: false,
@@ -5877,7 +6083,7 @@ async function carregarDRE(){
   const [{data:recD},{data:pagD},{data:contasContabeis}]=await Promise.all([
     db.from('contas_receber').select('valor,valor_liquido,valor_taxa_transacao,valor_taxa_antecipacao,data_referencia,categoria,origem,so_caixa').eq('oficina_id',APP.oficina.id).eq('status','recebido').gte('data_referencia',de).lte('data_referencia',ate),
     db.from('contas_pagar').select('valor,data_referencia,categoria,origem').eq('oficina_id',APP.oficina.id).eq('status','pago').gte('data_referencia',de).lte('data_referencia',ate),
-    db.from('plano_contas').select('nome,grupo_dre').eq('oficina_id',APP.oficina.id),
+    db.from('plano_contas').select('nome,grupo_dre').eq('oficina_id',APP.oficina.id).eq('grau',3),
   ]);
   const mapaGrupoDre = {};
   (contasContabeis||[]).forEach(c => { mapaGrupoDre[c.nome] = c.grupo_dre; });
@@ -6426,17 +6632,50 @@ async function carregarPlanoContas() {
       // Falhou ao criar — evita loop infinito, apenas mostra vazio
       planoCategorias = [];
       renderPlanoContas();
+      popularSelectsVinculoReceitaOS();
       return;
     }
     const { data: data2 } = await db.from('plano_contas')
       .select('*').eq('oficina_id', APP.oficina.id).order('tipo').order('ordem').order('nome');
     planoCategorias = data2 || [];
     renderPlanoContas();
+    popularSelectsVinculoReceitaOS();
     return;
   }
 
   planoCategorias = data;
   renderPlanoContas();
+  popularSelectsVinculoReceitaOS();
+}
+
+// Popula os 3 selects de "Vínculo de Receita de OS" só com contas de Grau 3
+// (Receita) — são as únicas que fazem sentido como destino de faturamento.
+function popularSelectsVinculoReceitaOS() {
+  const opcoes = planoCategorias.filter(c => c.tipo === 'receita' && c.grau === 3 && c.ativo);
+  const html = '<option value="">Não configurado</option>' + opcoes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+  const map = {
+    'cfg-conta-receita-servicos': APP.oficina?.conta_receita_servicos_id,
+    'cfg-conta-receita-pecas': APP.oficina?.conta_receita_pecas_id,
+    'cfg-conta-receita-terceiros': APP.oficina?.conta_receita_terceiros_id,
+  };
+  Object.entries(map).forEach(([id, valorAtual]) => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = html;
+    if (valorAtual) sel.value = valorAtual;
+  });
+}
+
+async function salvarVinculoReceitaOS() {
+  const payload = {
+    conta_receita_servicos_id: document.getElementById('cfg-conta-receita-servicos').value || null,
+    conta_receita_pecas_id: document.getElementById('cfg-conta-receita-pecas').value || null,
+    conta_receita_terceiros_id: document.getElementById('cfg-conta-receita-terceiros').value || null,
+  };
+  const { error } = await db.from('oficinas').update(payload).eq('id', APP.oficina.id);
+  if (error) { toast('Erro: ' + error.message, 'error'); return; }
+  Object.assign(APP.oficina, payload);
+  toast('Vínculo de receita salvo!', 'success');
 }
 
 async function criarCategoriasPadrao() {
@@ -6492,31 +6731,74 @@ function renderPlanoContas() {
     return;
   }
 
-  // Agrupa por tipo
-  const receitas = lista.filter(c => c.tipo === 'receita');
-  const despesas = lista.filter(c => c.tipo === 'despesa');
-
-  const renderGrupo = (itens, titulo, cor) => {
-    if (itens.length === 0) return '';
-    return '<div style="padding:10px 20px 4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:' + cor + '">' + titulo + '</div>'
-      + itens.map(c => {
-        const grupoCor = GRUPO_DRE_COR[c.grupo_dre] || 'var(--text-3)';
-        return '<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 20px;border-bottom:1px solid var(--border);' + (!c.ativo ? 'opacity:.4' : '') + '">'
-          + '<div style="display:flex;align-items:center;gap:10px;">'
-          + '<i class="ti ti-point-filled" style="color:' + cor + ';font-size:10px"></i>'
-          + '<div><div style="font-size:13px;font-weight:500;color:var(--navy)">' + c.nome + '</div>'
-          + '<div style="font-size:10px;color:var(--text-3);margin-top:1px">' + (GRUPO_DRE_LABELS[c.grupo_dre] || c.grupo_dre) + '</div></div>'
-          + '</div>'
-          + '<div style="display:flex;align-items:center;gap:6px;">'
-          + '<span class="badge ' + (c.ativo ? 'badge-success' : 'badge-gray') + '" style="font-size:10px">' + (c.ativo ? 'Ativa' : 'Inativa') + '</span>'
-          + '<button class="action-btn" onclick="editarCategoria(\'' + c.id + '\')" title="Editar"><i class="ti ti-pencil"></i></button>'
-          + '<button class="action-btn" onclick="excluirCategoria(\'' + c.id + '\')" style="color:var(--danger)" title="Excluir"><i class="ti ti-trash"></i></button>'
-          + '</div></div>';
-      }).join('');
+  // Linha de uma conta em qualquer grau — Grau 1/2 mostram "Grau X", Grau 3
+  // mostra o grupo da DRE (é o que efetivamente é usado no cálculo).
+  const linhaConta = (c, indent) => {
+    const grupoCor = GRUPO_DRE_COR[c.grupo_dre] || 'var(--text-3)';
+    const subLabel = c.grau === 3 ? (GRUPO_DRE_LABELS[c.grupo_dre] || c.grupo_dre || '—') : ('Grau ' + c.grau + ' — agrupamento');
+    const peso = c.grau === 1 ? '600' : '500';
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 20px 9px ' + (20 + indent) + 'px;border-bottom:1px solid var(--border);' + (!c.ativo ? 'opacity:.4' : '') + '">'
+      + '<div style="display:flex;align-items:center;gap:10px;">'
+      + (indent > 0
+          ? '<i class="ti ti-corner-down-right" style="font-size:12px;color:var(--text-3)"></i>'
+          : '<i class="ti ti-point-filled" style="color:' + grupoCor + ';font-size:10px"></i>')
+      + '<div><div style="font-size:13px;font-weight:' + peso + ';color:var(--navy)">' + c.nome + '</div>'
+      + '<div style="font-size:10px;color:var(--text-3);margin-top:1px">' + subLabel + '</div></div>'
+      + '</div>'
+      + '<div style="display:flex;align-items:center;gap:6px;">'
+      + '<span class="badge ' + (c.ativo ? 'badge-success' : 'badge-gray') + '" style="font-size:10px">' + (c.ativo ? 'Ativa' : 'Inativa') + '</span>'
+      + '<button class="action-btn" onclick="editarCategoria(\'' + c.id + '\')" title="Editar"><i class="ti ti-pencil"></i></button>'
+      + '<button class="action-btn" onclick="excluirCategoria(\'' + c.id + '\')" style="color:var(--danger)" title="Excluir"><i class="ti ti-trash"></i></button>'
+      + '</div></div>';
   };
 
-  el.innerHTML = renderGrupo(receitas, '↑ Receitas', 'var(--success)')
-    + renderGrupo(despesas, '↓ Despesas', 'var(--danger)');
+  // Monta a árvore Grau1 -> Grau2 -> Grau3. Qualquer conta sem hierarquia
+  // (o caso de 100% das oficinas antes dessa atualização) cai direto na
+  // lista solta no final — visual idêntico ao de antes da Fase 6.
+  const renderGrupo = (tipo, titulo, cor) => {
+    const itensTipo = lista.filter(c => c.tipo === tipo);
+    if (itensTipo.length === 0) return '';
+    const grau1s = itensTipo.filter(c => c.grau === 1);
+    const grau2s = itensTipo.filter(c => c.grau === 2);
+    const grau3s = itensTipo.filter(c => c.grau === 3);
+    const usados = new Set();
+
+    let html = '<div style="padding:10px 20px 4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:' + cor + '">' + titulo + '</div>';
+
+    grau1s.forEach(g1 => {
+      html += linhaConta(g1, 0);
+      usados.add(g1.id);
+      grau2s.filter(c => c.pai_id === g1.id).forEach(g2 => {
+        html += linhaConta(g2, 20);
+        usados.add(g2.id);
+        grau3s.filter(c => c.pai_id === g2.id).forEach(g3 => { html += linhaConta(g3, 40); usados.add(g3.id); });
+      });
+      grau3s.filter(c => c.pai_id === g1.id).forEach(g3 => { html += linhaConta(g3, 20); usados.add(g3.id); });
+    });
+
+    grau2s.filter(c => !usados.has(c.id)).forEach(g2 => {
+      html += linhaConta(g2, 0);
+      usados.add(g2.id);
+      grau3s.filter(c => c.pai_id === g2.id).forEach(g3 => { html += linhaConta(g3, 20); usados.add(g3.id); });
+    });
+
+    grau3s.filter(c => !usados.has(c.id)).forEach(g3 => { html += linhaConta(g3, 0); });
+
+    return html;
+  };
+
+  el.innerHTML = renderGrupo('receita', '↑ Receitas', 'var(--success)') + renderGrupo('despesa', '↓ Despesas', 'var(--danger)');
+}
+
+// Abre o cadastro de conta contábil (Plano de Contas) por cima do modal de
+// Contas a Pagar ou Receber. origem: 'pag' | 'rec' — define pra onde voltar
+// e qual tipo (despesa/receita) já vem pré-selecionado.
+function cadastrarPlanoContasRapido(origem) {
+  closeModal(origem);
+  document.getElementById('modal-categoria').dataset.voltarLancamento = origem;
+  abrirModalCategoria();
+  document.getElementById('cat-tipo').value = origem === 'pag' ? 'despesa' : 'receita';
+  onCatTipo();
 }
 
 function abrirModalCategoria() {
@@ -6524,6 +6806,7 @@ function abrirModalCategoria() {
   document.getElementById('cat-modal-title').textContent = 'Nova Categoria';
   document.getElementById('cat-nome').value = '';
   document.getElementById('cat-tipo').value = 'receita';
+  document.getElementById('cat-grau').value = '3';
   document.getElementById('cat-grupo').value = 'receita_bruta';
   document.getElementById('cat-ordem').value = planoCategorias.length + 1;
   document.getElementById('cat-ativo-toggle').classList.add('on');
@@ -6546,30 +6829,70 @@ function onCatTipo() {
       o.hidden = ['receita_bruta'].includes(o.value);
     });
   }
+  popularSelectContaPai();
+}
+
+// Grau 1 não tem pai (é raiz). Grau 2 escolhe um pai de Grau 1. Grau 3
+// escolhe um pai de Grau 2 — e só Grau 3 tem Grupo na DRE, porque é a
+// única que efetivamente recebe lançamento e alimenta o cálculo.
+function onCatGrau() {
+  const grau = parseInt(document.getElementById('cat-grau').value);
+  document.getElementById('cat-pai-wrap').style.display = grau === 1 ? 'none' : '';
+  document.getElementById('cat-grupo-wrap').style.display = grau === 3 ? '' : 'none';
+  popularSelectContaPai();
+}
+
+// Popula "Conta pai" com as contas do grau imediatamente acima, do mesmo tipo.
+function popularSelectContaPai() {
+  const sel = document.getElementById('cat-pai');
+  const grau = parseInt(document.getElementById('cat-grau').value);
+  const tipo = document.getElementById('cat-tipo').value;
+  const valorAtual = sel.value;
+  if (grau === 1) { sel.innerHTML = '<option value="">Nenhuma</option>'; return; }
+  const grauPai = grau - 1;
+  const editId = document.getElementById('modal-categoria').dataset.editId;
+  const opcoes = planoCategorias.filter(c => c.grau === grauPai && c.tipo === tipo && c.ativo && c.id !== editId);
+  sel.innerHTML = '<option value="">Nenhuma</option>' + opcoes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+  if (valorAtual) sel.value = valorAtual;
 }
 
 async function salvarCategoria() {
   const nome = document.getElementById('cat-nome').value.trim();
   if (!nome) { toast('Informe o nome.', 'error'); return; }
-  const editId = document.getElementById('modal-categoria').dataset.editId;
+  const modalEl = document.getElementById('modal-categoria');
+  const editId = modalEl.dataset.editId;
+  const voltarLancamento = modalEl.dataset.voltarLancamento; // 'pag' | 'rec' | undefined
+  const grau = parseInt(document.getElementById('cat-grau').value);
   const payload = {
     nome,
     tipo: document.getElementById('cat-tipo').value,
-    grupo_dre: document.getElementById('cat-grupo').value,
+    grau,
+    pai_id: grau === 1 ? null : (document.getElementById('cat-pai').value || null),
+    grupo_dre: grau === 3 ? document.getElementById('cat-grupo').value : null,
     ordem: parseInt(document.getElementById('cat-ordem').value) || 0,
     ativo: document.getElementById('cat-ativo-toggle').classList.contains('on'),
   };
-  let error;
+  let error, novoId = null;
   if (editId) {
     ({ error } = await db.from('plano_contas').update(payload).eq('id', editId));
   } else {
-    ({ error } = await db.from('plano_contas').insert({ oficina_id: APP.oficina.id, ...payload }));
+    const { data, error: err } = await db.from('plano_contas').insert({ oficina_id: APP.oficina.id, ...payload }).select();
+    error = err;
+    novoId = data?.[0]?.id || null;
   }
   if (error) { toast('Erro: ' + error.message, 'error'); return; }
+  delete modalEl.dataset.voltarLancamento;
   closeModal('categoria');
   toast(editId ? 'Categoria atualizada!' : 'Categoria criada!', 'success');
   await carregarPlanoContas();
   await sincronizarCategoriasNosModais();
+  // Se veio do cadastro rápido dentro de Contas a Pagar/Receber, volta e já seleciona
+  // — só faz sentido quando a conta criada é Grau 3 (as únicas selecionáveis lá).
+  if (voltarLancamento && !editId && novoId && grau === 3) {
+    const selectId = voltarLancamento === 'pag' ? 'pag-plano-contas' : 'rec-plano-contas';
+    await popularSelectPlanoContasLancamento(selectId, payload.tipo, novoId);
+    openModal(voltarLancamento);
+  }
 }
 
 function editarCategoria(id) {
@@ -6579,8 +6902,11 @@ function editarCategoria(id) {
   document.getElementById('cat-modal-title').textContent = 'Editar Categoria';
   document.getElementById('cat-nome').value = c.nome;
   document.getElementById('cat-tipo').value = c.tipo;
+  document.getElementById('cat-grau').value = String(c.grau || 3);
   onCatTipo();
-  document.getElementById('cat-grupo').value = c.grupo_dre;
+  onCatGrau();
+  document.getElementById('cat-pai').value = c.pai_id || '';
+  if (c.grupo_dre) document.getElementById('cat-grupo').value = c.grupo_dre;
   document.getElementById('cat-ordem').value = c.ordem || 0;
   if (c.ativo) document.getElementById('cat-ativo-toggle').classList.add('on');
   else document.getElementById('cat-ativo-toggle').classList.remove('on');
@@ -6889,14 +7215,21 @@ function carregarTaxas() {
 async function editarRec(id) {
   const r = recTodos.find(x => x.id === id);
   if (!r) return;
+  document.getElementById('rec-numero').value = r.numero || '';
+  document.getElementById('rec-doc-num').value = r.numero_documento || '';
   document.getElementById('rec-desc').value = r.descricao || '';
   document.getElementById('rec-valor').value = r.valor || 0;
-  document.getElementById('rec-ref').value = r.data_referencia || hoje();
+  document.getElementById('rec-emissao').value = r.data_referencia || hoje();
   document.getElementById('rec-venc').value = r.data_vencimento || hoje();
-  document.getElementById('rec-origem').value = r.origem || 'avulso';
-  document.getElementById('rec-forma').value = r.forma_pagamento || 'PIX';
-  onRecOrigem();
-  if (r.categoria) document.getElementById('rec-cat').value = r.categoria;
+  document.getElementById('rec-parcelas').value = 1;
+  document.getElementById('rec-socaixa-toggle').classList.toggle('on', !!r.so_caixa);
+  await Promise.all([
+    carregarCacheClientesLancamento(r.cliente_id),
+    popularSelectTiposDocumentoLancamento('rec-tipo-documento', r.tipo_documento_id),
+    popularSelectPlanoContasLancamento('rec-plano-contas', 'receita', r.plano_contas_id),
+    popularSelectContasBancarias('rec-banco', r.conta_bancaria_id),
+  ]);
+  gerarPreviewParcelas('rec');
   document.getElementById('modal-rec').dataset.editId = id;
   document.querySelector('#modal-rec .modal-title').textContent = 'Editar Lançamento';
   openModal('rec');
@@ -6917,14 +7250,21 @@ async function excluirRec(id) {
 async function editarPag(id) {
   const p = pagTodos.find(x => x.id === id);
   if (!p) return;
+  document.getElementById('pag-doc-num').value = p.numero_nf || '';
   document.getElementById('pag-desc').value = p.descricao || '';
   document.getElementById('pag-valor').value = p.valor || 0;
-  document.getElementById('pag-ref').value = p.data_referencia || hoje();
+  document.getElementById('pag-emissao').value = p.data_referencia || hoje();
   document.getElementById('pag-venc').value = p.data_vencimento || hoje();
-  document.getElementById('pag-origem').value = p.origem || 'comp';
-  document.getElementById('pag-forma').value = p.forma_pagamento || 'PIX';
-  document.getElementById('pag-cat').value = p.categoria || '';
   document.getElementById('pag-parcelas').value = 1;
+  document.getElementById('pag-recorrente-toggle').classList.toggle('on', !!p.recorrente);
+  if (p.frequencia_recorrencia) document.getElementById('pag-freq').value = p.frequencia_recorrencia;
+  await Promise.all([
+    carregarCacheFornecedores(p.fornecedor_id),
+    popularSelectTiposDocumentoLancamento('pag-tipo-documento', p.tipo_documento_id),
+    popularSelectPlanoContasLancamento('pag-plano-contas', 'despesa', p.plano_contas_id),
+    popularSelectContasBancarias('pag-banco', p.conta_bancaria_id),
+  ]);
+  gerarPreviewParcelas('pag');
   document.getElementById('modal-pag').dataset.editId = id;
   document.querySelector('#modal-pag .modal-title').textContent = 'Editar Lançamento';
   openModal('pag');
@@ -7071,48 +7411,119 @@ function toggleGrupoRec(osId) {
   if (chev) chev.style.transform = hidden ? 'rotate(90deg)' : 'rotate(0deg)';
 }
 
-function abrirModalRec(){
-  document.getElementById('rec-ref').value=hoje();
-  document.getElementById('rec-venc').value=hoje();
-  onRecOrigem();
+async function gerarNumeroRec() {
+  const { data } = await db.from('contas_receber')
+    .select('numero')
+    .eq('oficina_id', APP.oficina.id);
+  const maiorNumero = (data || []).reduce((max, r) => {
+    const n = parseInt(r.numero, 10);
+    return isNaN(n) ? max : Math.max(max, n);
+  }, 0);
+  return String(maiorNumero + 1).padStart(3, '0');
+}
+
+async function abrirModalRec(){
+  delete document.getElementById('modal-rec').dataset.editId;
+  document.querySelector('#modal-rec .modal-title').textContent = 'Novo Lançamento';
+  document.getElementById('rec-numero').value = 'Gerando...';
+  document.getElementById('rec-doc-num').value = '';
+  document.getElementById('rec-cliente-nome').value = '';
+  document.getElementById('rec-cliente').value = '';
+  document.getElementById('rec-desc').value = '';
+  document.getElementById('rec-valor').value = '';
+  document.getElementById('rec-parcelas').value = 1;
+  document.getElementById('rec-emissao').value = hoje();
+  document.getElementById('rec-venc').value = hoje();
+  document.getElementById('rec-recorrente-toggle').classList.remove('on');
+  document.getElementById('rec-socaixa-toggle').classList.remove('on');
+  previewParcelasRec = [];
+  document.getElementById('rec-preview-wrap').style.display = 'none';
+  await carregarPlanoContas(); // garante que exista Plano de Contas (semeia o padrão se a oficina for nova)
+  const [numero] = await Promise.all([
+    gerarNumeroRec(),
+    carregarCacheClientesLancamento(),
+    popularSelectTiposDocumentoLancamento('rec-tipo-documento'),
+    popularSelectPlanoContasLancamento('rec-plano-contas', 'receita'),
+    popularSelectContasBancarias('rec-banco'),
+  ]);
+  document.getElementById('rec-numero').value = numero;
   openModal('rec');
 }
 
-function onRecOrigem(){
-  const o=document.getElementById('rec-origem').value;
-  const soCaixa=['aporte','emprestimo'].includes(o);
-  document.getElementById('rec-socaixa-wrap').style.display=soCaixa?'block':'none';
-  document.getElementById('rec-cat-wrap').style.display=soCaixa?'none':'flex';
-}
-
 async function salvarReceber(){
-  const desc=document.getElementById('rec-desc').value.trim();
-  const valor=parseFloat(document.getElementById('rec-valor').value)||0;
-  if(!desc){toast('Informe a descrição.','error');return;}
-  if(!valor){toast('Informe o valor.','error');return;}
+  const desc = document.getElementById('rec-desc').value.trim();
+  if (!desc) { toast('Informe a descrição.', 'error'); return; }
+  const clienteId = document.getElementById('rec-cliente').value;
+  if (!clienteId) { toast('Selecione o cliente.', 'error'); return; }
+  const tipoDocumentoId = document.getElementById('rec-tipo-documento').value;
+  if (!tipoDocumentoId) { toast('Selecione o tipo de documento.', 'error'); return; }
+  const planoContasId = document.getElementById('rec-plano-contas').value;
+  if (!planoContasId) { toast('Selecione o plano de contas.', 'error'); return; }
+  gerarPreviewParcelas('rec');
+  if (!previewParcelasRec.length) { toast('Preencha valor total e vencimento pra gerar as parcelas.', 'error'); return; }
+
+  const soCaixa = document.getElementById('rec-socaixa-toggle').classList.contains('on');
   const editId = document.getElementById('modal-rec').dataset.editId;
-  const origem=document.getElementById('rec-origem').value;
-  const soCaixa=['aporte','emprestimo'].includes(origem);
-  const payload = {
-    origem, descricao:desc,
-    categoria:soCaixa?origem:document.getElementById('rec-cat').value,
-    data_referencia:document.getElementById('rec-ref').value,
-    data_vencimento:document.getElementById('rec-venc').value,
-    valor, valor_liquido:valor,
-    forma_pagamento:document.getElementById('rec-forma').value,
-    so_caixa:soCaixa,
+  const base = {
+    oficina_id: APP.oficina.id,
+    numero: document.getElementById('rec-numero').value.trim() || null,
+    numero_documento: document.getElementById('rec-doc-num').value.trim() || null,
+    cliente_id: clienteId,
+    tipo_documento_id: tipoDocumentoId,
+    plano_contas_id: planoContasId,
+    conta_bancaria_id: document.getElementById('rec-banco').value || null,
+    descricao: desc,
+    origem: soCaixa ? 'aporte' : 'avulso',
+    so_caixa: soCaixa,
   };
-  let error;
+
   if (editId) {
-    ({error} = await db.from('contas_receber').update(payload).eq('id', editId));
+    const primeira = previewParcelasRec[0];
+    const { error } = await db.from('contas_receber').update({
+      ...base,
+      data_referencia: primeira.emissao,
+      data_vencimento: primeira.vencimento,
+      valor: primeira.valor,
+      valor_liquido: primeira.valor,
+    }).eq('id', editId);
     delete document.getElementById('modal-rec').dataset.editId;
     document.querySelector('#modal-rec .modal-title').textContent = 'Novo Lançamento';
-  } else {
-    ({error} = await db.from('contas_receber').insert({oficina_id:APP.oficina.id, status:'aberto', ...payload}));
+    if (error) { toast('Erro: ' + error.message, 'error'); return; }
+    closeModal('rec');
+    toast('Lançamento atualizado!', 'success');
+    await carregarReceber();
+    return;
   }
-  if(error){toast('Erro: '+error.message,'error');return;}
+
+  const n = previewParcelasRec.length;
+  const primeira = previewParcelasRec[0];
+  const { data: raiz, error: errRaiz } = await db.from('contas_receber').insert({
+    ...base, status: 'aberto',
+    data_referencia: primeira.emissao,
+    data_vencimento: primeira.vencimento,
+    valor: primeira.valor,
+    valor_liquido: primeira.valor,
+    parcela_num: 1, parcela_total: n,
+  }).select();
+  if (errRaiz) { toast('Erro: ' + errRaiz.message, 'error'); return; }
+  const raizId = raiz?.[0]?.id;
+
+  if (n > 1 && raizId) {
+    const demais = previewParcelasRec.slice(1).map((p, i) => ({
+      ...base, status: 'aberto',
+      data_referencia: p.emissao,
+      data_vencimento: p.vencimento,
+      valor: p.valor,
+      valor_liquido: p.valor,
+      conta_pai_id: raizId,
+      parcela_num: i + 2, parcela_total: n,
+    }));
+    const { error: errDemais } = await db.from('contas_receber').insert(demais);
+    if (errDemais) toast('Título principal salvo, mas houve erro ao gerar as demais parcelas: ' + errDemais.message, 'error');
+  }
+
   closeModal('rec');
-  toast(editId?'Lançamento atualizado!':'Lançamento salvo!','success');
+  toast(n > 1 ? n + ' parcelas geradas!' : 'Lançamento salvo!', 'success');
   await carregarReceber();
 }
 
@@ -7186,6 +7597,182 @@ async function popularSelectContasBancarias(selectId, valorAtual) {
     contas.map(c => `<option value="${c.id}">${c.apelido || c.banco}</option>`).join('');
   if (contas.length === 1) sel.value = contas[0].id;
   if (valorAtual) sel.value = valorAtual;
+}
+
+// Popula os selects de Fornecedor / Cliente / Tipo de Documento / Plano de Contas
+// usados no novo modal de Lançamento (Pagar/Receber). Todos aceitam um valor pra
+// já vir pré-selecionado — usado tanto na edição quanto no fluxo de "cadastro rápido"
+// (cadastrar um fornecedor/cliente/conta contábil novo sem sair do modal de lançamento).
+// Sincroniza o texto do botão-gatilho visível (campo buscável) com o valor
+// atual do <select> real escondido por trás dele.
+// --- BUSCA DE FORNECEDOR (Contas a Pagar) COM AUTOCOMPLETE ---
+// Mesmo padrão do cliente no Novo Orçamento: filtra localmente um cache já
+// carregado, mostra dropdown embaixo do próprio campo, sem abrir modal.
+let fornecedoresCacheLancamento = [];
+
+async function carregarCacheFornecedores(valorAtual) {
+  const { data } = await db.from('fornecedores').select('id,nome').eq('oficina_id', APP.oficina.id).eq('status', 'ativo').order('nome');
+  fornecedoresCacheLancamento = data || [];
+  if (valorAtual) {
+    const f = fornecedoresCacheLancamento.find(x => x.id === valorAtual);
+    document.getElementById('pag-fornecedor').value = valorAtual;
+    document.getElementById('pag-fornecedor-nome').value = f ? f.nome : '';
+  }
+}
+
+function buscaFornecedorPag(v) {
+  document.getElementById('pag-fornecedor').value = '';
+  const termo = v.trim().toLowerCase();
+  const dropdown = document.getElementById('pag-fornecedor-dropdown');
+  if (!termo) { dropdown.style.display = 'none'; return; }
+  const resultados = fornecedoresCacheLancamento.filter(f => (f.nome || '').toLowerCase().includes(termo)).slice(0, 8);
+  dropdown.innerHTML = resultados.length === 0
+    ? '<div style="padding:10px 14px;font-size:12px;color:var(--text-3);">Nenhum fornecedor encontrado com esse nome.</div>'
+    : resultados.map(f => `<div onclick="selecionarFornecedorPag('${f.id}','${(f.nome || '').replace(/'/g, "\\'")}')" style="padding:9px 14px;cursor:pointer;font-size:12px;border-bottom:1px solid var(--border);" onmouseover="this.style.background='var(--blue-bg)'" onmouseout="this.style.background=''">${f.nome}</div>`).join('');
+  dropdown.style.display = '';
+}
+function selecionarFornecedorPag(id, nome) {
+  document.getElementById('pag-fornecedor').value = id;
+  document.getElementById('pag-fornecedor-nome').value = nome;
+  document.getElementById('pag-fornecedor-dropdown').style.display = 'none';
+}
+
+// --- BUSCA DE CLIENTE (Contas a Receber) COM AUTOCOMPLETE ---
+let clientesCacheLancamentoRec = [];
+
+async function carregarCacheClientesLancamento(valorAtual) {
+  const { data } = await db.from('clientes').select('id,nome').eq('oficina_id', APP.oficina.id).order('nome');
+  clientesCacheLancamentoRec = data || [];
+  if (valorAtual) {
+    const c = clientesCacheLancamentoRec.find(x => x.id === valorAtual);
+    document.getElementById('rec-cliente').value = valorAtual;
+    document.getElementById('rec-cliente-nome').value = c ? c.nome : '';
+  }
+}
+
+function buscaClienteRec(v) {
+  document.getElementById('rec-cliente').value = '';
+  const termo = v.trim().toLowerCase();
+  const dropdown = document.getElementById('rec-cliente-dropdown');
+  if (!termo) { dropdown.style.display = 'none'; return; }
+  const resultados = clientesCacheLancamentoRec.filter(c => (c.nome || '').toLowerCase().includes(termo)).slice(0, 8);
+  dropdown.innerHTML = resultados.length === 0
+    ? '<div style="padding:10px 14px;font-size:12px;color:var(--text-3);">Nenhum cliente encontrado com esse nome.</div>'
+    : resultados.map(c => `<div onclick="selecionarClienteRec('${c.id}','${(c.nome || '').replace(/'/g, "\\'")}')" style="padding:9px 14px;cursor:pointer;font-size:12px;border-bottom:1px solid var(--border);" onmouseover="this.style.background='var(--blue-bg)'" onmouseout="this.style.background=''">${c.nome}</div>`).join('');
+  dropdown.style.display = '';
+}
+function selecionarClienteRec(id, nome) {
+  document.getElementById('rec-cliente').value = id;
+  document.getElementById('rec-cliente-nome').value = nome;
+  document.getElementById('rec-cliente-dropdown').style.display = 'none';
+}
+
+// Fecha os dois dropdowns ao clicar fora deles (mesmo comportamento do os-cliente-dropdown)
+document.addEventListener('click', e => {
+  const dForn = document.getElementById('pag-fornecedor-dropdown');
+  if (dForn && dForn.style.display !== 'none' && !e.target.closest('#pag-fornecedor-nome') && !e.target.closest('#pag-fornecedor-dropdown')) {
+    dForn.style.display = 'none';
+  }
+  const dRec = document.getElementById('rec-cliente-dropdown');
+  if (dRec && dRec.style.display !== 'none' && !e.target.closest('#rec-cliente-nome') && !e.target.closest('#rec-cliente-dropdown')) {
+    dRec.style.display = 'none';
+  }
+});
+
+async function popularSelectTiposDocumentoLancamento(selectId, valorAtual) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  const { data } = await db.from('tipos_documento').select('id,nome').eq('oficina_id', APP.oficina.id).eq('ativo', true).order('ordem').order('nome');
+  const lista = data || [];
+  sel.innerHTML = '<option value="">Selecione...</option>' + lista.map(t => `<option value="${t.id}">${t.nome}</option>`).join('');
+  if (valorAtual) sel.value = valorAtual;
+}
+
+async function popularSelectPlanoContasLancamento(selectId, tipo, valorAtual) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  // Só contas de Grau 3 são selecionáveis aqui — Grau 1/2 são só agrupamento.
+  const { data } = await db.from('plano_contas').select('id,nome,tipo,grau').eq('oficina_id', APP.oficina.id).eq('ativo', true).eq('grau', 3).order('ordem').order('nome');
+  const lista = (data || []).filter(c => !tipo || c.tipo === tipo);
+  sel.innerHTML = '<option value="">Selecione...</option>' + lista.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+  if (valorAtual) sel.value = valorAtual;
+}
+
+// Refresca os selects de Fornecedor/Cliente/Plano de Contas nos modais de Pagar/Receber.
+// Usado quando a lista muda por qualquer motivo que não seja o fluxo de cadastro rápido
+// (que já cuida de repopular e pré-selecionar sozinho na hora de salvar).
+
+// ============================================================
+// PREVIEW DE PARCELAS — motor compartilhado entre Pagar e Receber
+// ============================================================
+// Regra central: quando "Recorrente" está ligado, a Emissão (competência)
+// avança um mês por parcela junto com o Vencimento (cada parcela é um fato
+// gerador novo, ex: aluguel mensal). Quando não é recorrente, a Emissão
+// fica fixa na data original — é uma compra/venda única parcelada, só o
+// Vencimento avança.
+let previewParcelasPag = [];
+let previewParcelasRec = [];
+
+function gerarPreviewParcelas(prefixo) {
+  const valorTotal = parseFloat(document.getElementById(prefixo + '-valor').value) || 0;
+  const n = Math.max(1, parseInt(document.getElementById(prefixo + '-parcelas').value) || 1);
+  const dataEmissaoStr = document.getElementById(prefixo + '-emissao').value;
+  const vencBaseStr = document.getElementById(prefixo + '-venc').value;
+  const recorrente = document.getElementById(prefixo + '-recorrente-toggle')?.classList.contains('on');
+  const freq = document.getElementById(prefixo + '-freq')?.value || 'mensal';
+  const incr = { mensal: 1, bimestral: 2, trimestral: 3, anual: 12 }[freq] || 1;
+
+  if (!dataEmissaoStr || !vencBaseStr || !valorTotal) {
+    if (prefixo === 'pag') previewParcelasPag = []; else previewParcelasRec = [];
+    renderPreviewParcelas(prefixo);
+    return;
+  }
+
+  const emissaoBase = new Date(dataEmissaoStr + 'T12:00:00');
+  const vencBase = new Date(vencBaseStr + 'T12:00:00');
+  const valorParcela = Math.round((valorTotal / n) * 100) / 100;
+  const linhas = [];
+  for (let i = 0; i < n; i++) {
+    const venc = new Date(vencBase); venc.setMonth(venc.getMonth() + i * incr);
+    const emis = new Date(emissaoBase);
+    if (recorrente) emis.setMonth(emis.getMonth() + i * incr);
+    const ehUltima = i === n - 1;
+    // A última parcela absorve a diferença de arredondamento das demais.
+    const valor = ehUltima ? Math.round((valorTotal - valorParcela * (n - 1)) * 100) / 100 : valorParcela;
+    linhas.push({
+      parcela: i + 1,
+      emissao: emis.toISOString().split('T')[0],
+      vencimento: venc.toISOString().split('T')[0],
+      valor,
+    });
+  }
+  if (prefixo === 'pag') previewParcelasPag = linhas; else previewParcelasRec = linhas;
+  renderPreviewParcelas(prefixo);
+}
+
+function renderPreviewParcelas(prefixo) {
+  const linhas = prefixo === 'pag' ? previewParcelasPag : previewParcelasRec;
+  const wrap = document.getElementById(prefixo + '-preview-wrap');
+  if (!wrap) return;
+  if (!linhas.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  document.getElementById(prefixo + '-preview-body').innerHTML = linhas.map((l, i) => `
+    <tr>
+      <td style="padding:8px 10px;font-size:12px;color:var(--text-3)">${l.parcela}</td>
+      <td style="padding:5px 6px;"><input type="date" class="form-input" style="font-size:11px;padding:5px 8px;" value="${l.emissao}" onchange="editarPreviewParcela('${prefixo}',${i},'emissao',this.value)"></td>
+      <td style="padding:5px 6px;"><input type="date" class="form-input" style="font-size:11px;padding:5px 8px;" value="${l.vencimento}" onchange="editarPreviewParcela('${prefixo}',${i},'vencimento',this.value)"></td>
+      <td style="padding:5px 6px;"><input type="number" step="0.01" class="form-input" style="font-size:11px;padding:5px 8px;" value="${l.valor}" onchange="editarPreviewParcela('${prefixo}',${i},'valor',this.value)"></td>
+    </tr>`).join('');
+  const total = linhas.reduce((a, l) => a + (parseFloat(l.valor) || 0), 0);
+  const totalEl = document.getElementById(prefixo + '-preview-total');
+  if (totalEl) totalEl.textContent = fmtMoeda(total);
+}
+
+function editarPreviewParcela(prefixo, idx, campo, valor) {
+  const linhas = prefixo === 'pag' ? previewParcelasPag : previewParcelasRec;
+  if (!linhas[idx]) return;
+  linhas[idx][campo] = campo === 'valor' ? (parseFloat(valor) || 0) : valor;
+  renderPreviewParcelas(prefixo);
 }
 
 function resetBaixaRecModoAcao(){
@@ -7419,90 +8006,101 @@ function renderPagar(){
     }).join('')}</tbody></table>`;
 }
 
-function abrirModalPag(){
-  document.getElementById('pag-ref').value=hoje();
-  document.getElementById('pag-venc').value=hoje();
-  document.getElementById('toggle-recorrente').classList.remove('on');
-  document.getElementById('recorrente-wrap').style.display='none';
+async function abrirModalPag(){
+  delete document.getElementById('modal-pag').dataset.editId;
+  document.querySelector('#modal-pag .modal-title').textContent = 'Novo Lançamento';
+  document.getElementById('pag-doc-num').value = '';
+  document.getElementById('pag-fornecedor-nome').value = '';
+  document.getElementById('pag-fornecedor').value = '';
+  document.getElementById('pag-desc').value = '';
+  document.getElementById('pag-valor').value = '';
+  document.getElementById('pag-parcelas').value = 1;
+  document.getElementById('pag-emissao').value = hoje();
+  document.getElementById('pag-venc').value = hoje();
+  document.getElementById('pag-recorrente-toggle').classList.remove('on');
+  previewParcelasPag = [];
+  document.getElementById('pag-preview-wrap').style.display = 'none';
+  await carregarPlanoContas(); // garante que exista Plano de Contas (semeia o padrão se a oficina for nova)
+  await Promise.all([
+    carregarCacheFornecedores(),
+    popularSelectTiposDocumentoLancamento('pag-tipo-documento'),
+    popularSelectPlanoContasLancamento('pag-plano-contas', 'despesa'),
+    popularSelectContasBancarias('pag-banco'),
+  ]);
   openModal('pag');
 }
 
-function toggleRecorrente(){
-  const on=document.getElementById('toggle-recorrente').classList.contains('on');
-  document.getElementById('recorrente-wrap').style.display=on?'block':'none';
-}
-
 async function salvarPagar(){
-  const desc=document.getElementById('pag-desc').value.trim();
-  const valorTotal=parseFloat(document.getElementById('pag-valor').value)||0;
-  if(!desc){toast('Informe a descrição.','error');return;}
-  if(!valorTotal){toast('Informe o valor.','error');return;}
+  const desc = document.getElementById('pag-desc').value.trim();
+  if (!desc) { toast('Informe a descrição.', 'error'); return; }
+  const fornecedorId = document.getElementById('pag-fornecedor').value;
+  if (!fornecedorId) { toast('Selecione o fornecedor.', 'error'); return; }
+  const tipoDocumentoId = document.getElementById('pag-tipo-documento').value;
+  if (!tipoDocumentoId) { toast('Selecione o tipo de documento.', 'error'); return; }
+  const planoContasId = document.getElementById('pag-plano-contas').value;
+  if (!planoContasId) { toast('Selecione o plano de contas.', 'error'); return; }
+  gerarPreviewParcelas('pag'); // garante que o preview reflita os campos atuais antes de salvar
+  if (!previewParcelasPag.length) { toast('Preencha valor total e vencimento pra gerar as parcelas.', 'error'); return; }
+
   const editId = document.getElementById('modal-pag').dataset.editId;
+  const base = {
+    oficina_id: APP.oficina.id,
+    numero_nf: document.getElementById('pag-doc-num').value.trim() || null,
+    fornecedor_id: fornecedorId,
+    tipo_documento_id: tipoDocumentoId,
+    plano_contas_id: planoContasId,
+    conta_bancaria_id: document.getElementById('pag-banco').value || null,
+    descricao: desc,
+    origem: 'comp',
+    recorrente: document.getElementById('pag-recorrente-toggle').classList.contains('on'),
+    frequencia_recorrencia: document.getElementById('pag-freq').value,
+  };
+
   if (editId) {
-    const {error} = await db.from('contas_pagar').update({
-      origem:document.getElementById('pag-origem').value,
-      descricao:desc,
-      categoria:document.getElementById('pag-cat').value,
-      data_referencia:document.getElementById('pag-ref').value,
-      data_vencimento:document.getElementById('pag-venc').value,
-      valor:valorTotal,
-      forma_pagamento:document.getElementById('pag-forma').value,
+    // Edição atualiza só o título aberto (não regenera as parcelas irmãs, se houver).
+    const primeira = previewParcelasPag[0];
+    const { error } = await db.from('contas_pagar').update({
+      ...base,
+      data_referencia: primeira.emissao,
+      data_vencimento: primeira.vencimento,
+      valor: primeira.valor,
     }).eq('id', editId);
     delete document.getElementById('modal-pag').dataset.editId;
     document.querySelector('#modal-pag .modal-title').textContent = 'Novo Lançamento';
-    if(error){toast('Erro: '+error.message,'error');return;}
+    if (error) { toast('Erro: ' + error.message, 'error'); return; }
     closeModal('pag');
-    toast('Lançamento atualizado!','success');
+    toast('Lançamento atualizado!', 'success');
     await carregarPagar();
     return;
   }
-  const n=parseInt(document.getElementById('pag-parcelas').value)||1;
-  const vencBase=new Date(document.getElementById('pag-venc').value+'T12:00:00');
-  const recorrente=document.getElementById('toggle-recorrente').classList.contains('on');
-  const freq=document.getElementById('pag-freq').value;
-  const mesesFreq={mensal:1,bimestral:2,trimestral:3,anual:12};
-  const incr=mesesFreq[freq]||1;
-  const pv=valorTotal/n;
-  const inserts=[];
-  for(let i=0;i<n;i++){
-    const d=new Date(vencBase);
-    d.setMonth(d.getMonth()+i);
-    inserts.push({
-      oficina_id:APP.oficina.id,
-      origem:document.getElementById('pag-origem').value,
-      descricao:n>1?`${desc} (${i+1}/${n})`:desc,
-      categoria:document.getElementById('pag-cat').value,
-      data_referencia:document.getElementById('pag-ref').value,
-      data_vencimento:d.toISOString().split('T')[0],
-      valor:parseFloat(pv.toFixed(2)),
-      forma_pagamento:document.getElementById('pag-forma').value,
-      status:'aberto',recorrente,
-      frequencia_recorrencia:recorrente?freq:null,
-    });
+
+  const n = previewParcelasPag.length;
+  const primeira = previewParcelasPag[0];
+  const { data: raiz, error: errRaiz } = await db.from('contas_pagar').insert({
+    ...base, status: 'aberto',
+    data_referencia: primeira.emissao,
+    data_vencimento: primeira.vencimento,
+    valor: primeira.valor,
+    parcela_num: 1, parcela_total: n,
+  }).select();
+  if (errRaiz) { toast('Erro: ' + errRaiz.message, 'error'); return; }
+  const raizId = raiz?.[0]?.id;
+
+  if (n > 1 && raizId) {
+    const demais = previewParcelasPag.slice(1).map((p, i) => ({
+      ...base, status: 'aberto',
+      data_referencia: p.emissao,
+      data_vencimento: p.vencimento,
+      valor: p.valor,
+      conta_pai_id: raizId,
+      parcela_num: i + 2, parcela_total: n,
+    }));
+    const { error: errDemais } = await db.from('contas_pagar').insert(demais);
+    if (errDemais) toast('Título principal salvo, mas houve erro ao gerar as demais parcelas: ' + errDemais.message, 'error');
   }
-  // Se recorrente, gera os próximos 11 meses além das parcelas
-  if(recorrente&&n===1){
-    for(let i=1;i<12;i++){
-      const d=new Date(vencBase);
-      d.setMonth(d.getMonth()+i*incr);
-      inserts.push({
-        oficina_id:APP.oficina.id,
-        origem:document.getElementById('pag-origem').value,
-        descricao:`${desc} (${i+1}/12)`,
-        categoria:document.getElementById('pag-cat').value,
-        data_referencia:d.toISOString().split('T')[0],
-        data_vencimento:d.toISOString().split('T')[0],
-        valor:valorTotal,
-        forma_pagamento:document.getElementById('pag-forma').value,
-        status:'aberto',recorrente:true,
-        frequencia_recorrencia:freq,
-      });
-    }
-  }
-  const {error}=await db.from('contas_pagar').insert(inserts);
-  if(error){toast('Erro: '+error.message,'error');return;}
+
   closeModal('pag');
-  toast(`Salvo! ${inserts.length>1?inserts.length+" parcelas geradas.":""}`.trim(),'success');
+  toast(n > 1 ? n + ' parcelas geradas!' : 'Lançamento salvo!', 'success');
   await carregarPagar();
 }
 
@@ -8300,7 +8898,7 @@ function renderFornecedores() {
       </tr></thead>
       <tbody>${lista.map((f, i) => {
         const catHtml = (f.categorias || []).slice(0, 2).map(c => `<span style="font-size:10px;padding:1px 6px;border-radius:4px;background:var(--blue-bg);color:var(--blue);font-weight:500">${c}</span>`).join(' ');
-        return `<tr>
+        return `<tr onclick="abrirDetalheFornecedor('${f.id}')" style="cursor:pointer">
           <td><div style="display:flex;align-items:center;gap:9px;">
             <div style="width:30px;height:30px;border-radius:8px;background:${CORES_AV[i % CORES_AV.length]};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">${f.nome?.split(' ').slice(0,2).map(w=>w[0]).join('')}</div>
             <div><div style="font-weight:500;color:var(--navy)">${f.nome}</div><div style="font-size:10px;color:var(--text-3);font-family:monospace">${f.cnpj || ''}</div></div>
@@ -8310,7 +8908,7 @@ function renderFornecedores() {
           <td style="font-size:12px;color:var(--text-2)">${f.prazo_pagamento || '—'}</td>
           <td style="font-size:12px;color:var(--text-2)">${f.forma_pagamento || '—'}</td>
           <td><span class="badge badge-success">Ativo</span></td>
-          <td><button class="action-btn" onclick="excluirFornecedor('${f.id}')"><i class="ti ti-trash"></i></button></td>
+          <td><button class="action-btn" onclick="event.stopPropagation();excluirFornecedor('${f.id}')" title="Excluir"><i class="ti ti-trash"></i></button></td>
         </tr>`;
       }).join('')}</tbody>
     </table>`;
@@ -8319,9 +8917,11 @@ function renderFornecedores() {
 async function salvarFornecedor() {
   const nome = document.getElementById('forn-nome').value.trim();
   if (!nome) { toast('Informe a razão social.', 'error'); return; }
+  const modalEl = document.getElementById('modal-forn');
+  const voltarPag = modalEl.dataset.voltarPag;
   const catsRaw = document.getElementById('forn-cats').value;
   const cats = catsRaw ? catsRaw.split(',').map(c => c.trim()).filter(Boolean) : [];
-  const { error } = await db.from('fornecedores').insert({
+  const { data, error } = await db.from('fornecedores').insert({
     oficina_id: APP.oficina.id, nome,
     cnpj: document.getElementById('forn-cnpj').value,
     telefone: document.getElementById('forn-tel').value,
@@ -8332,17 +8932,145 @@ async function salvarFornecedor() {
     forma_pagamento: document.getElementById('forn-forma').value,
     categorias: cats,
     status: 'ativo',
-  });
+  }).select();
   if (error) { toast('Erro: ' + error.message, 'error'); return; }
+  const novoId = data?.[0]?.id || null;
+  delete modalEl.dataset.voltarPag;
   closeModal('forn');
   toast('Fornecedor salvo!', 'success');
   await carregarFornecedores();
+  if (voltarPag && novoId) {
+    await carregarCacheFornecedores(novoId);
+    openModal('pag');
+  }
+}
+
+// Abre o cadastro de fornecedor por cima do modal de Contas a Pagar, sem perder
+// o que já foi preenchido lá. Ao salvar, volta automaticamente e já seleciona.
+function cadastrarFornecedorRapido() {
+  closeModal('pag');
+  const modalEl = document.getElementById('modal-forn');
+  modalEl.dataset.voltarPag = '1';
+  ['forn-nome','forn-cnpj','forn-tel','forn-email','forn-rep','forn-end','forn-cats'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.querySelector('#modal-forn .modal-title').textContent = 'Novo Fornecedor';
+  openModal('forn');
 }
 
 async function excluirFornecedor(id) {
-  if (!confirm('Excluir este fornecedor?')) return;
-  await db.from('fornecedores').delete().eq('id', id);
-  toast('Fornecedor excluído', 'success');
+  abrirConfirm('Excluir fornecedor', 'Deseja excluir este fornecedor? Lançamentos existentes em Contas a Pagar não serão afetados.', async (ok) => {
+    if (!ok) return;
+    await db.from('fornecedores').delete().eq('id', id);
+    toast('Fornecedor excluído', 'success');
+    closeModal('detalhe-forn');
+    await carregarFornecedores();
+  });
+}
+
+// ============================================================
+// DETALHE DO FORNECEDOR (com histórico de Notas/Compromissos)
+// ============================================================
+let detalheFornId = null;
+
+async function abrirDetalheFornecedor(id) {
+  let f = fornTodos.find(x => x.id === id);
+  if (!f) {
+    const { data } = await db.from('fornecedores').select('*').eq('id', id).single();
+    f = data;
+  }
+  if (!f) return;
+  detalheFornId = id;
+  document.getElementById('modal-detalhe-forn').dataset.fornId = id;
+  document.getElementById('dforn-nome').textContent = f.nome;
+  document.getElementById('dforn-sub').textContent = (f.cnpj || '—') + ' · ' + (f.telefone || '—');
+  document.getElementById('dforn-nome-input').value = f.nome || '';
+  document.getElementById('dforn-cnpj').value = f.cnpj || '';
+  document.getElementById('dforn-tel').value = f.telefone || '';
+  document.getElementById('dforn-email').value = f.email || '';
+  document.getElementById('dforn-rep').value = f.representante || '';
+  document.getElementById('dforn-prazo').value = f.prazo_pagamento || 'À vista';
+  document.getElementById('dforn-forma').value = f.forma_pagamento || 'PIX';
+  document.getElementById('dforn-end').value = f.endereco || '';
+  document.getElementById('dforn-cats').value = (f.categorias || []).join(', ');
+  switchDetalheFornTab('dados');
+  openModal('detalhe-forn');
+}
+
+function switchDetalheFornTab(aba) {
+  document.getElementById('dforn-panel-dados').style.display = aba === 'dados' ? '' : 'none';
+  document.getElementById('dforn-panel-hist').style.display = aba === 'hist' ? '' : 'none';
+  document.getElementById('dforn-modal-foot').style.display = aba === 'dados' ? '' : 'none';
+  ['dados', 'hist'].forEach(a => {
+    const btn = document.getElementById('dforn-tab-' + a);
+    btn.style.color = a === aba ? 'var(--blue)' : 'var(--text-3)';
+    btn.style.borderBottomColor = a === aba ? 'var(--blue)' : 'transparent';
+  });
+  if (aba === 'hist') carregarHistoricoFornecedor();
+}
+
+async function carregarHistoricoFornecedor() {
+  if (!detalheFornId) return;
+  document.getElementById('dforn-hist-conteudo').innerHTML = '<div class="loading"><div class="spinner"></div> Carregando...</div>';
+  const { data: lista } = await db.from('contas_pagar')
+    .select('id,numero,numero_nf,descricao,valor,data_vencimento,data_pagamento,status')
+    .eq('fornecedor_id', detalheFornId)
+    .order('data_vencimento', { ascending: false });
+
+  if (!lista || lista.length === 0) {
+    document.getElementById('dforn-hist-conteudo').innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-3);font-size:12px;">Nenhum lançamento encontrado para este fornecedor.</div>';
+    return;
+  }
+
+  const ST = { aberto: 'Em aberto', atraso: 'Vencido', pago: 'Pago', pago_parcial: 'Pago parcial', cancelado: 'Cancelado' };
+  const SC = { aberto: 'badge-blue', atraso: 'badge-danger', pago: 'badge-success', pago_parcial: 'badge-warning', cancelado: 'badge-gray' };
+  const totalGeral = lista.reduce((a, l) => a + (l.valor || 0), 0);
+  const totalPago = lista.filter(l => l.status === 'pago').reduce((a, l) => a + (l.valor || 0), 0);
+
+  const resumo = `<div style="display:flex;gap:20px;padding:10px 14px;background:var(--surface-2);border-radius:var(--radius-md);margin-bottom:14px;font-size:12px;">
+      <div><span style="color:var(--text-3)">Total lançado:</span> <strong style="color:var(--navy)">${fmtMoeda(totalGeral)}</strong></div>
+      <div><span style="color:var(--text-3)">Total pago:</span> <strong style="color:var(--success)">${fmtMoeda(totalPago)}</strong></div>
+      <div><span style="color:var(--text-3)">Lançamentos:</span> <strong style="color:var(--navy)">${lista.length}</strong></div>
+    </div>`;
+
+  const linhas = lista.map(l => {
+    const label = ST[l.status] || l.status;
+    const cor = SC[l.status] || 'badge-gray';
+    const doc = l.numero_nf ? ' · NF ' + l.numero_nf : (l.numero ? ' · #' + l.numero : '');
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:8px;">
+        <div>
+          <div style="font-weight:500;color:var(--navy);font-size:13px">${l.descricao || '—'}${doc}</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:3px">Vencimento: ${l.data_vencimento ? new Date(l.data_vencimento + 'T12:00:00').toLocaleDateString('pt-BR') : '—'}${l.data_pagamento ? ' · Pago em ' + new Date(l.data_pagamento + 'T12:00:00').toLocaleDateString('pt-BR') : ''}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-weight:600;color:var(--navy);font-size:13px">${fmtMoeda(l.valor)}</div>
+          <span class="badge ${cor}" style="font-size:10px;margin-top:3px;">${label}</span>
+        </div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('dforn-hist-conteudo').innerHTML = resumo + linhas;
+}
+
+async function salvarDetalheFornecedor() {
+  const nome = document.getElementById('dforn-nome-input').value.trim();
+  if (!nome) { toast('Informe a razão social.', 'error'); return; }
+  const catsRaw = document.getElementById('dforn-cats').value;
+  const cats = catsRaw ? catsRaw.split(',').map(c => c.trim()).filter(Boolean) : [];
+  const { error } = await db.from('fornecedores').update({
+    nome,
+    cnpj: document.getElementById('dforn-cnpj').value,
+    telefone: document.getElementById('dforn-tel').value,
+    email: document.getElementById('dforn-email').value,
+    representante: document.getElementById('dforn-rep').value,
+    prazo_pagamento: document.getElementById('dforn-prazo').value,
+    forma_pagamento: document.getElementById('dforn-forma').value,
+    endereco: document.getElementById('dforn-end').value,
+    categorias: cats,
+  }).eq('id', detalheFornId);
+  if (error) { toast('Erro: ' + error.message, 'error'); return; }
+  toast('Fornecedor atualizado!', 'success');
+  document.getElementById('dforn-nome').textContent = nome;
   await carregarFornecedores();
 }
 
