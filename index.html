@@ -151,6 +151,14 @@ body{font-family:var(--font-body);background:var(--surface-2);color:var(--text);
 .fin-nav-item.active{background:var(--blue-bg);color:var(--blue);font-weight:500;}
 .fin-nav-item i{font-size:15px;flex-shrink:0;}
 .content.fin-shift{margin-left:200px;}
+.prec-subsidebar{display:none;flex-direction:column;position:fixed;top:var(--topbar-h);left:var(--sidebar-w);bottom:0;width:200px;background:var(--subsidebar-bg);border-right:1px solid var(--subsidebar-border);z-index:150;padding:16px 10px;overflow-y:auto;}
+.prec-subsidebar.show{display:flex;}
+.prec-subsidebar-title{font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-3);padding:4px 10px 10px;}
+.prec-nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius-md);cursor:pointer;font-size:12px;color:var(--text-2);margin-bottom:1px;border:none;background:none;width:100%;text-align:left;font-family:var(--font-body);transition:all .15s;outline:none;}
+.prec-nav-item:hover{background:var(--subsidebar-hover);}
+.prec-nav-item.active{background:var(--blue-bg);color:var(--blue);font-weight:500;}
+.prec-nav-item i{font-size:15px;flex-shrink:0;}
+.content.prec-shift{margin-left:200px;}
 .nav-badge{margin-left:auto;background:rgba(255,255,255,0.14);font-size:9px;padding:2px 6px;border-radius:10px;}
 .sidebar-footer{padding:11px 12px;border-top:1px solid rgba(255,255,255,0.08);position:relative;}
 .sidebar-user{display:flex;align-items:center;gap:9px;cursor:pointer;padding:5px;margin:-5px;border-radius:var(--radius-md);transition:background .15s;}
@@ -348,6 +356,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
 .modal{background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);margin-bottom:16px;box-shadow:var(--shadow-lg);width:100%;max-height:92vh;overflow-y:auto;}
 .modal-md{max-width:560px;}
 .modal-lg{max-width:720px;}
+.modal-xl{max-width:900px;}
 .modal-head{padding:15px 22px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:10;}
 .modal-title{font-family:var(--font-display);font-size:16px;font-weight:500;color:var(--navy);}
 .modal-sub{font-size:11px;color:var(--text-3);margin-top:2px;}
@@ -563,7 +572,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
       <div class="sidebar-nav-section">Administrativo</div>
       <button class="nav-item" onclick="navigate('rh',this)"><i class="ti ti-users-group"></i> RH</button>
       <button class="nav-item" id="nav-financeiro" onclick="navigate('receber',this)"><i class="ti ti-report-money"></i> Financeiro</button>
-      <button class="nav-item" onclick="navigate('precificacao',this)"><i class="ti ti-calculator"></i> Precificação</button>
+      <button class="nav-item" id="nav-precificacao" onclick="navigate('precmao',this)"><i class="ti ti-calculator"></i> Precificação</button>
       <div class="sidebar-nav-section">Sistema</div>
       <button class="nav-item" onclick="navigate('relatorios',this)"><i class="ti ti-chart-bar"></i> Relatórios</button>
       <button class="nav-item" onclick="navigate('config',this)"><i class="ti ti-settings"></i> Configurações</button>
@@ -605,6 +614,13 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
     <button class="fin-nav-item" data-fin-view="bancario" onclick="navigate('bancario')"><i class="ti ti-building-bank"></i> Contas Bancárias</button>
     <button class="fin-nav-item" data-fin-view="dre" onclick="navigate('dre')"><i class="ti ti-report-analytics"></i> DRE</button>
     <button class="fin-nav-item" data-fin-view="fluxo" onclick="navigate('fluxo')"><i class="ti ti-activity"></i> Fluxo de Caixa</button>
+  </nav>
+
+  <!-- SUB-SIDEBAR INTERNA — MÓDULO PRECIFICAÇÃO -->
+  <nav class="prec-subsidebar" id="prec-subsidebar">
+    <div class="prec-subsidebar-title">Precificação</div>
+    <button class="prec-nav-item" data-prec-view="precmao" onclick="navigate('precmao')"><i class="ti ti-tool"></i> Mão de Obra</button>
+    <button class="prec-nav-item" data-prec-view="precpecas" onclick="navigate('precpecas')"><i class="ti ti-package"></i> Peças</button>
   </nav>
 
   <!-- MAIN -->
@@ -982,54 +998,54 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
       </div>
 
       <!-- PRECIFICAÇÃO -->
-      <div class="page" id="page-precificacao">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-          <!-- SERVIÇOS -->
-          <div style="background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);overflow:hidden;">
-            <div style="background:var(--navy-surface);padding:14px 18px;">
-              <div style="font-size:14px;font-weight:500;color:#fff;"><i class="ti ti-tool"></i> Precificação de Serviços</div>
-              <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px">Custo hora calculado dos seus dados reais</div>
-            </div>
-            <div style="padding:18px;">
-              <div style="background:var(--blue-bg);border-radius:var(--radius-md);border:1px solid var(--border);padding:13px 15px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;">
-                <div><div style="font-size:11px;color:var(--text-3)">Custo hora oficina</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">calculado automaticamente</div></div>
-                <div style="font-size:22px;font-weight:500;color:var(--navy)" id="prec-custo-hora">R$ —</div>
-              </div>
-              <div style="margin-bottom:10px;"><div style="font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-3);font-weight:500;border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:8px;">Estrutura de custos</div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Despesas fixas mensais</span><input class="form-input" type="number" id="prec-desp" value="28000" oninput="calcPrecSvc()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Horas produtivas / dia</span><input class="form-input" type="number" id="prec-hd" value="8" step="0.5" oninput="calcPrecSvc()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Dias úteis / mês</span><input class="form-input" type="number" id="prec-dias" value="22" oninput="calcPrecSvc()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px;"><span style="color:var(--text-2)">Mecânicos produtivos</span><input class="form-input" type="number" id="prec-mecs" value="3" oninput="calcPrecSvc()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
-              </div>
-              <div style="margin-bottom:10px;"><div style="font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-3);font-weight:500;border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:8px;">Simulador</div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Horas do serviço</span><input class="form-input" type="number" id="prec-sh" value="1" step="0.5" oninput="calcPrecSvc()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Markup (%)</span><input class="form-input" type="number" id="prec-mk" value="60" oninput="calcPrecSvc()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Imposto sobre receita (%)</span><input class="form-input" type="number" id="prec-imp" value="8" step="0.1" oninput="calcPrecSvc()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px;"><span style="color:var(--text-2)">Taxa de transação (%)</span><input class="form-input" type="number" id="prec-tx" value="2.99" step="0.01" oninput="calcPrecSvc()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
-              </div>
-              <div id="prec-result-svc" style="background:var(--navy-surface);border-radius:var(--radius-md);padding:13px 16px;"></div>
-            </div>
+      <div class="page" id="page-precmao">
+        <div style="max-width:560px;background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);overflow:hidden;">
+          <div style="background:var(--navy-surface);padding:14px 18px;">
+            <div style="font-size:14px;font-weight:500;color:#fff;"><i class="ti ti-tool"></i> Precificação de Mão de Obra</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px">Custo hora calculado dos seus dados reais</div>
           </div>
-          <!-- PEÇAS -->
-          <div style="background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);overflow:hidden;">
-            <div style="background:var(--navy-surface);padding:14px 18px;">
-              <div style="font-size:14px;font-weight:500;color:#fff;"><i class="ti ti-package"></i> Precificação de Peças</div>
-              <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px">Markup sobre custo de aquisição</div>
+          <div style="padding:18px;">
+            <div style="background:var(--blue-bg);border-radius:var(--radius-md);border:1px solid var(--border);padding:13px 15px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;">
+              <div><div style="font-size:11px;color:var(--text-3)">Custo hora oficina</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">calculado automaticamente</div></div>
+              <div style="font-size:22px;font-weight:500;color:var(--navy)" id="prec-custo-hora">R$ —</div>
             </div>
-            <div style="padding:18px;">
-              <div style="margin-bottom:10px;"><div style="font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-3);font-weight:500;border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:8px;">Parâmetros</div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Custo de aquisição (R$)</span><input class="form-input" type="number" id="pp-custo" value="100" step="0.01" oninput="calcPrecPec()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Imposto (%)</span><input class="form-input" type="number" id="pp-imp" value="8" step="0.1" oninput="calcPrecPec()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">% Custos fixos sobre receita</span><input class="form-input" type="number" id="pp-cf" value="15" step="0.1" oninput="calcPrecPec()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">% Lucro desejado</span><input class="form-input" type="number" id="pp-lucro" value="20" step="0.1" oninput="calcPrecPec()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Taxa de transação (%)</span><input class="form-input" type="number" id="pp-tx" value="2.99" step="0.01" oninput="calcPrecPec()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px;"><span style="color:var(--text-2)">Quantidade vendida</span><input class="form-input" type="number" id="pp-qtd" value="1" oninput="calcPrecPec()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
-              </div>
-              <div id="prec-result-pec" style="background:var(--navy-surface);border-radius:var(--radius-md);padding:13px 16px;"></div>
+            <div style="margin-bottom:10px;"><div style="font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-3);font-weight:500;border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:8px;">Estrutura de custos</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Despesas fixas mensais</span><input class="form-input" type="number" id="prec-desp" value="28000" oninput="calcPrecSvc()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Horas produtivas / dia</span><input class="form-input" type="number" id="prec-hd" value="8" step="0.5" oninput="calcPrecSvc()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Dias úteis / mês</span><input class="form-input" type="number" id="prec-dias" value="22" oninput="calcPrecSvc()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px;"><span style="color:var(--text-2)">Mecânicos produtivos</span><input class="form-input" type="number" id="prec-mecs" value="3" oninput="calcPrecSvc()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
             </div>
+            <div style="margin-bottom:10px;"><div style="font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-3);font-weight:500;border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:8px;">Simulador</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Horas do serviço</span><input class="form-input" type="number" id="prec-sh" value="1" step="0.5" oninput="calcPrecSvc()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Markup (%)</span><input class="form-input" type="number" id="prec-mk" value="60" oninput="calcPrecSvc()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Imposto sobre receita (%)</span><input class="form-input" type="number" id="prec-imp" value="8" step="0.1" oninput="calcPrecSvc()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px;"><span style="color:var(--text-2)">Taxa de transação (%)</span><input class="form-input" type="number" id="prec-tx" value="2.99" step="0.01" oninput="calcPrecSvc()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
+            </div>
+            <div id="prec-result-svc" style="background:var(--navy-surface);border-radius:var(--radius-md);padding:13px 16px;"></div>
           </div>
         </div>
       </div>
+
+      <div class="page" id="page-precpecas">
+        <div style="max-width:560px;background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);overflow:hidden;">
+          <div style="background:var(--navy-surface);padding:14px 18px;">
+            <div style="font-size:14px;font-weight:500;color:#fff;"><i class="ti ti-package"></i> Precificação de Peças</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px">Markup sobre custo de aquisição</div>
+          </div>
+          <div style="padding:18px;">
+            <div style="margin-bottom:10px;"><div style="font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-3);font-weight:500;border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:8px;">Parâmetros</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Custo de aquisição (R$)</span><input class="form-input" type="number" id="pp-custo" value="100" step="0.01" oninput="calcPrecPec()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Imposto (%)</span><input class="form-input" type="number" id="pp-imp" value="8" step="0.1" oninput="calcPrecPec()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">% Custos fixos sobre receita</span><input class="form-input" type="number" id="pp-cf" value="15" step="0.1" oninput="calcPrecPec()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">% Lucro desejado</span><input class="form-input" type="number" id="pp-lucro" value="20" step="0.1" oninput="calcPrecPec()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-2)">Taxa de transação (%)</span><input class="form-input" type="number" id="pp-tx" value="2.99" step="0.01" oninput="calcPrecPec()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px;"><span style="color:var(--text-2)">Quantidade vendida</span><input class="form-input" type="number" id="pp-qtd" value="1" oninput="calcPrecPec()" style="width:110px;padding:5px 9px;font-size:12px;text-align:right"></div>
+            </div>
+            <div id="prec-result-pec" style="background:var(--navy-surface);border-radius:var(--radius-md);padding:13px 16px;"></div>
+          </div>
+        </div>
+      </div>
+
 
       <!-- COMERCIAL (em desenvolvimento) -->
       <div class="page" id="page-comercial">
@@ -1454,6 +1470,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
     <button class="btn btn-outline btn-sm" onclick="abrirVeiculoDeCliente()" style="margin-left:auto;"><i class="ti ti-car-plus"></i> Adicionar veículo</button>
   </div>
   <div id="dcli-panel-dados" class="modal-body">
+    <div style="max-width:520px;margin:0 auto;">
     <div class="form-grid">
       <div class="form-group form-full">
         <label class="form-label">Tipo</label>
@@ -1480,6 +1497,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
         </select>
       </div>
     </div>
+    </div>
   </div>
   <div id="dcli-panel-hist" class="modal-body" style="display:none;">
     <div id="dcli-hist-conteudo"><div class="loading"><div class="spinner"></div> Carregando...</div></div>
@@ -1493,7 +1511,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
 
 <!-- MODAL DETALHE VEÍCULO -->
 <div class="modal-overlay" id="modal-detalhe-vei" onclick="if(event.target===this)closeModal('detalhe-vei')">
-<div class="modal modal-lg">
+<div class="modal modal-xl">
   <div class="modal-head">
     <div><div class="modal-title" id="dvei-titulo">Veículo</div><div class="modal-sub" id="dvei-sub">—</div></div>
     <button class="modal-close" onclick="closeModal('detalhe-vei')"><i class="ti ti-x"></i></button>
@@ -1503,6 +1521,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
     <button id="dvei-tab-hist" onclick="switchDetalheVeiTab('hist')" style="padding:10px 16px;font-size:12px;font-weight:500;border:none;background:none;cursor:pointer;color:var(--text-3);border-bottom:2px solid transparent;margin-bottom:-1px;">Histórico de OS</button>
   </div>
   <div id="dvei-panel-dados" class="modal-body">
+    <div style="max-width:560px;margin:0 auto;">
     <div class="form-grid">
       <div class="form-group"><label class="form-label">Placa</label><input class="form-input" id="dvei-placa" readonly style="background:var(--surface-2);font-family:monospace;font-weight:700;letter-spacing:2px;text-transform:uppercase"></div>
       <div class="form-group"><label class="form-label">Cliente</label><input class="form-input" id="dvei-cliente" readonly style="background:var(--surface-2)"></div>
@@ -1517,6 +1536,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
       <div class="form-group"><label class="form-label">Câmbio</label><input class="form-input" id="dvei-cambio"></div>
       <div class="form-group"><label class="form-label">Motor</label><input class="form-input" id="dvei-motor"></div>
     </div>
+    </div>
   </div>
   <div id="dvei-panel-hist" class="modal-body" style="display:none;">
     <div id="dvei-hist-conteudo"><div class="loading"><div class="spinner"></div> Carregando...</div></div>
@@ -1530,7 +1550,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
 
 <!-- MODAL NOVO CLIENTE -->
 <div class="modal-overlay" id="modal-cli" onclick="if(event.target===this)closeModal('cli')">
-<div class="modal modal-md">
+<div class="modal modal-lg">
   <div class="modal-head">
     <div><div class="modal-title" id="cli-modal-title">Novo Cliente</div><div class="modal-sub">Preencha os dados cadastrais</div></div>
     <button class="modal-close" onclick="closeModal('cli')"><i class="ti ti-x"></i></button>
@@ -1541,6 +1561,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
     <button class="btn btn-primary btn-sm" onclick="abrirVeiculoDeClienteForm()" style="flex-shrink:0;"><i class="ti ti-car-plus"></i> Adicionar veículo</button>
   </div>
   <div class="modal-body">
+    <div style="max-width:520px;margin:0 auto;">
     <div class="form-grid">
       <div class="form-group form-full">
         <label class="form-label">Tipo</label>
@@ -1570,6 +1591,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
           <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
         </select>
       </div>
+    </div>
     </div>
   </div>
   <div class="modal-foot">
@@ -1616,12 +1638,13 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
 
 <!-- MODAL NOVO VEÍCULO -->
 <div class="modal-overlay" id="modal-vei" onclick="if(event.target===this)closeModal('vei')">
-<div class="modal modal-lg">
+<div class="modal modal-xl">
   <div class="modal-head">
     <div><div class="modal-title">Novo Veículo</div><div class="modal-sub">Cadastro completo do veículo</div></div>
     <button class="modal-close" onclick="closeModal('vei')"><i class="ti ti-x"></i></button>
   </div>
   <div class="modal-body" style="max-height:70vh;overflow-y:auto;">
+    <div style="max-width:720px;margin:0 auto;">
     <div class="form-grid">
 
       <div class="form-sec">Identificação</div>
@@ -1688,6 +1711,7 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
       <div class="form-group form-full"><label class="form-label">Intervalo de revisão</label>
         <select class="form-input" id="vei-intervalo"><option value="10000">10.000 km</option><option value="5000">5.000 km</option><option value="15000">15.000 km</option></select>
       </div>
+    </div>
     </div>
   </div>
   <div class="modal-foot">
@@ -2726,6 +2750,54 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
 </div>
 </div>
 
+<!-- MODAL IMPORTAR OFX -->
+<div class="modal-overlay" id="modal-ofx" onclick="if(event.target===this)closeModal('ofx')">
+<div class="modal modal-xl">
+  <div class="modal-head">
+    <div><div class="modal-title">Importar extrato (OFX)</div><div class="modal-sub">Lança o que for novo e concilia o que já existe no sistema</div></div>
+    <button class="modal-close" onclick="closeModal('ofx')"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="modal-body">
+    <!-- ETAPA 1: upload -->
+    <div id="ofx-step-upload">
+      <div class="form-grid">
+        <div class="form-group form-full"><label class="form-label">Conta bancária</label><select class="form-input" id="ofx-conta"><option value="">Selecione...</option></select></div>
+        <div class="form-group form-full">
+          <label class="form-label">Arquivo .ofx</label>
+          <input type="file" accept=".ofx,.OFX" id="ofx-arquivo" onchange="ofxArquivoSelecionado(this)" style="display:none">
+          <button class="btn btn-outline" style="width:100%" onclick="document.getElementById('ofx-arquivo').click()"><i class="ti ti-upload"></i> Escolher arquivo</button>
+          <div id="ofx-nome-arquivo" style="font-size:12px;color:var(--text-3);margin-top:6px"></div>
+        </div>
+      </div>
+    </div>
+    <!-- ETAPA 2: preview / classificação -->
+    <div id="ofx-step-preview" style="display:none;">
+      <div id="ofx-resumo" style="font-size:12.5px;color:var(--text-3);margin-bottom:10px;"></div>
+      <div style="overflow-x:auto;max-height:55vh;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-md);">
+        <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+          <thead style="position:sticky;top:0;background:var(--surface-2);z-index:1;">
+            <tr>
+              <th style="text-align:left;padding:8px 10px;">Data</th>
+              <th style="text-align:left;padding:8px 10px;">Descrição</th>
+              <th style="text-align:right;padding:8px 10px;">Valor</th>
+              <th style="text-align:left;padding:8px 10px;">Status</th>
+              <th style="text-align:left;padding:8px 10px;">Classificação</th>
+              <th style="text-align:left;padding:8px 10px;">Ação</th>
+            </tr>
+          </thead>
+          <tbody id="ofx-preview-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn btn-outline" onclick="closeModal('ofx')">Cancelar</button>
+    <button class="btn btn-primary" id="ofx-btn-processar" onclick="processarArquivoOFX()"><i class="ti ti-scan"></i> Processar arquivo</button>
+    <button class="btn btn-primary" id="ofx-btn-confirmar" style="display:none" onclick="confirmarImportacaoOFX()"><i class="ti ti-check"></i> Confirmar importação</button>
+  </div>
+</div>
+</div>
+
 <!-- MODAL TRANSFERÊNCIA ENTRE CONTAS -->
 <div class="modal-overlay" id="modal-transferencia" onclick="if(event.target===this)closeModal('transferencia')">
 <div class="modal modal-md">
@@ -2788,11 +2860,12 @@ const PAGE_CONFIG = {
   agendamento: { title:"Agendamento", sub:"Próximas entregas e compromissos", actions:"" },
   receber:      { title:"Contas a Receber", sub:"Receitas, previsão e baixas", actions:"<button class='btn btn-outline btn-sm'><i class='ti ti-download'></i> Exportar</button><button class='btn btn-primary btn-sm' onclick='abrirModalRec()'><i class='ti ti-plus'></i> Novo Lançamento</button>" },
   pagar:        { title:"Contas a Pagar", sub:"Compromissos e notas de fornecedores", actions:"<button class='btn btn-outline btn-sm'><i class='ti ti-download'></i> Exportar</button><button class='btn btn-primary btn-sm' onclick='abrirModalPag()'><i class='ti ti-plus'></i> Novo Lançamento</button>" },
-  movimentacoes: { title:"Movimentações", sub:"Livro caixa — entradas, saídas e transferências", actions:"<button class='btn btn-outline btn-sm' onclick='abrirModalTransferencia()'><i class='ti ti-arrows-left-right'></i> Transferência</button><button class='btn btn-primary btn-sm' onclick='abrirModalMovAvulsa()'><i class='ti ti-plus'></i> Lançamento Avulso</button>" },
+  movimentacoes: { title:"Movimentações", sub:"Livro caixa — entradas, saídas e transferências", actions:"<button class='btn btn-outline btn-sm' onclick='abrirModalOfx()'><i class='ti ti-file-import'></i> Importar OFX</button><button class='btn btn-outline btn-sm' onclick='abrirModalTransferencia()'><i class='ti ti-arrows-left-right'></i> Transferência</button><button class='btn btn-primary btn-sm' onclick='abrirModalMovAvulsa()'><i class='ti ti-plus'></i> Lançamento Avulso</button>" },
   bancario:     { title:"Contas Bancárias", sub:"Saldos e posição financeira", actions:"<button class='btn btn-outline btn-sm' onclick='carregarBancario()'><i class='ti ti-refresh'></i> Atualizar</button><button class='btn btn-primary btn-sm' onclick='showCfgPanel(\"contas\",null);navigate(\"config\",null)'><i class='ti ti-settings'></i> Gerenciar contas</button>" },
   fluxo:        { title:"Fluxo de Caixa", sub:"DFC — Regime de Caixa", actions:"<button class='btn btn-outline btn-sm' onclick='carregarFluxo()'><i class='ti ti-refresh'></i> Atualizar</button>" },
   dre:          { title:"DRE", sub:"Demonstrativo do Resultado — Competência", actions:"<button class='btn btn-outline btn-sm' onclick='carregarDRE()'><i class='ti ti-refresh'></i> Atualizar</button>" },
-  precificacao: { title:"Precificação", sub:"Calcule o preço justo com base nos seus custos reais", actions:"" },
+  precmao:      { title:"Precificação — Mão de Obra", sub:"Calcule o preço justo com base nos seus custos reais", actions:"" },
+  precpecas:    { title:"Precificação — Peças", sub:"Markup sobre custo de aquisição", actions:"" },
   relatorios:   { title:"Relatórios", sub:"Exportação e análise de dados", actions:"" },
   config:       { title:"Configurações", sub:"Parametrização do sistema", actions:"" },
 };
@@ -2808,7 +2881,7 @@ const URL_SLUGS = {
   fornecedores: 'fornecedores', comercial: 'comercial', rh: 'rh',
   receber: 'contasareceber', pagar: 'contasapagar', movimentacoes: 'movimentacoes',
   bancario: 'contasbancarias', dre: 'dre', fluxo: 'fluxodecaixa',
-  precificacao: 'precificacao', relatorios: 'relatorios', config: 'configuracoes',
+  precmao: 'precificacaomaodeobra', precpecas: 'precificacaopecas', relatorios: 'relatorios', config: 'configuracoes',
 };
 const SLUG_PARA_PAGINA = Object.fromEntries(Object.entries(URL_SLUGS).map(([k, v]) => [v, k]));
 function paginaDoCaminho(caminho) {
@@ -3468,12 +3541,7 @@ function cadastrarClienteRapidoReceber() {
   const modalEl = document.getElementById('modal-cli');
   modalEl.dataset.voltarRec = '1';
   delete modalEl.dataset.editId;
-  document.getElementById('cli-aviso-veiculo').style.display = 'none';
-  document.getElementById('cli-btn-add-vei').style.display = '';
-  document.querySelector('#modal-cli .modal-title').textContent = 'Novo Cliente';
-  ['cli-nome','cli-doc','cli-tel','cli-email','cli-nasc','cli-cep','cli-numero','cli-rua','cli-bairro','cli-cidade','cli-estado'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.value = '';
-  });
+  limparCamposClienteModal();
   openModal('cli');
 }
 
@@ -3482,6 +3550,23 @@ function cadastrarClienteRapidoReceber() {
 // Reset completo pra "Novo Cliente" — usado pelo botão da tela de Clientes.
 // Sem isso, abrir o modal depois de editar outro cliente reaproveitava o
 // editId antigo e o "Salvar" acabava sobrescrevendo o cliente errado.
+// Limpeza completa do formulário de Novo Cliente — usada por TODOS os pontos de entrada
+// (botão da tela de Clientes, cadastro rápido de dentro de Veículo/OS/Agendamento/Receber).
+// Antes, só o botão principal resetava o tipo PF/PJ e o placeholder do documento; os
+// cadastros rápidos deixavam a seleção e a máscara do cliente anterior, mesmo com os
+// campos de texto em branco — daí a sensação de "ficar salvo o cliente anterior".
+function limparCamposClienteModal() {
+  ['cli-nome','cli-doc','cli-tel','cli-email','cli-nasc','cli-cep','cli-numero','cli-rua','cli-bairro','cli-cidade','cli-estado'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  const radioPF = document.querySelector('input[name="cli-tipo"][value="PF"]');
+  if (radioPF) radioPF.checked = true;
+  document.getElementById('cli-doc').placeholder = '000.000.000-00';
+  document.getElementById('cli-aviso-veiculo').style.display = 'none';
+  document.getElementById('cli-btn-add-vei').style.display = '';
+  document.querySelector('#modal-cli .modal-title').textContent = 'Novo Cliente';
+}
+
 function abrirModalNovoCliente() {
   const modalEl = document.getElementById('modal-cli');
   delete modalEl.dataset.editId;
@@ -3489,15 +3574,7 @@ function abrirModalNovoCliente() {
   delete modalEl.dataset.voltarOs;
   delete modalEl.dataset.voltarAgend;
   delete modalEl.dataset.voltarRec;
-  document.getElementById('cli-modal-title').textContent = 'Novo Cliente';
-  const radioPF = document.querySelector('input[name="cli-tipo"][value="PF"]');
-  if (radioPF) radioPF.checked = true;
-  document.getElementById('cli-doc').placeholder = '000.000.000-00';
-  document.getElementById('cli-aviso-veiculo').style.display = 'none';
-  document.getElementById('cli-btn-add-vei').style.display = '';
-  ['cli-nome','cli-doc','cli-tel','cli-email','cli-nasc','cli-cep','cli-numero','cli-rua','cli-bairro','cli-cidade','cli-estado'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.value = '';
-  });
+  limparCamposClienteModal();
   openModal('cli');
 }
 
@@ -3505,12 +3582,7 @@ function cadastrarClienteRapido() {
   closeModal('vei');
   document.getElementById('modal-cli').dataset.voltarVei = '1';
   delete document.getElementById('modal-cli').dataset.editId;
-  document.getElementById('cli-aviso-veiculo').style.display = 'none';
-  document.getElementById('cli-btn-add-vei').style.display = '';
-  document.querySelector('#modal-cli .modal-title').textContent = 'Novo Cliente';
-  ['cli-nome','cli-doc','cli-tel','cli-email','cli-nasc','cli-cep','cli-numero','cli-rua','cli-bairro','cli-cidade','cli-estado'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.value = '';
-  });
+  limparCamposClienteModal();
   openModal('cli');
 }
 
@@ -4041,12 +4113,7 @@ function abrirCadastroClienteDeOS() {
   closeModal('os');
   document.getElementById('modal-cli').dataset.voltarOs = '1';
   delete document.getElementById('modal-cli').dataset.editId;
-  document.getElementById('cli-aviso-veiculo').style.display = 'none';
-  document.getElementById('cli-btn-add-vei').style.display = '';
-  document.querySelector('#modal-cli .modal-title').textContent = 'Novo Cliente';
-  ['cli-nome','cli-doc','cli-tel','cli-email','cli-nasc','cli-cep','cli-numero','cli-rua','cli-bairro','cli-cidade','cli-estado'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.value = '';
-  });
+  limparCamposClienteModal();
   openModal('cli');
 }
 
@@ -4644,7 +4711,8 @@ const PAGE_LOADERS = {
   movimentacoes: carregarMovimentacoes,
   fluxo: carregarFluxo,
   dre: carregarDRE,
-  precificacao: iniciarPrecificacao,
+  precmao: iniciarPrecificacao,
+  precpecas: iniciarPrecificacao,
   relatorios: iniciarRelatorios,
   config: carregarConfig,
   agendamento: carregarAgendamento,
@@ -6240,6 +6308,12 @@ function iniciarPrecificacao(){
     set('prec-desp', salvo.desp); set('prec-hd', salvo.hd); set('prec-dias', salvo.dias);
     set('prec-mecs', salvo.mecs); set('prec-mk', salvo.mk); set('prec-imp', salvo.imp); set('prec-tx', salvo.tx);
   }
+  const salvoPecas = APP.oficina?.padroes_os?.precificacao?.pecas;
+  if (salvoPecas) {
+    const set = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+    set('pp-custo', salvoPecas.custo); set('pp-imp', salvoPecas.imp); set('pp-cf', salvoPecas.cf);
+    set('pp-lucro', salvoPecas.lucro); set('pp-tx', salvoPecas.tx); set('pp-qtd', salvoPecas.qtd);
+  }
   calcPrecSvc();
   calcPrecPec();
 }
@@ -6249,7 +6323,22 @@ function salvarPrecificacaoDebounced(dados) {
   if (!APP.oficina) return;
   clearTimeout(precSalvarTimeout);
   precSalvarTimeout = setTimeout(async () => {
-    const padroes = { ...(APP.oficina.padroes_os || {}), precificacao: dados };
+    // Mescla com o que já existe (preserva "pecas" salvo por salvarPrecPecasDebounced,
+    // em vez de sobrescrever o objeto inteiro).
+    const precAtual = { ...(APP.oficina.padroes_os?.precificacao || {}), ...dados };
+    const padroes = { ...(APP.oficina.padroes_os || {}), precificacao: precAtual };
+    const { error } = await db.from('oficinas').update({ padroes_os: padroes }).eq('id', APP.oficina.id);
+    if (!error) APP.oficina.padroes_os = padroes;
+  }, 800);
+}
+
+let precPecasSalvarTimeout = null;
+function salvarPrecPecasDebounced(dadosPecas) {
+  if (!APP.oficina) return;
+  clearTimeout(precPecasSalvarTimeout);
+  precPecasSalvarTimeout = setTimeout(async () => {
+    const precAtual = { ...(APP.oficina.padroes_os?.precificacao || {}), pecas: dadosPecas };
+    const padroes = { ...(APP.oficina.padroes_os || {}), precificacao: precAtual };
     const { error } = await db.from('oficinas').update({ padroes_os: padroes }).eq('id', APP.oficina.id);
     if (!error) APP.oficina.padroes_os = padroes;
   }, 800);
@@ -6310,6 +6399,10 @@ function calcPrecPec(){
   const preco=div>0?custo/div:0;
   const markup=preco>0?(preco/custo):0;
   const marg=preco>0?((preco-custo)/preco)*100:0;
+
+  // Persiste no banco (padroes_os), assim como já acontece na aba Mão de Obra —
+  // sem isso, os parâmetros de peças voltavam ao padrão a cada atualização de página.
+  salvarPrecPecasDebounced({ custo, imp, cf, lucro, tx, qtd });
 
   const res=document.getElementById('prec-result-pec');
   if(!res)return;
@@ -7592,11 +7685,14 @@ async function registrarMovimentacoes(contaBancariaId, tipo, lancamentos) {
     data: l.data, valor: l.valor,
     conta_bancaria_id: contaBancariaId,
     categoria_id: l.categoria_id || null,
+    plano_contas_id: l.plano_contas_id || null,
     centro_custo_id: l.centro_custo_id || null,
     tipo_documento_id: l.tipo_documento_id || null,
     numero_documento: l.numero_documento || null,
     descricao: l.descricao,
     forma_pagamento: l.forma_pagamento || null,
+    fitid: l.fitid || null,
+    conciliado: l.conciliado || false,
   }));
   const { error: errMov } = await db.from('movimentacoes').insert(inserts);
   if (errMov) return { error: errMov };
@@ -7646,6 +7742,225 @@ async function popularSelectContasBancarias(selectId, valorAtual) {
   if (contas.length === 1) sel.value = contas[0].id;
   if (valorAtual) sel.value = valorAtual;
 }
+
+// ============================================================
+// IMPORTAR OFX — lança o que for novo e concilia o que já existe
+// ============================================================
+let OFX_ARQUIVO_SELECIONADO = null;
+let OFX_CONTA_ID = null;
+let OFX_PREVIEW = [];        // lançamentos lidos do arquivo, com status/classificação
+let OFX_CANDIDATOS = [];     // movimentações existentes no período, pra casar e pra vincular na mão
+let OFX_PLANO_CONTAS = [];   // cache local das contas grau 3, pra não buscar de novo a cada linha
+
+async function abrirModalOfx() {
+  OFX_ARQUIVO_SELECIONADO = null;
+  OFX_PREVIEW = [];
+  document.getElementById('ofx-arquivo').value = '';
+  document.getElementById('ofx-nome-arquivo').textContent = '';
+  document.getElementById('ofx-step-upload').style.display = '';
+  document.getElementById('ofx-step-preview').style.display = 'none';
+  document.getElementById('ofx-btn-processar').style.display = '';
+  document.getElementById('ofx-btn-confirmar').style.display = 'none';
+  await popularSelectContasBancarias('ofx-conta');
+  openModal('ofx');
+}
+
+function ofxArquivoSelecionado(input) {
+  OFX_ARQUIVO_SELECIONADO = input.files[0] || null;
+  document.getElementById('ofx-nome-arquivo').textContent = OFX_ARQUIVO_SELECIONADO ? OFX_ARQUIVO_SELECIONADO.name : '';
+}
+
+// Bancos brasileiros costumam exportar OFX em Windows-1252, não UTF-8 — lendo como
+// UTF-8 direto, acento em descrição de lançamento vira caractere estranho.
+async function lerArquivoOFX(file) {
+  const buffer = await file.arrayBuffer();
+  try { return new TextDecoder('windows-1252').decode(buffer); }
+  catch (e) { return new TextDecoder('utf-8').decode(buffer); }
+}
+
+// OFX é um formato SGML antigo (tags sem fechamento consistente) — não dá pra usar
+// um parser de XML/HTML normal, por isso a extração é via regex por bloco <STMTTRN>.
+function parseOFX(texto) {
+  const blocos = texto.match(/<STMTTRN>[\s\S]*?<\/STMTTRN>/gi) || [];
+  return blocos.map(bloco => {
+    const pega = (tag) => {
+      const m = bloco.match(new RegExp('<' + tag + '>([^<\\r\\n]*)', 'i'));
+      return m ? m[1].trim() : '';
+    };
+    const dtRaw = pega('DTPOSTED');
+    const data = dtRaw.length >= 8 ? `${dtRaw.slice(0,4)}-${dtRaw.slice(4,6)}-${dtRaw.slice(6,8)}` : '';
+    const valor = parseFloat(pega('TRNAMT').replace(',', '.')) || 0;
+    const descricao = pega('MEMO') || pega('NAME') || pega('TRNTYPE') || 'Sem descrição';
+    const fitid = pega('FITID');
+    return { data, valor, descricao, fitid, tipo: valor >= 0 ? 'entrada' : 'saida' };
+  }).filter(t => t.fitid && t.data && t.valor !== 0);
+}
+
+function ofxDiasEntre(d1, d2) {
+  return Math.abs((new Date(d1 + 'T12:00:00') - new Date(d2 + 'T12:00:00')) / 86400000);
+}
+
+async function processarArquivoOFX() {
+  const contaId = document.getElementById('ofx-conta').value;
+  if (!contaId) { toast('Selecione a conta bancária.', 'error'); return; }
+  if (!OFX_ARQUIVO_SELECIONADO) { toast('Selecione o arquivo .ofx.', 'error'); return; }
+
+  const texto = await lerArquivoOFX(OFX_ARQUIVO_SELECIONADO);
+  const transacoes = parseOFX(texto);
+  if (!transacoes.length) { toast('Não encontrei lançamentos nesse arquivo. Confira se é um .ofx válido.', 'error'); return; }
+
+  const datasOrdenadas = transacoes.map(t => t.data).sort();
+  const dataMin = new Date(datasOrdenadas[0] + 'T12:00:00'); dataMin.setDate(dataMin.getDate() - 3);
+  const dataMax = new Date(datasOrdenadas[datasOrdenadas.length - 1] + 'T12:00:00'); dataMax.setDate(dataMax.getDate() + 3);
+
+  const { data: existentes } = await db.from('movimentacoes')
+    .select('id,data,valor,tipo,descricao,fitid,conciliado')
+    .eq('conta_bancaria_id', contaId)
+    .gte('data', dataMin.toISOString().slice(0, 10))
+    .lte('data', dataMax.toISOString().slice(0, 10));
+
+  OFX_CANDIDATOS = existentes || [];
+  OFX_CONTA_ID = contaId;
+  const fitidsJaImportados = new Set(OFX_CANDIDATOS.filter(m => m.fitid).map(m => m.fitid));
+
+  OFX_PREVIEW = transacoes
+    .filter(t => !fitidsJaImportados.has(t.fitid)) // já tinha sido importado antes — não duplica
+    .map(t => {
+      const candidatos = OFX_CANDIDATOS.filter(m =>
+        !m.conciliado && m.tipo === t.tipo &&
+        Math.abs(Math.abs(m.valor) - Math.abs(t.valor)) < 0.01 &&
+        ofxDiasEntre(m.data, t.data) <= 3
+      );
+      return {
+        ...t,
+        status: candidatos.length === 1 ? 'conciliado' : 'novo',
+        movimentacaoId: candidatos.length === 1 ? candidatos[0].id : null,
+        categoria_id: '', plano_contas_id: '',
+      };
+    });
+
+  if (!OFX_PREVIEW.length) {
+    toast('Todos os lançamentos desse arquivo já tinham sido importados antes.', 'default');
+    return;
+  }
+
+  const { data: planoContas } = await db.from('plano_contas').select('id,nome,tipo,grau')
+    .eq('oficina_id', APP.oficina.id).eq('ativo', true).eq('grau', 3).order('ordem').order('nome');
+  OFX_PLANO_CONTAS = planoContas || [];
+
+  renderOfxPreview();
+  document.getElementById('ofx-step-upload').style.display = 'none';
+  document.getElementById('ofx-step-preview').style.display = '';
+  document.getElementById('ofx-btn-processar').style.display = 'none';
+  document.getElementById('ofx-btn-confirmar').style.display = '';
+}
+
+function renderOfxPreview() {
+  const tbody = document.getElementById('ofx-preview-tbody');
+  tbody.innerHTML = OFX_PREVIEW.map((item, i) => {
+    const dataFmt = item.data.split('-').reverse().join('/');
+    const valorFmt = (item.tipo === 'saida' ? '-' : '') + fmtMoeda(Math.abs(item.valor));
+    const corValor = item.tipo === 'entrada' ? 'var(--success)' : 'var(--danger)';
+
+    if (item.status === 'conciliado') {
+      const mov = OFX_CANDIDATOS.find(m => m.id === item.movimentacaoId);
+      return `<tr style="border-top:1px solid var(--border)">
+        <td style="padding:7px 10px;white-space:nowrap;">${dataFmt}</td>
+        <td style="padding:7px 10px;">${item.descricao}</td>
+        <td style="padding:7px 10px;text-align:right;color:${corValor};font-weight:500;white-space:nowrap;">${valorFmt}</td>
+        <td style="padding:7px 10px;"><span class="badge badge-success">Conciliado</span></td>
+        <td style="padding:7px 10px;font-size:11.5px;color:var(--text-3);">${mov ? ('já lançado: ' + (mov.descricao || '')) : ''}</td>
+        <td style="padding:7px 10px;"><button class="btn btn-outline btn-sm" onclick="ofxDesfazer(${i})">Desfazer</button></td>
+      </tr>`;
+    }
+
+    const candidatosNovo = OFX_CANDIDATOS.filter(m => !m.conciliado && m.tipo === item.tipo);
+    const tipoContabil = item.tipo === 'entrada' ? 'receita' : 'despesa';
+    const opcoesPlano = OFX_PLANO_CONTAS.filter(c => c.tipo === tipoContabil);
+    const opcoesCat = categoriasFinTodas.filter(c => c.ativo && c.tipo === tipoContabil);
+
+    return `<tr style="border-top:1px solid var(--border)">
+      <td style="padding:7px 10px;white-space:nowrap;">${dataFmt}</td>
+      <td style="padding:7px 10px;">${item.descricao}</td>
+      <td style="padding:7px 10px;text-align:right;color:${corValor};font-weight:500;white-space:nowrap;">${valorFmt}</td>
+      <td style="padding:7px 10px;"><span class="badge badge-warning">Novo</span></td>
+      <td style="padding:7px 10px;">
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:200px">
+          <select class="form-input" style="font-size:11.5px;padding:4px 8px" onchange="ofxSetCampo(${i},'categoria_id',this.value)">
+            <option value="">Sem categoria</option>
+            ${opcoesCat.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')}
+          </select>
+          <select class="form-input" style="font-size:11.5px;padding:4px 8px" onchange="ofxSetCampo(${i},'plano_contas_id',this.value)">
+            <option value="">Conta contábil...</option>
+            ${opcoesPlano.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')}
+          </select>
+        </div>
+      </td>
+      <td style="padding:7px 10px;">${candidatosNovo.length ? `<select class="form-input" style="font-size:11.5px;padding:4px 8px" onchange="if(this.value)ofxVincular(${i},this.value)">
+        <option value="">Vincular a lançamento existente...</option>
+        ${candidatosNovo.map(m => `<option value="${m.id}">${m.data.split('-').reverse().join('/')} — ${(m.descricao||'').slice(0,28)} — ${fmtMoeda(Math.abs(m.valor))}</option>`).join('')}
+      </select>` : ''}</td>
+    </tr>`;
+  }).join('');
+
+  const totalConciliado = OFX_PREVIEW.filter(i => i.status === 'conciliado').length;
+  document.getElementById('ofx-resumo').textContent =
+    `${OFX_PREVIEW.length} lançamento(s) no arquivo — ${totalConciliado} conciliado(s) automaticamente, ${OFX_PREVIEW.length - totalConciliado} novo(s) pra classificar.`;
+}
+
+function ofxSetCampo(i, campo, valor) {
+  OFX_PREVIEW[i][campo] = valor;
+}
+function ofxDesfazer(i) {
+  OFX_PREVIEW[i].status = 'novo';
+  OFX_PREVIEW[i].movimentacaoId = null;
+  renderOfxPreview();
+}
+function ofxVincular(i, movId) {
+  OFX_PREVIEW[i].status = 'conciliado';
+  OFX_PREVIEW[i].movimentacaoId = movId;
+  renderOfxPreview();
+}
+
+async function confirmarImportacaoOFX() {
+  if (!OFX_PREVIEW.length) return;
+
+  const semContaContabil = OFX_PREVIEW.filter(i => i.status === 'novo' && !i.plano_contas_id);
+  if (semContaContabil.length) {
+    toast(`Falta escolher a Conta Contábil em ${semContaContabil.length} lançamento(s) novo(s).`, 'error');
+    return;
+  }
+
+  const conciliar = OFX_PREVIEW.filter(i => i.status === 'conciliado' && i.movimentacaoId);
+  const novosEntrada = OFX_PREVIEW.filter(i => i.status === 'novo' && i.tipo === 'entrada');
+  const novosSaida = OFX_PREVIEW.filter(i => i.status === 'novo' && i.tipo === 'saida');
+
+  for (const item of conciliar) {
+    await db.from('movimentacoes').update({ fitid: item.fitid, conciliado: true }).eq('id', item.movimentacaoId);
+  }
+
+  let erro = null;
+  const montarLancamento = i => ({
+    origem: 'avulsa', valor: Math.abs(i.valor), data: i.data, descricao: i.descricao,
+    categoria_id: i.categoria_id || null, plano_contas_id: i.plano_contas_id || null,
+    fitid: i.fitid, conciliado: true,
+  });
+  if (novosEntrada.length) {
+    const r = await registrarMovimentacoes(OFX_CONTA_ID, 'entrada', novosEntrada.map(montarLancamento));
+    erro = erro || r.error;
+  }
+  if (novosSaida.length) {
+    const r = await registrarMovimentacoes(OFX_CONTA_ID, 'saida', novosSaida.map(montarLancamento));
+    erro = erro || r.error;
+  }
+
+  if (erro) { toast('Erro ao importar: ' + erro.message, 'error'); return; }
+
+  closeModal('ofx');
+  toast(`Importação concluída: ${conciliar.length} conciliado(s), ${novosEntrada.length + novosSaida.length} novo(s) lançado(s).`, 'success');
+  await carregarMovimentacoes();
+}
+
 
 // Popula os selects de Fornecedor / Cliente / Tipo de Documento / Plano de Contas
 // usados no novo modal de Lançamento (Pagar/Receber). Todos aceitam um valor pra
@@ -8820,12 +9135,7 @@ function abrirCadastroClienteDeAgend() {
   closeModal('agend');
   document.getElementById('modal-cli').dataset.voltarAgend = '1';
   delete document.getElementById('modal-cli').dataset.editId;
-  document.getElementById('cli-aviso-veiculo').style.display = 'none';
-  document.getElementById('cli-btn-add-vei').style.display = '';
-  document.querySelector('#modal-cli .modal-title').textContent = 'Novo Cliente';
-  ['cli-nome','cli-doc','cli-tel','cli-email','cli-nasc','cli-cep','cli-numero','cli-rua','cli-bairro','cli-cidade','cli-estado'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.value = '';
-  });
+  limparCamposClienteModal();
   openModal('cli');
 }
 
@@ -9123,6 +9433,7 @@ async function salvarDetalheFornecedor() {
 }
 
 const FIN_VIEWS = ['receber', 'pagar', 'movimentacoes', 'bancario', 'dre', 'fluxo'];
+const PREC_VIEWS = ['precmao', 'precpecas'];
 
 function navigate(pagina, navItem) {
   renderizarPagina(pagina, navItem);
@@ -9138,17 +9449,25 @@ function renderizarPagina(pagina, navItem) {
   if (page) page.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   const isFin = FIN_VIEWS.includes(pagina);
+  const isPrec = PREC_VIEWS.includes(pagina);
   if (isFin) {
     // Dentro do módulo Financeiro, o item "Financeiro" da sidebar principal fica
     // marcado como ativo (não existe mais um nav-item por tela financeira ali),
     // e a sub-sidebar interna assume a navegação entre Receber/Pagar/DRE/etc.
     document.getElementById('nav-financeiro')?.classList.add('active');
+  } else if (isPrec) {
+    // Mesmo padrão do Financeiro: dentro de Precificação, o item da sidebar
+    // principal fica ativo e a sub-sidebar interna navega entre Mão de Obra/Peças.
+    document.getElementById('nav-precificacao')?.classList.add('active');
   } else if (navItem) {
     navItem.classList.add('active');
   }
   document.getElementById('fin-subsidebar')?.classList.toggle('show', isFin);
+  document.getElementById('prec-subsidebar')?.classList.toggle('show', isPrec);
   document.getElementById('main-content')?.classList.toggle('fin-shift', isFin);
+  document.getElementById('main-content')?.classList.toggle('prec-shift', isPrec);
   document.querySelectorAll('.fin-nav-item').forEach(n => n.classList.toggle('active', n.dataset.finView === pagina));
+  document.querySelectorAll('.prec-nav-item').forEach(n => n.classList.toggle('active', n.dataset.precView === pagina));
   const cfg = PAGE_CONFIG[pagina] || { title: pagina, sub: '', actions: '' };
   document.getElementById('topbar-title').textContent = cfg.title;
   document.getElementById('topbar-sub').textContent = (APP.oficina?.nome || '') + (cfg.sub ? ' — ' + cfg.sub : '');
@@ -10241,13 +10560,8 @@ function openModal(id) {
   // Reset do modal de cliente quando aberto "do zero" (sem edição e sem vir de outra tela)
   if (id === 'cli') {
     const modal = document.getElementById('modal-cli');
-    if (!modal.dataset.editId && !modal.dataset.voltarVei && !modal.dataset.voltarOs && !modal.dataset.voltarAgend) {
-      document.querySelector('#modal-cli .modal-title').textContent = 'Novo Cliente';
-      document.getElementById('cli-aviso-veiculo').style.display = 'none';
-      document.getElementById('cli-btn-add-vei').style.display = '';
-      ['cli-nome','cli-doc','cli-tel','cli-email','cli-nasc','cli-cep','cli-numero','cli-rua','cli-bairro','cli-cidade','cli-estado'].forEach(f => {
-        const el = document.getElementById(f); if (el) el.value = '';
-      });
+    if (!modal.dataset.editId && !modal.dataset.voltarVei && !modal.dataset.voltarOs && !modal.dataset.voltarAgend && !modal.dataset.voltarRec) {
+      limparCamposClienteModal();
     }
   }
 }
