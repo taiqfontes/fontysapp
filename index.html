@@ -2774,15 +2774,15 @@ tbody td{padding:10px 13px;font-size:12px;vertical-align:middle;}
     <div id="ofx-step-preview" style="display:none;">
       <div id="ofx-resumo" style="font-size:12.5px;color:var(--text-3);margin-bottom:10px;"></div>
       <div style="overflow-x:auto;max-height:55vh;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-md);">
-        <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
-          <thead style="position:sticky;top:0;background:var(--surface-2);z-index:1;">
+        <table style="width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;">
+          <thead>
             <tr>
-              <th style="text-align:left;padding:8px 10px;">Data</th>
-              <th style="text-align:left;padding:8px 10px;">Descrição</th>
-              <th style="text-align:right;padding:8px 10px;">Valor</th>
-              <th style="text-align:left;padding:8px 10px;">Status</th>
-              <th style="text-align:left;padding:8px 10px;">Classificação</th>
-              <th style="text-align:left;padding:8px 10px;">Ação</th>
+              <th style="position:sticky;top:0;background:var(--surface-2);z-index:1;text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);">Data</th>
+              <th style="position:sticky;top:0;background:var(--surface-2);z-index:1;text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);">Descrição</th>
+              <th style="position:sticky;top:0;background:var(--surface-2);z-index:1;text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);">Valor</th>
+              <th style="position:sticky;top:0;background:var(--surface-2);z-index:1;text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);">Status</th>
+              <th style="position:sticky;top:0;background:var(--surface-2);z-index:1;text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);">Classificação</th>
+              <th style="position:sticky;top:0;background:var(--surface-2);z-index:1;text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);">Ação</th>
             </tr>
           </thead>
           <tbody id="ofx-preview-tbody"></tbody>
@@ -7003,6 +7003,7 @@ async function salvarCategoria() {
   const modalEl = document.getElementById('modal-categoria');
   const editId = modalEl.dataset.editId;
   const voltarLancamento = modalEl.dataset.voltarLancamento; // 'pag' | 'rec' | undefined
+  const voltarOfx = modalEl.dataset.voltarOfx; // índice da linha no OFX, ou undefined
   const grau = parseInt(document.getElementById('cat-grau').value);
   const payload = {
     nome,
@@ -7023,10 +7024,20 @@ async function salvarCategoria() {
   }
   if (error) { toast('Erro: ' + error.message, 'error'); return; }
   delete modalEl.dataset.voltarLancamento;
+  delete modalEl.dataset.voltarOfx;
   closeModal('categoria');
   toast(editId ? 'Categoria atualizada!' : 'Categoria criada!', 'success');
   await carregarPlanoContas();
   await sincronizarCategoriasNosModais();
+  // Se veio do cadastro rápido dentro de uma linha do OFX, volta pro modal de
+  // importação e já seleciona a conta contábil recém-criada naquela linha.
+  if (voltarOfx !== undefined && !editId && novoId && grau === 3) {
+    await atualizarCachePlanoContasOfx();
+    OFX_PREVIEW[parseInt(voltarOfx)].plano_contas_id = novoId;
+    openModal('ofx');
+    renderOfxPreview();
+    return;
+  }
   // Se veio do cadastro rápido dentro de Contas a Pagar/Receber, volta e já seleciona
   // — só faz sentido quando a conta criada é Grau 3 (as únicas selecionáveis lá).
   if (voltarLancamento && !editId && novoId && grau === 3) {
@@ -7145,7 +7156,9 @@ function editarCatFin(id) {
 async function salvarCatFin() {
   const nome = document.getElementById('catfin-nome').value.trim();
   if (!nome) { toast('Informe o nome.', 'error'); return; }
-  const editId = document.getElementById('modal-catfin').dataset.editId;
+  const modalEl = document.getElementById('modal-catfin');
+  const editId = modalEl.dataset.editId;
+  const voltarOfx = modalEl.dataset.voltarOfx;
   const payload = {
     nome,
     tipo: document.getElementById('catfin-tipo').value,
@@ -7153,13 +7166,25 @@ async function salvarCatFin() {
     ordem: parseInt(document.getElementById('catfin-ordem').value) || 0,
     ativo: document.getElementById('catfin-ativo-toggle').classList.contains('on'),
   };
-  let error;
-  if (editId) ({ error } = await db.from('categorias_financeiras').update(payload).eq('id', editId));
-  else ({ error } = await db.from('categorias_financeiras').insert({ oficina_id: APP.oficina.id, ...payload }));
+  let error, novoId = null;
+  if (editId) {
+    ({ error } = await db.from('categorias_financeiras').update(payload).eq('id', editId));
+  } else {
+    const { data, error: err } = await db.from('categorias_financeiras').insert({ oficina_id: APP.oficina.id, ...payload }).select();
+    error = err;
+    novoId = data?.[0]?.id || null;
+  }
   if (error) { toast('Erro: ' + error.message, 'error'); return; }
+  delete modalEl.dataset.voltarOfx;
   closeModal('catfin');
   toast(editId ? 'Categoria atualizada!' : 'Categoria criada!', 'success');
   await carregarCategoriasFin();
+  // Se veio do cadastro rápido dentro de uma linha do OFX, volta e já seleciona.
+  if (voltarOfx !== undefined && !editId && novoId) {
+    OFX_PREVIEW[parseInt(voltarOfx)].categoria_id = novoId;
+    openModal('ofx');
+    renderOfxPreview();
+  }
 }
 
 function excluirCatFin(id) {
@@ -7686,6 +7711,7 @@ async function registrarMovimentacoes(contaBancariaId, tipo, lancamentos) {
     conta_bancaria_id: contaBancariaId,
     categoria_id: l.categoria_id || null,
     plano_contas_id: l.plano_contas_id || null,
+    fornecedor_id: l.fornecedor_id || null,
     centro_custo_id: l.centro_custo_id || null,
     tipo_documento_id: l.tipo_documento_id || null,
     numero_documento: l.numero_documento || null,
@@ -7835,7 +7861,7 @@ async function processarArquivoOFX() {
         ...t,
         status: candidatos.length === 1 ? 'conciliado' : 'novo',
         movimentacaoId: candidatos.length === 1 ? candidatos[0].id : null,
-        categoria_id: '', plano_contas_id: '',
+        categoria_id: '', plano_contas_id: '', fornecedor_id: '',
       };
     });
 
@@ -7844,15 +7870,19 @@ async function processarArquivoOFX() {
     return;
   }
 
-  const { data: planoContas } = await db.from('plano_contas').select('id,nome,tipo,grau')
-    .eq('oficina_id', APP.oficina.id).eq('ativo', true).eq('grau', 3).order('ordem').order('nome');
-  OFX_PLANO_CONTAS = planoContas || [];
+  await Promise.all([atualizarCachePlanoContasOfx(), carregarCacheFornecedores()]);
 
   renderOfxPreview();
   document.getElementById('ofx-step-upload').style.display = 'none';
   document.getElementById('ofx-step-preview').style.display = '';
   document.getElementById('ofx-btn-processar').style.display = 'none';
   document.getElementById('ofx-btn-confirmar').style.display = '';
+}
+
+async function atualizarCachePlanoContasOfx() {
+  const { data } = await db.from('plano_contas').select('id,nome,tipo,grau')
+    .eq('oficina_id', APP.oficina.id).eq('ativo', true).eq('grau', 3).order('ordem').order('nome');
+  OFX_PLANO_CONTAS = data || [];
 }
 
 function renderOfxPreview() {
@@ -7878,6 +7908,7 @@ function renderOfxPreview() {
     const tipoContabil = item.tipo === 'entrada' ? 'receita' : 'despesa';
     const opcoesPlano = OFX_PLANO_CONTAS.filter(c => c.tipo === tipoContabil);
     const opcoesCat = categoriasFinTodas.filter(c => c.ativo && c.tipo === tipoContabil);
+    const opcoesForn = fornecedoresCacheLancamento || [];
 
     return `<tr style="border-top:1px solid var(--border)">
       <td style="padding:7px 10px;white-space:nowrap;">${dataFmt}</td>
@@ -7885,15 +7916,28 @@ function renderOfxPreview() {
       <td style="padding:7px 10px;text-align:right;color:${corValor};font-weight:500;white-space:nowrap;">${valorFmt}</td>
       <td style="padding:7px 10px;"><span class="badge badge-warning">Novo</span></td>
       <td style="padding:7px 10px;">
-        <div style="display:flex;flex-direction:column;gap:4px;min-width:200px">
-          <select class="form-input" style="font-size:11.5px;padding:4px 8px" onchange="ofxSetCampo(${i},'categoria_id',this.value)">
-            <option value="">Sem categoria</option>
-            ${opcoesCat.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')}
-          </select>
-          <select class="form-input" style="font-size:11.5px;padding:4px 8px" onchange="ofxSetCampo(${i},'plano_contas_id',this.value)">
-            <option value="">Conta contábil...</option>
-            ${opcoesPlano.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')}
-          </select>
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:230px">
+          <div style="display:flex;gap:4px;align-items:center;">
+            <select class="form-input" style="font-size:11.5px;padding:4px 8px;flex:1" onchange="ofxSetCampo(${i},'categoria_id',this.value)">
+              <option value="" ${!item.categoria_id ? 'selected' : ''}>Sem categoria</option>
+              ${opcoesCat.map(c => `<option value="${c.id}" ${item.categoria_id === c.id ? 'selected' : ''}>${c.nome}</option>`).join('')}
+            </select>
+            <button class="btn btn-outline btn-sm" style="padding:3px 7px;flex-shrink:0;" title="Nova categoria financeira" onclick="cadastrarCategoriaFinRapidoOfx(${i})"><i class="ti ti-plus"></i></button>
+          </div>
+          <div style="display:flex;gap:4px;align-items:center;">
+            <select class="form-input" style="font-size:11.5px;padding:4px 8px;flex:1" onchange="ofxSetCampo(${i},'plano_contas_id',this.value)">
+              <option value="" ${!item.plano_contas_id ? 'selected' : ''}>Conta contábil...</option>
+              ${opcoesPlano.map(c => `<option value="${c.id}" ${item.plano_contas_id === c.id ? 'selected' : ''}>${c.nome}</option>`).join('')}
+            </select>
+            <button class="btn btn-outline btn-sm" style="padding:3px 7px;flex-shrink:0;" title="Nova conta contábil" onclick="cadastrarContaContabilRapidoOfx(${i})"><i class="ti ti-plus"></i></button>
+          </div>
+          ${item.tipo === 'saida' ? `<div style="display:flex;gap:4px;align-items:center;">
+            <select class="form-input" style="font-size:11.5px;padding:4px 8px;flex:1" onchange="ofxSetCampo(${i},'fornecedor_id',this.value)">
+              <option value="" ${!item.fornecedor_id ? 'selected' : ''}>Sem fornecedor</option>
+              ${opcoesForn.map(f => `<option value="${f.id}" ${item.fornecedor_id === f.id ? 'selected' : ''}>${f.nome}</option>`).join('')}
+            </select>
+            <button class="btn btn-outline btn-sm" style="padding:3px 7px;flex-shrink:0;" title="Novo fornecedor" onclick="cadastrarFornecedorRapidoOfx(${i})"><i class="ti ti-plus"></i></button>
+          </div>` : ''}
         </div>
       </td>
       <td style="padding:7px 10px;">${candidatosNovo.length ? `<select class="form-input" style="font-size:11.5px;padding:4px 8px" onchange="if(this.value)ofxVincular(${i},this.value)">
@@ -7922,6 +7966,52 @@ function ofxVincular(i, movId) {
   renderOfxPreview();
 }
 
+// --- Cadastro rápido de Categoria Financeira / Conta Contábil / Fornecedor
+// direto de uma linha do OFX, sem perder o progresso já feito na importação ---
+function cadastrarCategoriaFinRapidoOfx(i) {
+  const item = OFX_PREVIEW[i];
+  closeModal('ofx');
+  const modalEl = document.getElementById('modal-catfin');
+  modalEl.dataset.voltarOfx = String(i);
+  delete modalEl.dataset.editId;
+  document.getElementById('catfin-modal-title').textContent = 'Nova Categoria Financeira';
+  document.getElementById('catfin-nome').value = '';
+  document.getElementById('catfin-tipo').value = item.tipo === 'entrada' ? 'receita' : 'despesa';
+  document.getElementById('catfin-ordem').value = categoriasFinTodas.length + 1;
+  document.getElementById('catfin-ativo-toggle').classList.add('on');
+  popularSelectContaContabil();
+  openModal('catfin');
+}
+
+function cadastrarContaContabilRapidoOfx(i) {
+  const item = OFX_PREVIEW[i];
+  closeModal('ofx');
+  const modalEl = document.getElementById('modal-categoria');
+  modalEl.dataset.voltarOfx = String(i);
+  delete modalEl.dataset.editId;
+  document.getElementById('cat-modal-title').textContent = 'Nova Conta Contábil';
+  document.getElementById('cat-nome').value = '';
+  document.getElementById('cat-tipo').value = item.tipo === 'entrada' ? 'receita' : 'despesa';
+  document.getElementById('cat-grau').value = '3';
+  onCatTipo();
+  onCatGrau();
+  document.getElementById('cat-ordem').value = planoCategorias.length + 1;
+  document.getElementById('cat-ativo-toggle').classList.add('on');
+  openModal('categoria');
+}
+
+function cadastrarFornecedorRapidoOfx(i) {
+  closeModal('ofx');
+  const modalEl = document.getElementById('modal-forn');
+  modalEl.dataset.voltarOfx = String(i);
+  ['forn-nome','forn-cnpj','forn-tel','forn-email','forn-rep','forn-end','forn-cats'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.querySelector('#modal-forn .modal-title').textContent = 'Novo Fornecedor';
+  openModal('forn');
+}
+
+
 async function confirmarImportacaoOFX() {
   if (!OFX_PREVIEW.length) return;
 
@@ -7943,6 +8033,7 @@ async function confirmarImportacaoOFX() {
   const montarLancamento = i => ({
     origem: 'avulsa', valor: Math.abs(i.valor), data: i.data, descricao: i.descricao,
     categoria_id: i.categoria_id || null, plano_contas_id: i.plano_contas_id || null,
+    fornecedor_id: i.fornecedor_id || null,
     fitid: i.fitid, conciliado: true,
   });
   if (novosEntrada.length) {
@@ -9277,6 +9368,7 @@ async function salvarFornecedor() {
   if (!nome) { toast('Informe a razão social.', 'error'); return; }
   const modalEl = document.getElementById('modal-forn');
   const voltarPag = modalEl.dataset.voltarPag;
+  const voltarOfx = modalEl.dataset.voltarOfx;
   const catsRaw = document.getElementById('forn-cats').value;
   const cats = catsRaw ? catsRaw.split(',').map(c => c.trim()).filter(Boolean) : [];
   const { data, error } = await db.from('fornecedores').insert({
@@ -9294,9 +9386,17 @@ async function salvarFornecedor() {
   if (error) { toast('Erro: ' + error.message, 'error'); return; }
   const novoId = data?.[0]?.id || null;
   delete modalEl.dataset.voltarPag;
+  delete modalEl.dataset.voltarOfx;
   closeModal('forn');
   toast('Fornecedor salvo!', 'success');
   await carregarFornecedores();
+  if (voltarOfx !== undefined && novoId) {
+    await carregarCacheFornecedores();
+    OFX_PREVIEW[parseInt(voltarOfx)].fornecedor_id = novoId;
+    openModal('ofx');
+    renderOfxPreview();
+    return;
+  }
   if (voltarPag && novoId) {
     await carregarCacheFornecedores(novoId);
     openModal('pag');
